@@ -1,4 +1,6 @@
-// Config
-export const Host: string = '0.0.0.0'
+import { ServerConfiguration } from 'kenote-config-helper'
+import { loadData } from 'kenote-config-helper/dist/utils.server'
 
-export const Port: number = 3000
+const config = loadData('config/server') as ServerConfiguration
+
+export = config

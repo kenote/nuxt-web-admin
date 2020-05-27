@@ -1,0 +1,31 @@
+---
+# 服务器配置
+
+# 服务器IP；默认 0.0.0.0
+Host              : 0.0.0.0
+
+# 服务器端口；此为内部运行端口，请将此端口映射到 nginx 上
+Port              : 3000
+
+# 站点名称
+site_name         : Nuxt web admin
+
+# 站点链接
+site_url          : http://localhost:3000
+
+# 设置 Session 名称
+session_secret    : nuxt-web-admin
+
+# 设置 Redis 缓存库
+redis:
+  host            : 127.0.0.1
+  port            : 6397
+  db              : 0
+
+# 设置 MongoDB 数据库
+mongodb:
+  uris            : mongodb://localhost:27017/nuxt-web-admin
+  options:
+    useNewUrlParser        : true
+    useCreateIndex         : true
+    useUnifiedTopology     : true
