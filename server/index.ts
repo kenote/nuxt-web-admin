@@ -10,6 +10,7 @@ import * as cookieParser from 'cookie-parser'
 import { sessionParser, notFoundHandler, errorHandler } from '~/plugin.config'
 import { nuxt, nuxtReady, nuxtHandler } from '~/nuxt.config'
 import { Host, Port, session_secret } from '~/config'
+import logger from '~/utils/logger'
 
 async function start (): Promise<void> {
   let app: express.Application = express()
@@ -47,7 +48,7 @@ async function start (): Promise<void> {
   
   // Running Server ...
   http.createServer(app).listen(Port, Host, () => {
-    console.log(`\nService running in %s environment, PORT: %d ...`, process.env.NODE_ENV || 'development', Port)
+    logger.info(`Service running in %s environment, PORT: %d ...`, process.env.NODE_ENV || 'development', Port)
   })
 }
 

@@ -43,6 +43,8 @@ jspm_packages/
 package-lock.json
 yarn.lock
 build/
+config/**/*.yml
+!config/**/*.default.yml
 
 # TypeScript v1 declaration files
 typings/
@@ -105,3 +107,6 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Deploy
+deploy.config.*
