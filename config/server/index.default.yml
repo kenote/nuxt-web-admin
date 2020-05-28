@@ -19,7 +19,7 @@ session_secret    : nuxt-web-admin
 # 设置 Redis 缓存库
 redis:
   host            : 127.0.0.1
-  port            : 6397
+  port            : 6379
   db              : 0
 
 # 设置 MongoDB 数据库
