@@ -29,3 +29,20 @@ mongodb:
     useNewUrlParser        : true
     useCreateIndex         : true
     useUnifiedTopology     : true
+
+# 默认语言
+language          : zh-cn
+
+# 自定义选项
+options:
+  # 绑定 Request 头部信息
+  headers:
+    # - !!seq [ Access-Control-Allow-Origin, '*' ]
+    # - !!seq [ Access-Control-Allow-Methods, 'GET, HEAD, POST, PUT, PATCH, DELETE' ]
+    - !!seq [ Access-Control-Allow-Headers, 'X-Requested-With,content-type, Authorization' ]
+  # 错误信息
+  errorInfo: |-
+    {
+      "error": {{ code }},
+      "message": "{{ message }}"
+    }
