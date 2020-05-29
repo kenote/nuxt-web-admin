@@ -15,6 +15,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "kenote-config-helper": "^1.0.9",
+    "kenote-express-helper": "^1.1.2",
     "kenote-mongoose-helper": "^1.1.2",
     "log4js": "^6.3.0",
     "method-override": "^3.0.0",
@@ -54,6 +55,7 @@
   "scripts": {
     "develop": "backpack dev",
     "build": "nuxt build && backpack build",
-    "start": "node ./build/index.js"
+    "start": "node ./build/index.js",
+    "deploy": "ko deploy"
   }
 }

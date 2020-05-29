@@ -9,8 +9,10 @@ import * as cookieParser from 'cookie-parser'
 
 import { sessionParser, notFoundHandler, errorHandler } from '~/plugin.config'
 import { nuxt, nuxtReady, nuxtHandler } from '~/nuxt.config'
-import { Host, Port, session_secret } from '~/config'
+import { Host, Port, session_secret, options } from '~/config'
 import logger from '~/utils/logger'
+import { oc } from 'ts-optchain'
+import restful, { IResponse } from '~/middleware/restful'
 
 async function start (): Promise<void> {
   let app: express.Application = express()
@@ -35,6 +37,9 @@ async function start (): Promise<void> {
 
   // Session
   app.use(sessionParser(session_secret!))
+
+  // 自定义 Restful
+  app.use(restful)
   
   // Render Nuxt ...
   await nuxtReady()
