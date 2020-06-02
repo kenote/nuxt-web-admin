@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
-const ticketSchema = new Schema({
+const schema: Schema = new Schema({
   id: {
     type: Number,
     default: 0,
@@ -42,4 +42,4 @@ const ticketSchema = new Schema({
   }
 })
 
-export default ticketSchema
+export default model('ticket', schema)

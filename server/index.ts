@@ -6,13 +6,15 @@ import * as bodyParser from 'body-parser'
 import * as methodOverride from 'method-override'
 import * as compress from 'compression'
 import * as cookieParser from 'cookie-parser'
-
-import { sessionParser, notFoundHandler, errorHandler } from '~/plugin.config'
+import * as passport from 'passport'
+import { sessionParser, notFoundHandler, errorHandler, corsHandler } from '~/plugin.config'
 import { nuxt, nuxtReady, nuxtHandler } from '~/nuxt.config'
-import { Host, Port, session_secret, options } from '~/config'
+import { Host, Port, session_secret } from '~/config'
 import logger from '~/utils/logger'
-import { oc } from 'ts-optchain'
-import restful, { IResponse } from '~/middleware/restful'
+import restful from '~/middleware/restful'
+import { strategy } from '~/middleware/auth'
+import controller from '~/controller'
+import api_v1 from '~/api/v1'
 
 async function start (): Promise<void> {
   let app: express.Application = express()
@@ -38,8 +40,26 @@ async function start (): Promise<void> {
   // Session
   app.use(sessionParser(session_secret!))
 
+  // Passport
+  passport.use(strategy)
+  passport.serializeUser((user, done) => 
+    done(null, user)
+  )
+  passport.deserializeUser((user, done) => 
+    done(null, user)
+  )
+  app.use(passport.initialize())
+  app.use(passport.session())
+
+
   // 自定义 Restful
   app.use(restful)
+
+  // Controller
+  app.use('/', corsHandler, controller)
+
+  // api_v1
+  app.use('/api/v1', corsHandler, api_v1)
   
   // Render Nuxt ...
   await nuxtReady()

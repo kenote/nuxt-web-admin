@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
-const teamSchema = new Schema({
+const schema: Schema = new Schema({
   id: {
     type: Number,
     default: 0,
@@ -36,4 +36,4 @@ const teamSchema = new Schema({
   }
 })
 
-export default teamSchema
+export default model('team', schema)

@@ -1,0 +1,19 @@
+---
+# 上传文件配置
+
+default:
+  # 类型
+  type            : local
+  # 文件存储目录
+  root_dir        : uploadfiles
+  # 文件下载入口
+  root_url        : http://localhost:3000/uploadfiles
+  # 最大上传文件大小
+  max_szie        : 4MB
+  # 支持文件类型
+  mime_type       : !!seq
+    - image/png
+  # 是否使用源文件名
+  original_name   : true
+  # 只允许登录用户下载
+  download_auth   : true

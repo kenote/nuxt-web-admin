@@ -35,6 +35,8 @@ language          : zh-cn
 
 # 自定义选项
 options:
+  # 上传文件默认目录
+  store_root        : uploadfiles
   # 绑定 Request 头部信息
   headers:
     # - !!seq [ Access-Control-Allow-Origin, '*' ]

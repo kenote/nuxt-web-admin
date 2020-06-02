@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
-const verifySchema = new Schema({
+const schema: Schema = new Schema({
   id: {
     type: Number,
     default: 0,
@@ -33,4 +33,4 @@ const verifySchema = new Schema({
   }
 })
 
-export default verifySchema
+export default model('verify', schema)

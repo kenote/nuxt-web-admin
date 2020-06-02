@@ -45,6 +45,7 @@ yarn.lock
 build/
 config/**/*.yml
 !config/**/*.default.yml
+uploadfiles/
 
 # TypeScript v1 declaration files
 typings/

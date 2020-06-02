@@ -32,6 +32,7 @@ export default {
     '@nuxt/components',
     '@nuxtjs/svg'
   ],
+  components: true,
   build: {
     babel: {
       plugins: [

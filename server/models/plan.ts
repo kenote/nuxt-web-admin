@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
-const planSchema = new Schema({
+const schema: Schema = new Schema({
   id: {
     type: Number,
     default: 0,
@@ -44,4 +44,4 @@ const planSchema = new Schema({
   }
 })
 
-export default planSchema
+export default model('plan', schema)

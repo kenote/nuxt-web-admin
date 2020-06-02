@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
-const groupSchema = new Schema({
+const schema: Schema = new Schema({
   id: {
     type: Number,
     default: 0,
@@ -36,4 +36,4 @@ const groupSchema = new Schema({
   }
 })
 
-export default groupSchema
+export default model('group', schema)

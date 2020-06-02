@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
-const ditchSchema = new Schema({
+const schema: Schema = new Schema({
   id: {
     type: Number,
     default: 0,
@@ -29,4 +29,4 @@ const ditchSchema = new Schema({
   }
 })
 
-export default ditchSchema
+export default model('ditch', schema)

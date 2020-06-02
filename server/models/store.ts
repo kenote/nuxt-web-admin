@@ -1,19 +1,19 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
-const storeSchema = new Schema({
+const schema: Schema = new Schema({
   id: {
     type: Number,
     default: 0,
     index: { unique: true }
   },
-  upload_type: {
-    type: Array,
-    default: []
+  upload_type: { 
+    type: Array, 
+    default: [] 
   },
   download_type: {
-    type: Array,
+    type: Array, 
     default: []
   }
 })
 
-export default storeSchema
+export default model('store', schema)
