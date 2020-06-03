@@ -38,7 +38,7 @@ export interface ResponseUserDocument extends Document {
   avatar          ?: string
   sex              : number
   email            : string
-  mobilb          ?: string
+  mobile          ?: string
   jw_token        ?: string
   binds            : string[]
   group            : ResponseGroupDocument

@@ -37,9 +37,10 @@
 <script lang="ts">
 import { Component, Vue, Provide, namespace } from 'nuxt-property-decorator'
 import { Channel } from '@/types/channel'
-import { Stote } from '~/store'
+import { ResponseUserDocument } from '@/types/proxys/user'
+import { Store } from '~/store'
 
-const { Setting } = Stote
+const { Setting, Auth } = Store
 
 @Component<R>({
   layout: 'homepage',
@@ -50,7 +51,10 @@ const { Setting } = Stote
 })
 export default class R extends Vue {
 
-  @Stote.Setting.State 
+  // @Stote.Setting.State 
+
+  @Auth.State auth!: ResponseUserDocument
+  @Auth.Getter token!: string
 
   @Setting.State name!: string
   @Setting.State channelId!: number

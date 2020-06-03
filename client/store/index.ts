@@ -1,10 +1,12 @@
 import { ModuleTree } from 'vuex'
 import { namespace } from 'nuxt-property-decorator'
 import * as root from '~/store/root'
+import * as auth from '~/store/modules/auth'
 import * as setting from '~/store/modules/setting'
 
-export const Stote = {
-  Setting: namespace(setting.name)
+export const Store = {
+  Auth             : namespace(auth.name),
+  Setting          : namespace(setting.name)
 }
 
 interface ModulesStates extends Record<string, any> {}
@@ -12,7 +14,8 @@ interface ModulesStates extends Record<string, any> {}
 export type RootState = root.State & ModulesStates
 
 export const modules: ModuleTree<ModulesStates> = {
-  [setting.name]: setting
+  [auth.name]             : auth,
+  [setting.name]          : setting,
 }
 
 export const state = () => root.state()

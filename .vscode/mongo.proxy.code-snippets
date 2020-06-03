@@ -1,0 +1,28 @@
+{
+  "default": {
+    "scope": "typescript",
+    "prefix": "mongo:proxy",
+    "body": [
+      "import { QueryOptions, MongooseDao, autoNumber } from 'kenote-mongoose-helper'",
+      "import __Models from '~/models'",
+      "import { loadError, ErrorState } from '~/utils/error'",
+      "\nconst Model = __Models.${1:name}Model",
+      "const options: QueryOptions = {",
+      "  name: '${1:name}'",
+      "}",
+      "\n@autoNumber({})",
+      "class ${1/(.*)/${1:/capitalize}/g}Dao extends MongooseDao {}",
+      "\nclass ${1/(.*)/${1:/capitalize}/g}Proxy {",
+      "\n  public Dao = new ${1/(.*)/${1:/capitalize}/g}Dao(Model, options)",
+      "\n  private errorState: ErrorState",
+      "\n  constructor (errorState: ErrorState) {",
+      "    this.errorState = errorState",
+      "  }",
+      "}",
+      "\nexport default (errorState?: ErrorState) => new ${1/(.*)/${1:/capitalize}/g}Proxy(errorState || loadError('zh-cn'))"
+    ],
+    "description": "新建 MongoDB Proxy."
+  }
+}
+
+

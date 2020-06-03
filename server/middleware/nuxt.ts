@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express'
 import { NuxtTypes } from '@/types/restful'
 import { Channel } from '@/types/channel'
 import * as channels from '~/channel.json'
+import { site_url } from '~/config'
 
 type Request = NuxtTypes.request
 
@@ -11,6 +12,8 @@ export async function nuxtHandler (req: Request, res: Response, next: NextFuncti
     // ...
     req.__name = 'Nuxt Server'
     req.__channels = channels as Channel.element[]
+
+    req.__proxyhost = site_url!
   }
   return next()
 }
