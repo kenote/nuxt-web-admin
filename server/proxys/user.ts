@@ -1,6 +1,11 @@
 import { QueryOptions, MongooseDao, autoNumber } from 'kenote-mongoose-helper'
 import __Models from '~/models'
+import __ErrorCode from '~/utils/error/code'
 import { loadError, ErrorState } from '~/utils/error'
+import * as PassportAPI from '@/types/apis/passport'
+import { ResponseUserDocument, SafeUserDocument } from '@/types/proxys/user'
+import { pick } from 'lodash'
+import * as passportUtil from '~/utils/passport'
 
 const Model = __Models.userModel
 const options: QueryOptions = {
@@ -35,6 +40,26 @@ class UserProxy {
 
   constructor (errorState: ErrorState) {
     this.errorState = errorState
+  }
+
+  public async login (doc: PassportAPI.login): Promise<ResponseUserDocument> {
+    let { ErrorInfo } = this.errorState
+    let conditions = {
+      $or: [
+        { username  : doc.username },
+        { email     : doc.username },
+        { mobile    : doc.username }
+      ]
+    }
+    let user = await this.Dao.findOne(conditions) as SafeUserDocument
+    if (!user) {
+      throw ErrorInfo(__ErrorCode.ERROR_LOGINVALID_FAIL)
+    }
+    let valide = passportUtil.bcrypt.compare(doc.password!, user.encrypt, user.salt)
+    if (!valide) {
+      throw ErrorInfo(__ErrorCode.ERROR_LOGINVALID_FAIL)
+    }
+    return pick(user, userBaseField) as ResponseUserDocument
   }
   
 }

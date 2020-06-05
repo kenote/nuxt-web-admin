@@ -22,7 +22,7 @@ export const state = (): State => ({
 })
 
 export const getters: GetterTree<State, RootState> = {
-  token: state =>  oc(state).auth.jw_token()
+  token: state => oc(state).auth.jw_token()
 }
 
 export interface Actions<S, R> extends ActionTree<S, R> {

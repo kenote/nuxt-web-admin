@@ -1,19 +1,26 @@
 import { ActionTree, MutationTree, GetterTree, ActionContext } from 'vuex'
 import { RootState } from '~/store'
 import { Channel } from '@/types/channel'
+import { Register, SinglePage } from '@/types/restful'
 
 export const name: string = 'setting'
 
 export const types = {
   SETNAME          : 'SETNAME',
   SELECTCHANNEL    : 'SELECTCHANNEL',
-  CHANNELS         : 'CHANNELS'
+  CHANNELS         : 'CHANNELS',
+  //
+  REGISTER         : 'REGISTER',
+  SINGLEPAGES      : 'SINGLEPAGES'
 }
 
 export interface State {
   name            ?: string
   channelId        : number
   channels         : Channel.element[]
+  //
+  register        ?: Register.config
+  singlepages     ?: SinglePage.item[]
 }
 
 export const namespaced: boolean = true
@@ -50,5 +57,12 @@ export const mutations: MutationTree<State> = {
   },
   [types.CHANNELS] (state: State, channels: Channel.element[]): void {
     state.channels = channels
+  },
+  //
+  [types.REGISTER] (state: State, register: Register.config): void {
+    state.register = register
+  },
+  [types.SINGLEPAGES] (state: State, singlepages: SinglePage.item[]): void {
+    state.singlepages = singlepages
   }
 }

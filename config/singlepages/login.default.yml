@@ -1,0 +1,7 @@
+---
+# 独立页面配置
+
+key             : login
+activitys       :
+  - main_title      : [ 不止于 后台管理，, Express + Nuxt + Element-UI ]
+    secondary_title : JSON Web Token (JWT) & 服务端渲染(Server Side Render)

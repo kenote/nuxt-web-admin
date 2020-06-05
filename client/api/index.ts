@@ -4,7 +4,7 @@ import { RestfulInfoByError } from '@/types/restful'
 /**
  * 校验访问令牌
  */
-export async function accesstoken (options?: HeaderOptions, prefix: string = ''): Promise<RestfulInfoByError> {
+export async function accesstoken (options: HeaderOptions, prefix: string = ''): Promise<RestfulInfoByError> {
   let restful = await httpClient.get(`${prefix}/api/v1/passport/accesstoken`, null, options)
   return formatRestful(restful)
 }
@@ -12,8 +12,8 @@ export async function accesstoken (options?: HeaderOptions, prefix: string = '')
 /**
  * 用户登出
  */
-export async function logout (): Promise<RestfulInfoByError> {
-  let restful = await httpClient.get(`/api/v1/passport/logout`, null)
+export async function logout (options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.get(`/api/v1/passport/logout`, null, options)
   return formatRestful(restful)
 }
 

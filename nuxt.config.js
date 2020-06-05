@@ -32,7 +32,10 @@ export default {
     '@nuxt/components',
     '@nuxtjs/svg'
   ],
-  components: true,
+  components: [
+    '~/components',
+    { path: '~/components/passport', prefix: 'passport' }
+  ],
   build: {
     babel: {
       plugins: [

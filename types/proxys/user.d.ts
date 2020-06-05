@@ -49,7 +49,7 @@ export interface ResponseUserDocument extends Document {
 }
 
 export interface SafeUserDocument extends ResponseUserDocument {
-  encrpt           : string
+  encrypt          : string
   salt             : string
 }
 

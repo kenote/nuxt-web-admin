@@ -20,7 +20,10 @@ export const actions: Actions<State, RootState> = {
   async nuxtServerInit({ commit }, { req }) {
     commit(`${setting.name}/${setting.types.SETNAME}`, req.__name)
     commit(`${setting.name}/${setting.types.CHANNELS}`, req.__channels)
-
+    //
+    commit(`${setting.name}/${setting.types.REGISTER}`, req.__register)
+    commit(`${setting.name}/${setting.types.SINGLEPAGES}`, req.__singlePages)
+    
     let token = req.cookies['token'] as string
     if (!token) return
     let options: HeaderOptions = {

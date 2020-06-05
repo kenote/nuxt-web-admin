@@ -1,0 +1,37 @@
+{
+  "default": {
+    "scope": "typescript",
+    "prefix": "express:controller",
+    "body": [
+      "import { Controller, Router, Filter, Path } from 'kenote-express-helper'",
+      "import { Request, Response, NextFunction } from 'express'",
+      "import { IResponse } from '~/middleware/restful'",
+      "import { language } from '~/config'",
+      "import { oc } from 'ts-optchain'",
+      "import { loadError } from '~/utils/error'",
+      "\nclass ${1/(.*)/${1:/capitalize}/g}Controller extends Controller {",
+      "\n}",
+      "\nexport = ${1/(.*)/${1:/capitalize}/g}Controller"
+    ],
+    "description": "新建 Express Controller."
+  },
+  "method": {
+    "scope": "typescript",
+    "prefix": "express:controller->mothod",
+    "body": [
+      "public async ${1:name} (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {",
+      "  let lang = oc(req).query.lang('') as string || language",
+      "  let { __ErrorCode, CustomError } = loadError(lang)",
+      "  try {",
+      "    return res.api(null)",
+      "  } catch (error) {",
+      "    if (CustomError(error)) {",
+      "      return res.api(null, error)",
+      "    }",
+      "    return next(error)",
+      "  }",
+      "\n}"
+    ],
+    "description": "创建 Express Controller 方法."
+  }
+}
