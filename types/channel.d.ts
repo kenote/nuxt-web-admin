@@ -1,10 +1,9 @@
 
-
+import { KenoteConfig } from 'kenote-config-helper'
 
 export declare namespace Channel {
 
-  interface element {
-    id         : number
-    name       : string
+  interface element extends KenoteConfig.Channel {
+    
   }
 }

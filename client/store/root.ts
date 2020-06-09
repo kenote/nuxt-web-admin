@@ -23,6 +23,8 @@ export const actions: Actions<State, RootState> = {
     //
     commit(`${setting.name}/${setting.types.REGISTER}`, req.__register)
     commit(`${setting.name}/${setting.types.SINGLEPAGES}`, req.__singlePages)
+    commit(`${setting.name}/${setting.types.FLAGS}`, req.__flags)
+    commit(`${setting.name}/${setting.types.DASHBOARD}`, req.__dashboard)
     
     let token = req.cookies['token'] as string
     if (!token) return

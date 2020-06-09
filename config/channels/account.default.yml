@@ -1,0 +1,27 @@
+---
+# 频道 我的帐户 配置
+
+# 频道 ID
+id            : 1
+# 频道名称
+name          : 我的帐户
+# 频道标识
+label         : account
+# 频道描述
+description   : 查看和管理自己的信息、活动、安全选项和隐私偏好设置
+# 默认打开页面
+default       : /account/baseinfo
+# 频道导航
+navs:
+  # 导航分栏 -- 帐户管理
+  - index         : 1-1
+    name          : 帐户管理
+    icon          : iconfont icon-passport
+    children:
+      - index         : /account/baseinfo
+        name          : 基本资料
+      - index         : /account/security
+        name          : 安全设置
+      - index         : /account/plan
+        name          : 方案管理
+        disabled      : true

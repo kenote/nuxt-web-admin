@@ -6,6 +6,6 @@ export default (context: Context): void => {
   let { redirect, store } = context
   let Auth = store.state.auth as auth.State
   if (Auth.auth) {
-    return redirect('/console')
+    return redirect('/dashboard')
   }
 }

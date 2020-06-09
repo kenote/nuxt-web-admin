@@ -5,10 +5,14 @@
         <path d="M22 30h4v4h-4zm0-16h4v12h-4zm1.99-10C12.94 4 4 12.95 4 24s8.94 20 19.99 20S44 35.05 44 24 35.04 4 23.99 4zM24 40c-8.84 0-16-7.16-16-16S15.16 8 24 8s16 7.16 16 16-7.16 16-16 16z" />
       </svg>
 
-      <div class="title">This page could not be found.</div>
-      <p class="description">
+      <div class="title">{{ message }}</div>
+      <p v-if="statusCode === 404" class="description">
         <NuxtLink class="error-link" to="/">Back to the home page</NuxtLink>
       </p>
+      <p v-else-if="statusCode === 403" class="description">
+        This page is forbidden and you may not have access
+      </p>
+      <p class="description" v-else>An error occurred while rendering the page. Check developer tools console for details.</p>
 
       <div class="logo">
         <a href="https://nuxtjs.org" target="_blank" rel="noopener">Nuxt.js</a>
@@ -18,10 +22,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Provide } from 'nuxt-property-decorator'
+import { Component, Vue, Provide, Prop } from 'nuxt-property-decorator'
 import config from '~/config.json'
-@Component({
-  name: 'NuxtError',
+
+@Component<ErrorPage>({
+  name: 'error-page',
   head () {
     return {
       title: config.name,
@@ -34,7 +39,10 @@ import config from '~/config.json'
     }
   }
 })
-export default class R extends Vue {
+export default class ErrorPage extends Vue {
+
+  @Prop({ default: 404 }) statusCode!: number
+  @Prop({ default: 'This page could not be found' }) message!: string
 }
 </script>
 

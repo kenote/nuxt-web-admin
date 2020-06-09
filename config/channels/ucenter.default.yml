@@ -1,0 +1,28 @@
+---
+# 频道 用户中心 配置
+
+# 频道 ID
+id            : 2
+# 频道名称
+name          : 用户中心
+# 频道标识
+label         : ucenter
+# 频道描述
+description   : 管理所有用户的信息，以及登录、注册等等
+# 默认打开页面
+default       : /ucenter/group
+# 频道导航
+navs:
+  # 导航分栏 -- 帐户管理
+  - index         : 2-1
+    name          : 帐户管理
+    icon          : iconfont iconfont icon-team
+    children:
+      - index         : /ucenter/group
+        name          : 用户组
+      - index         : /ucenter/user
+        name          : 查询用户
+      - index         : /ucenter/ticket
+        name          : 注册邀请
+      - index         : /ucenter/team
+        name          : 团队

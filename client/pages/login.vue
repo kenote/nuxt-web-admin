@@ -33,6 +33,7 @@ import * as auth from '~/store/modules/auth'
 @Component<LoginPage>({
   name: 'login-page',
   layout: 'passport',
+  middleware: ['notauthenticated'],
   created () {
     this.activitys = oc(this.singlepages.find( o => o.key === 'login' )).activitys([])
   }
@@ -53,7 +54,7 @@ export default class LoginPage extends Vue {
         if (result.error === 0) {
           let { url_callback } = this.$route.query
           this.$store.commit(`${auth.name}/${auth.types.AUTH}`, result.data)
-          this.$router.push(url_callback as string || '/console')
+          this.$router.push(url_callback as string || '/dashboard')
         }
         else {
           this.$message.warning(result.message)

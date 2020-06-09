@@ -1,0 +1,22 @@
+---
+# 仪表盘设置
+
+# 用户入口
+userEntrance      :
+  - name              : 基本资料
+    command           : router:/account/baseinfo
+  - name              : 实名认证
+    command           : 
+  - name              : 安全设置
+    command           : router:/account/security
+  - name              : 我的主页
+    command           : 
+  - name              : 我的收藏
+    command           : 
+  - name              : 访问控制
+    command           : 
+  - name              : Accesskeys
+    command           : 
+
+# 菜单冻结模式  hide | disable
+disableMode       : disable

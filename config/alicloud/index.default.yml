@@ -1,0 +1,29 @@
+---
+# 阿里云服务 配置
+
+# API 配置
+apis:
+  - key                  : dcdn
+    name                 : 全站加速
+    endpoint             : https://dcdn.aliyuncs.com
+    apiVersion           : !!str 2018-01-15
+  - key                  : cdn
+    name                 : CDN
+    endpoint             : https://cdn.aliyuncs.com
+    apiVersion           : !!str 2018-05-10
+  - key                  : ecs
+    name                 : 云服务器 ECS
+    endpoint             : https://ecs.aliyuncs.com
+    apiVersion           : !!str 2014-05-26
+  - key                  : dysms
+    name                 : 短信服务
+    endpoint             : https://dysmsapi.aliyuncs.com
+    apiVersion           : !!str 2017-05-25
+  - key                  : domain
+    name                 : 域名
+    endpoint             : https://domain.aliyuncs.com
+    apiVersion           : !!str 2018-01-29
+  - key                  : cas
+    name                 : SSL 证书
+    endpoint             : https://cas.aliyuncs.com
+    apiVersion           : !!str 2018-07-13

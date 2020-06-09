@@ -1,6 +1,7 @@
 import { Request } from 'express'
 import { Channel } from './channel'
 import { IErrorInfo, Maps } from 'kenote-config-helper'
+import { Dropdown } from './'
 
 /**
  * HTTPServer
@@ -33,6 +34,16 @@ export declare namespace NuxtTypes {
      * 独立页面配置
      */
     __singlePages         : SinglePage.item[]
+
+    /**
+     * 页面权限配置
+     */
+    __flags               : Maps<PageFlag.item>
+    
+    /**
+     * 仪表盘选项
+     */
+    __dashboard           : DashboardOptions
   }
 }
 
@@ -152,4 +163,28 @@ export declare namespace SinglePage {
     main_title        : string[]
     secondary_title   : string
   }
+}
+
+export declare namespace PageFlag {
+  
+  type type = 'access' | 'list' | 'create' | 'edit' | 'remove'
+
+  interface item {
+    access           ?: number
+    list             ?: number
+    create           ?: number
+    edit             ?: number
+    remove           ?: number
+  }
+}
+
+export interface DashboardOptions {
+  userEntrance       ?: DashboardOptions.userEntrance
+  disableMode         : DashboardOptions.disableMode
+}
+
+export declare namespace DashboardOptions {
+
+  type userEntrance = Dropdown.menuItem[]
+  type disableMode = 'hide' | 'disable'
 }

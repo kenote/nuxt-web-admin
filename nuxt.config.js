@@ -16,6 +16,7 @@ export default {
     ]
   },
   css: [
+    '~/assets/iconfont/iconfont.css',
     '~/assets/scss/common.scss'
   ],
   plugins: [
@@ -34,7 +35,8 @@ export default {
   ],
   components: [
     '~/components',
-    { path: '~/components/passport', prefix: 'passport' }
+    { path: '~/components/passport', prefix: 'passport' },
+    { path: '~/components/dashboard', prefix: 'dashboard' }
   ],
   build: {
     babel: {
@@ -57,7 +59,7 @@ export default {
       routes.push({
         name: 'custom',
         path: '*',
-        component: resolve(__dirname, 'client/components/404.vue')
+        component: resolve(__dirname, 'client/components/error-page.vue')
       })
     }
   }
