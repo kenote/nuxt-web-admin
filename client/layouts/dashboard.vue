@@ -27,8 +27,14 @@
           </div>
         </div>
         <div class="dashboard-page" >
-          <nuxt v-if="permission"></nuxt>
+          <fragment v-if="permission">
+            <nuxt></nuxt>
+          </fragment>
+          
           <error-page v-else :statusCode="403" message="Forbidden" />
+          <dashboard-drawer :visible="drawerVisible" @close="handleCloseDrawer" ref="theDrawer">
+            <!-- 加载侧栏 -->
+          </dashboard-drawer>
         </div>
       </div>
       
@@ -81,6 +87,7 @@ export default class DashboardLayout extends Vue {
   @Provide() platforms: Channel.element[] = []
   @Provide() access: string[] | null = null
   @Provide() collapse: boolean = false
+  @Provide() drawerVisible: boolean = false
 
   @Watch('$route')
   async onRouteChange (val: Route, oldVal: Route): Promise<void> {
@@ -95,7 +102,6 @@ export default class DashboardLayout extends Vue {
   }
 
   handleCollapse (): void {
-    console.log('dkdkdk')
     this.collapse = !this.collapse
   }
 
@@ -151,6 +157,9 @@ export default class DashboardLayout extends Vue {
         case 'logout':
           this.logout()
           break
+        case 'collect':
+          this.drawerVisible = true
+          break
         default:
           break
       }
@@ -158,6 +167,10 @@ export default class DashboardLayout extends Vue {
     else if (command.type === 'router') {
       this.$router.push(command.path)
     }
+  }
+
+  handleCloseDrawer () {
+    this.drawerVisible = false
   }
 
   logout (): void {

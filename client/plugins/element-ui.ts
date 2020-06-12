@@ -1,10 +1,13 @@
 import Vue from 'vue'
 import {
+  Breadcrumb,
+  BreadcrumbItem,
   Button,
   Carousel,
   CarouselItem,
   Col,
   DatePicker,
+  Drawer,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -16,19 +19,24 @@ import {
   MenuItem,
   Message, 
   MessageBox,
+  Radio,
   RadioButton,
   RadioGroup,
   Row,
-  Submenu
+  Submenu,
+  Switch
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 
 export default () => {
+  Vue.use(Breadcrumb)
+  Vue.use(BreadcrumbItem)
   Vue.use(Button)
   Vue.use(Carousel)
   Vue.use(CarouselItem)
   Vue.use(Col)
   Vue.use(DatePicker)
+  Vue.use(Drawer)
   Vue.use(Dropdown)
   Vue.use(DropdownItem)
   Vue.use(DropdownMenu)
@@ -38,10 +46,12 @@ export default () => {
   Vue.use(Loading.directive)
   Vue.use(Menu)
   Vue.use(MenuItem)
+  Vue.use(Radio)
   Vue.use(RadioButton)
   Vue.use(RadioGroup)
   Vue.use(Row)
   Vue.use(Submenu)
+  Vue.use(Switch)
 
   Vue.component(CollapseTransition.name, CollapseTransition)
 

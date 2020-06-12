@@ -56,11 +56,11 @@ export default {
   },
   router: {
     extendRoutes (routes, resolve) {
-      routes.push({
-        name: 'custom',
-        path: '*',
-        component: resolve(__dirname, 'client/components/error-page.vue')
-      })
+      // routes.push({
+      //   name: 'custom',
+      //   path: '*',
+      //   component: resolve(__dirname, 'client/components/error-page.vue')
+      // })
     }
   }
 }

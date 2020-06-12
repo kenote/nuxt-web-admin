@@ -1,5 +1,6 @@
 import httpClient, { HeaderOptions, formatRestful } from '@/utils/http'
 import { RestfulInfoByError } from '@/types/restful'
+import * as PassportAPI  from '@/types/apis/passport'
 
 /**
  * 校验访问令牌
@@ -20,7 +21,7 @@ export async function logout (options: HeaderOptions): Promise<RestfulInfoByErro
 /**
  * 用户登录
  */
-export async function login (data: any): Promise<RestfulInfoByError> {
+export async function login (data: PassportAPI.login): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(`/api/v1/passport/login`, data)
   return formatRestful(restful)
 }
@@ -46,5 +47,21 @@ export async function check (name: string, type: 'username' | 'email' | 'mobile'
  */
 export async function register (data: any): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(`/api/v1/passport/register`, data)
+  return formatRestful(restful)
+}
+
+/**
+ * 找回密码请求验证码
+ */
+export async function resetpwdCode (type: PassportAPI.verifyUserType, name: string): Promise<RestfulInfoByError> {
+  let restful = await httpClient.put(`/api/v1/passport/resetpwd/code/${type}`, { name })
+  return formatRestful(restful)
+}
+
+/**
+ * 找回密码修改密码
+ */
+export async function resetpwd (type: PassportAPI.verifyUserType, data: PassportAPI.resetPwdDocument): Promise<RestfulInfoByError> {
+  let restful = await httpClient.put(`/api/v1/passport/resetpwd/${type}`, data)
   return formatRestful(restful)
 }

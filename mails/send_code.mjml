@@ -1,0 +1,27 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{ site_name }}{{ title }}</mj-title>
+    <mj-attributes>
+      <mj-all font-size="15px" color="#646464" line-height="1.4" />
+      <mj-class name="title" font-size="20px" color="#4e9c74" font-weight="bold" />
+    <mj-attributes>
+  </mj-head>
+  <mj-body background-color="#ffffff" width="100%">
+    <mj-section>
+      <mj-column>
+        <mj-text><b>亲爱的 {{ username }}:</b></mj-text>
+        <mj-text>您选择了通过邮件进行{{ site_name }}{{ title }}。请在相关页面中输入以下 <b>验证码</b> 进行操作：</mj-text>
+        <mj-table>
+          <tr style="background-color:#f4f4f4; border: 1px #17aec8 solid;">
+            <td style="text-align: center;font-size: 24px;color:#17aec8;padding: 10px"><b>{{ code }}</b></td>
+          </tr>
+        </mj-table>
+        <mj-text color="#989898">(此验证码有效时间为 {{ timeout }} 分钟，若超时请重新获取邮件)</mj-text>
+        <mj-text>如果您要放弃操作，或者未曾申请{{ title }}，请忽略此邮件。</mj-text>
+        <mj-text><b>为了您的账户安全，请您注意对此邮件内容保密。</b></mj-text>
+        <mj-spacer height="30px" />
+        <mj-text>- {{ site_name }}<br/>(这是一封自动产生的Email，请勿回复)</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

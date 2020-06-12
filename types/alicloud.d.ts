@@ -43,7 +43,7 @@ export default Alicloud
 
 export declare namespace SMS {
 
-  type template = 'register' | 'verifyid' | 'password' | 'setinfos'
+  type template = keyof templates
 
   interface config {
     key               : string

@@ -1,4 +1,4 @@
-import { QueryOptions, MongooseDao, autoNumber } from 'kenote-mongoose-helper'
+import { QueryOptions, MongooseDao, autoNumber, UpdateWriteResult } from 'kenote-mongoose-helper'
 import __Models from '~/models'
 import __ErrorCode from '~/utils/error/code'
 import { loadError, ErrorState } from '~/utils/error'
@@ -60,6 +60,12 @@ class UserProxy {
       throw ErrorInfo(__ErrorCode.ERROR_LOGINVALID_FAIL)
     }
     return pick(user, userBaseField) as ResponseUserDocument
+  }
+
+  public async resetPwd (doc: PassportAPI.resetPwdDocument, type: PassportAPI.verifyUserType): Promise<UpdateWriteResult> {
+    let { hash: encrypt, salt } = passportUtil.bcrypt.hash(doc.password || '')
+    let result = await this.Dao.updateOne({ [type]: doc.name }, { encrypt, salt })
+    return result
   }
   
 }

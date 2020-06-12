@@ -1,13 +1,14 @@
 <template>
   <main>
     <slot></slot>
+    <slot name="footer"></slot>
   </main>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Provide } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator'
 
-@Component<R>({
+@Component<Page>({
   name: 'page',
   mounted () {
     this.$nextTick(() => {
@@ -16,5 +17,5 @@ import { Component, Vue, Provide } from 'nuxt-property-decorator'
     })
   }
 })
-export default class R extends Vue {}
+export default class Page extends Vue {}
 </script>

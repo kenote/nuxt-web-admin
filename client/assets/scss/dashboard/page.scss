@@ -10,9 +10,9 @@
   overflow-x: hidden;
   position: relative;
   min-width: 940px;
-  pointer-events: none;
+  // pointer-events: none;
 
-  &>div {
+  &>main {
     padding: 20px 20px 100px;
   }
 
