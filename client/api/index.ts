@@ -37,7 +37,7 @@ export async function invitation (cdkey: string): Promise<RestfulInfoByError> {
 /**
  * 验证名称是否占用，非登录用户
  */
-export async function check (name: string, type: 'username' | 'email' | 'mobile'): Promise<RestfulInfoByError> {
+export async function check (name: string, type: PassportAPI.checkUserType): Promise<RestfulInfoByError> {
   let restful = await httpClient.put(`/api/v1/passport/check/${type}`, { name })
   return formatRestful(restful)
 }
@@ -45,7 +45,7 @@ export async function check (name: string, type: 'username' | 'email' | 'mobile'
 /**
  * 用户注册
  */
-export async function register (data: any): Promise<RestfulInfoByError> {
+export async function register (data: PassportAPI.registerDocument): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(`/api/v1/passport/register`, data)
   return formatRestful(restful)
 }

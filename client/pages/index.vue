@@ -1,6 +1,6 @@
 <template>
   <page>
-    <h1>Home page 🚀</h1>
+    
   </page>
 </template>
 
@@ -8,7 +8,7 @@
 import { Component, Vue, Provide, namespace } from 'nuxt-property-decorator'
 
 @Component<HomePage>({
-  layout: 'homepage'
+  middleware: ['homepage']
 })
 export default class HomePage extends Vue {
 

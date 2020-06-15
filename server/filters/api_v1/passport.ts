@@ -9,6 +9,10 @@ import { language } from '~/config'
 import { loadData } from 'kenote-config-helper/dist/utils.server'
 import { Register } from '@/types/restful'
 import { isEmail, isMobilePhone } from 'validator'
+import ticketProxy from '~/proxys/ticket'
+import groupProxy from '~/proxys/group'
+import { ResponseTicketDocument } from '@/types/proxys/ticket'
+import { RegisterUserDocument } from '@/types/proxys/user'
 
 class PassportFilter {
 
@@ -56,15 +60,15 @@ class PassportFilter {
       {
         key     : 'code',
         rules   : [
-          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VERIFY_CODE_REQUIRED) }
+          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VERIFY_CODE_REQUIRED, null, true) }
         ],
         value   : code
       },
       {
         key     : 'password',
         rules   : [
-          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_PASSWORD_REQUIRED) },
-          { pattern: /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/, ...ErrorInfo(__ErrorCode.ERROR_VALID_PASSWORD_FORMAT) }
+          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_PASSWORD_REQUIRED, null, true) },
+          { pattern: /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/, ...ErrorInfo(__ErrorCode.ERROR_VALID_PASSWORD_FORMAT, null, true) }
         ],
         value   : password
       }
@@ -72,16 +76,16 @@ class PassportFilter {
     type === 'email' && filters.push({
       key     : 'name',
       rules   : [
-        { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_REQUIRED) },
-        { validator: isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT) }
+        { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_REQUIRED, null, true) },
+        { validator: isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
       ],
       value   : name
     } as Filter)
     type === 'mobile' && filters.push({
       key     : 'name',
       rules   : [
-        { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_REQUIRED) },
-        { validator: value => isMobilePhone(value, 'zh-CN'), ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_FORMAT) }
+        { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_REQUIRED, null, true) },
+        { validator: value => isMobilePhone(value, 'zh-CN'), ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_FORMAT, null, true) }
       ],
       value   : name
     } as Filter)
@@ -89,6 +93,63 @@ class PassportFilter {
     try {
       let document = await asyncFilterData(filters) as PassportAPI.resetPwdDocument
       return next({ type, document, setting })
+    } catch (error) {
+      return res.api(null, error)
+    }
+  }
+
+  public async register (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { username, email, mobile, password, invitation } = req.body as PassportAPI.registerDocument
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { ErrorInfo } = errorState
+    let TicketProxy = ticketProxy(errorState)
+    let GroupProxy = groupProxy(errorState)
+    let filters = [
+      {
+        key: 'username',
+        rules: [
+          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_USERNAME_REQUIRED, null, true) },
+          { pattern: /^[a-zA-Z]{1}[a-zA-Z0-9\_\-]{4,19}$/, ...ErrorInfo(__ErrorCode.ERROR_VALID_USERNAME_FORMAT, null, true)  }
+        ],
+        value: username
+      },
+      {
+        key: 'email',
+        rules: [
+          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_REQUIRED, null, true) },
+          { validator: isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
+        ],
+        value: email
+      },
+      {
+        key: 'password',
+        rules: [
+          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_PASSWORD_REQUIRED, null, true) },
+          { pattern: /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/, ...ErrorInfo(__ErrorCode.ERROR_VALID_PASSWORD_FORMAT, null, true) }
+        ],
+        value: password
+      }
+    ] as Filter[]
+    let setting = loadData('config/register') as Register.config
+    try {
+      let ticket: ResponseTicketDocument | null = null
+      if (setting.invitation) {
+        ticket = await TicketProxy.valid(invitation!, { name: '邀请码', type: 'register', key: 'cdkey' })
+      }
+      let document = await asyncFilterData(filters) as RegisterUserDocument
+      if (ticket) {
+        let ticketSetting = oc(ticket).setting({})
+        document.group = ticketSetting['group']
+        if (ticketSetting['teams']) {
+          document.teams = ticketSetting['teams']
+        }
+      }
+      else {
+        let group = await GroupProxy.defaultGroup()
+        document.group = group._id
+      }
+      return next({ document, ticket, setting })
     } catch (error) {
       return res.api(null, error)
     }
