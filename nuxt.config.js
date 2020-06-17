@@ -36,7 +36,8 @@ export default {
   components: [
     '~/components',
     { path: '~/components/passport', prefix: 'passport' },
-    { path: '~/components/dashboard', prefix: 'dashboard' }
+    { path: '~/components/dashboard', prefix: 'dashboard' },
+    { path: '~/components/security', prefix: 'security' }
   ],
   build: {
     babel: {

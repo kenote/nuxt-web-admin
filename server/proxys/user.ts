@@ -12,8 +12,9 @@ import { site_name, site_url, options as serverOptins } from '~/config'
 import { MailerContext } from '@/types/mailer'
 import verifyProxy from './verify'
 import ticketProxy from './ticket'
-import { Register } from '@/types/restful'
+import { Register, Security } from '@/types/restful'
 import { ResponseTicketDocument } from '@/types/proxys/ticket'
+import { ResponseVerifyDocument } from '@/types/proxys/verify'
 
 const Model = __Models.userModel
 const options: QueryOptions = {
@@ -71,8 +72,9 @@ class UserProxy {
   }
 
   public async resetPwd (doc: PassportAPI.resetPwdDocument, type: PassportAPI.verifyUserType): Promise<UpdateWriteResult> {
-    let { hash: encrypt, salt } = passportUtil.bcrypt.hash(doc.password || '')
-    let result = await this.Dao.updateOne({ [type]: doc.name }, { encrypt, salt })
+    // let { hash: encrypt, salt } = passportUtil.bcrypt.hash(doc.password || '')
+    // let result = await this.Dao.updateOne({ [type]: doc.name }, { encrypt, salt })
+    let result = await this.setPassword({ [type]: doc.name }, pick(doc, ['password']) as Security.setPassword)
     return result
   }
 
@@ -120,6 +122,32 @@ class UserProxy {
       timeout: timeout / 3600
     }
     mailer.sendMail('email_verify.mjml', mail, content)
+  }
+
+  public async verifyEmailMobile (document: PassportAPI.verifyDocument, warnings: PassportAPI.verifyWarning, setting: Register.config): Promise<ResponseVerifyDocument> {
+    let { ErrorInfo } = this.errorState
+    let VerifyProxy = verifyProxy(this.errorState)
+    let { type } = document
+    let verify = await VerifyProxy.Dao.findOne(document) as ResponseVerifyDocument
+    if (verify) {
+      let difftime: number = Date.now() - verify.create_at.getTime()
+      let timeout: number = setting.email_verify.timeout * 1000
+      if (difftime > timeout) {
+        throw ErrorInfo(warnings[type].timeout)
+      }
+      if (verify.approved) {
+        throw ErrorInfo(__ErrorCode.ERROR_VERIFY_TOKEN_VERIFIED)
+      }
+      await VerifyProxy.Dao.updateOne({ _id: verify._id }, { approved: true })
+      await this.Dao.updateOne({ _id: verify.user._id }, { binds: Array.from(new Set([ ...verify.user.binds, type ])) })
+    }
+    return verify
+  }
+
+  public async setPassword (conditions: any, doc: Security.setPassword): Promise<UpdateWriteResult> {
+    let { hash: encrypt, salt } = passportUtil.bcrypt.hash(doc.password || '')
+    let result = await this.Dao.updateOne(conditions, { encrypt, salt })
+    return result
   }
   
 }

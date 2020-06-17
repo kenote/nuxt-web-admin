@@ -1,4 +1,4 @@
-import { Register } from '@/types/restful'
+import { Register, Security } from '@/types/restful'
 import { ResponseTicketDocument } from '@/types/proxys/ticket'
 import { RegisterUserDocument } from '@/types/proxys/user'
 
@@ -36,6 +36,7 @@ declare namespace PassportAPI {
     code        ?: string
     name        ?: string
     password    ?: string
+    user        ?: string
   }
 
   interface restPwd {
@@ -71,6 +72,38 @@ declare namespace PassportAPI {
   interface register {
     document     : RegisterUserDocument
     ticket       : ResponseTicketDocument | null
+    setting      : Register.config
+  }
+
+  interface verify {
+    document     : verifyDocument
+    warnings     : verifyWarning
+    setting      : Register.config
+  }
+
+  interface verifyDocument extends verifyBaseDocument {
+    type         : verifyUserType
+  }
+
+  interface verifyBaseDocument {
+    id           : string
+    token        : string
+  }
+
+  type verifyWarning = Record<string, verifyItem>
+
+  interface verifyItem {
+    timeout      : number
+    failed       : number
+  }
+
+  // interface sendCode {
+  //   document     : Security.sendCode
+  //   setting      : Register.config
+  // }
+
+  interface request<T extends {}> {
+    document     : T
     setting      : Register.config
   }
 }

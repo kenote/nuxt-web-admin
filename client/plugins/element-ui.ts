@@ -23,6 +23,8 @@ import {
   RadioButton,
   RadioGroup,
   Row,
+  Step,
+  Steps,
   Submenu,
   Switch
 } from 'element-ui'
@@ -50,6 +52,8 @@ export default () => {
   Vue.use(RadioButton)
   Vue.use(RadioGroup)
   Vue.use(Row)
+  Vue.use(Step)
+  Vue.use(Steps)
   Vue.use(Submenu)
   Vue.use(Switch)
 

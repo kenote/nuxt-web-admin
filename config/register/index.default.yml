@@ -5,7 +5,7 @@
 invitation        : true
 
 # 验证码发送间隔；单位：秒
-mailphone_step    : 60
+mailphone_step    : 30
 
 # 邮箱验证相关
 email_verify:

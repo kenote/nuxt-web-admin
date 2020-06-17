@@ -65,7 +65,7 @@ export default class RegisterPage extends Vue {
         let result = await api.invitation(values.cdkey!)
         if (result.error === 0) {
           let { cdkey } = result.data as ResponseTicketDocument
-          this,cdkey = cdkey
+          this.cdkey = cdkey
           this.steptag = 'submitinfo'
         }
         else {

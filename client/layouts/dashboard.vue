@@ -27,10 +27,7 @@
           </div>
         </div>
         <div class="dashboard-page" >
-          <fragment v-if="permission">
-            <nuxt></nuxt>
-          </fragment>
-          
+          <nuxt v-if="permission"></nuxt>
           <error-page v-else :statusCode="403" message="Forbidden" />
           <dashboard-drawer :visible="drawerVisible" @close="handleCloseDrawer" ref="theDrawer">
             <!-- 加载侧栏 -->

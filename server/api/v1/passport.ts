@@ -41,6 +41,7 @@ class PassportController extends Controller {
       let token = setToken({ _id: user._id })
       res.cookie('token', token)
       await UserProxy.Dao.updateOne({ _id: user._id }, { jw_token: token })
+      user.jw_token = token
       return res.api(user)
     } catch (error) {
       if (CustomError(error)) {
@@ -126,6 +127,7 @@ class PassportController extends Controller {
       if (!user) {
         return res.api(null, __ErrorCode.ERROR_FINDUSER_NOTEXIST)
       }
+      document.user = user._id
       let result = await VerifyProxy.resetPwd(document, type, setting.lost_pass.timeout)
       return res.api(result)
     } catch (error) {
@@ -200,6 +202,35 @@ class PassportController extends Controller {
       return res.api(result)
     } catch (error) {
       if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
+   * 验证邮箱/手机
+   */
+  @Router({ method: 'post', path: '/verify/:type(email|mobile)' })
+  @Filter( passportFilter.verify_email_mobile )
+  public async verify_email_mobile (verify_email_mobile: PassportAPI.verify, req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { warnings, setting, document } = verify_email_mobile
+    let { type } = document
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let UserProxy = userProxy(errorState)
+    try {
+      let verify = await UserProxy.verifyEmailMobile(document, warnings, setting)
+      if (!verify) {
+        return res.api('error', warnings[type].failed)
+      }
+      return res.api(verify)
+    } catch (error) {
+      if (CustomError(error)) {
+        if ([ warnings[type].timeout, __ErrorCode.ERROR_VERIFY_TOKEN_VERIFIED ].includes(error.code)) {
+          return res.api('warning', error)
+        }
         return res.api(null, error)
       }
       return next(error)

@@ -2,6 +2,8 @@ import { Request } from 'express'
 import { Channel } from './channel'
 import { IErrorInfo, Maps } from 'kenote-config-helper'
 import { Dropdown } from './'
+import * as PassportAPI from './apis/passport'
+import { VerifyGenerateOptions } from '@/types/proxys/verify'
 
 /**
  * HTTPServer
@@ -138,17 +140,29 @@ export declare namespace Security {
   }
 
   interface verifyCode {
-    code             : string
+    code            ?: string,
+    user            ?: string
+  }
+
+  interface setPassword {
+    password         : string
+    verify_id       ?: string | null
   }
 
   interface setEmail {
     email            ?: string
     code             ?: string
+    verify_id       ?: string | null
   }
 
   interface setMobile {
     mobile           ?: string
     code             ?: string
+    verify_id       ?: string | null
+  }
+
+  interface sendCode extends VerifyGenerateOptions {
+    type              : PassportAPI.verifyUserType
   }
 }
 

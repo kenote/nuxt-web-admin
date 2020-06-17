@@ -154,6 +154,23 @@ class PassportFilter {
       return res.api(null, error)
     }
   }
+
+  public async verify_email_mobile (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { type } = req.params
+    let { token, id } = req.body as PassportAPI.verifyBaseDocument
+    let warnings: PassportAPI.verifyWarning = {
+      email: {
+        timeout : __ErrorCode.ERROR_VERIFY_EMAIL_TIMEOUT,
+        failed  : __ErrorCode.ERROR_VERIFY_EMAIL_FAILED
+      },
+      mobile: {
+        timeout : __ErrorCode.ERROR_VERIFY_MOBILE_TIMEOUT,
+        failed  : __ErrorCode.ERROR_VERIFY_MOBILE_FAILED
+      }
+    }
+    let setting = loadData('config/register') as Register.config
+    return next({ setting, warnings, document: { type, token, id } })
+  }
 }
 
 export default new PassportFilter()

@@ -15,6 +15,8 @@ import { DYSMS } from '~/utils/sms'
 import { SMS } from '@/types/alicloud'
 import userProxy from './user'
 import * as PassportAPI from '@/types/apis/passport'
+import { Security } from '@/types/restful'
+import { pick } from 'lodash'
 
 const Model = __Models.verifyModel
 const options: QueryOptions = {
@@ -85,17 +87,29 @@ class VerifyProxy {
     return verify
   }
 
-  public async resetPwd (doc: PassportAPI.resetPwdDocument, type: PassportAPI.verifyUserType, step: number): Promise<UpdateWriteResult> {
+  public async check (doc: Security.verifyCode, step: number, verify_id?: string): Promise<ResponseVerifyDocument> {
     let { ErrorInfo } = this.errorState
-    let verify = await this.Dao.findOne({ type: 'code' }) as ResponseVerifyDocument
+    let conditions: any = { type: 'code', user: doc.user }
+    if (verify_id) {
+      conditions = { ...conditions, _id: verify_id }
+    }
+    else {
+      conditions = { ...conditions, token: doc.code }
+    }
+    let verify = await this.Dao.findOne(conditions) as ResponseVerifyDocument
     if (!verify) {
-      throw ErrorInfo(__ErrorCode.ERROR_VERIFY_CODE_FAILED)
+      throw ErrorInfo(verify_id ? __ErrorCode.ERROR_VERIFY_ID_FAILED : __ErrorCode.ERROR_VERIFY_CODE_FAILED)
     }
     let difftime: number = Date.now() - verify.create_at.getTime()
     let timeout: number = step * 1000
     if (difftime > timeout) {
-      throw ErrorInfo(__ErrorCode.ERROR_VERIFY_CODE_TIMEOUT)
+      throw ErrorInfo(verify_id ? __ErrorCode.ERROR_VERIFY_ID_TIMEOUT : __ErrorCode.ERROR_VERIFY_CODE_TIMEOUT)
     }
+    return verify
+  }
+
+  public async resetPwd (doc: PassportAPI.resetPwdDocument, type: PassportAPI.verifyUserType, step: number): Promise<UpdateWriteResult> {
+    let verify = await this.check(pick(doc, ['user', 'code']) as Security.verifyCode, step)
     let result = await userProxy(this.errorState).resetPwd(doc, type)
     await this.Dao.remove({ _id: verify._id })
     return result
