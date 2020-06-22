@@ -19,6 +19,7 @@ import {
   MenuItem,
   Message, 
   MessageBox,
+  Pagination,
   Radio,
   RadioButton,
   RadioGroup,
@@ -26,7 +27,9 @@ import {
   Step,
   Steps,
   Submenu,
-  Switch
+  Switch,
+  Table,
+  TableColumn
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 
@@ -48,6 +51,7 @@ export default () => {
   Vue.use(Loading.directive)
   Vue.use(Menu)
   Vue.use(MenuItem)
+  Vue.use(Pagination)
   Vue.use(Radio)
   Vue.use(RadioButton)
   Vue.use(RadioGroup)
@@ -56,6 +60,8 @@ export default () => {
   Vue.use(Steps)
   Vue.use(Submenu)
   Vue.use(Switch)
+  Vue.use(Table)
+  Vue.use(TableColumn)
 
   Vue.component(CollapseTransition.name, CollapseTransition)
 

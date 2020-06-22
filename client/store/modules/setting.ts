@@ -45,7 +45,7 @@ export const getters: GetterTree<State, RootState> = {
   selectedChannel: state => {
     let p: Channel.element = state.channels?.find( o => o.id === state.channelId )!
     return p || { id: 0, name: '仪表盘' }
-  },
+  }
 }
 
 export interface Actions<S, R> extends ActionTree<S, R> {

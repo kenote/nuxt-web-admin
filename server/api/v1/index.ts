@@ -2,5 +2,6 @@ import { MountController } from 'kenote-express-helper'
 
 export default MountController(
   require('./passport'),
-  require('./security')
+  require('./security'),
+  require('./group')
 )

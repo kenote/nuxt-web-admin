@@ -7,7 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "@alicloud/pop-core": "^1.7.9",
-    "@vue/composition-api": "^0.6.2",
+    "@vue/composition-api": "^0.6.4",
     "axios": "^0.19.2",
     "connect-redis": "^4.0.4",
     "cookie-parser": "^1.4.5",
@@ -25,9 +25,9 @@
     "kenote-validate-helper": "^1.1.1",
     "log4js": "^6.3.0",
     "method-override": "^3.0.0",
-    "mongoose": "^5.9.18",
+    "mongoose": "^5.9.19",
     "nunjucks": "^3.2.1",
-    "nuxt": "^2.12.2",
+    "nuxt": "~2.12.2",
     "nuxt-property-decorator": "^2.7.2",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
@@ -38,8 +38,8 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
-    "@nuxt/components": "^0.3.3",
-    "@nuxt/typescript-build": "^1.0.2",
+    "@nuxt/components": "^0.3.4",
+    "@nuxt/typescript-build": "^1.0.3",
     "@nuxtjs/svg": "^0.1.11",
     "@types/bytes": "^3.1.0",
     "@types/connect-redis": "^0.0.14",

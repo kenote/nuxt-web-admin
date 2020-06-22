@@ -9,9 +9,9 @@
         <div class="sidebar-nav" v-bind:style="collapse ? 'flex: 0 0 64px' : 'flex: 0 0 260px'" v-if="selectedChannel.id > 0">
           <template v-for="(channel, key) in channels">
             <el-collapse-transition :key="key" v-if="channel.id === selectedChannel.id">
-              <dashboard-sidebar 
+              <dashboard-sidebar v-if="!loading.channel"
                 :navs="accessNavs(channel.navs, access)"
-                :defaultActive="$route.path"
+                :default-active="$route.path"
                 :disable-mode="dashboardOpts.disableMode"
                 :background-color="'#444c54'"
                 :text-color="'#ffffff'"
@@ -76,6 +76,7 @@ export default class DashboardLayout extends Vue {
   @Store.Setting.State channels!: Channel.element[]
   @Store.Setting.State flags!: Maps<PageFlag.item>
   @Store.Setting.State dashboardOpts!: DashboardOptions
+  @Store.Setting.State loading!: Maps<boolean>
   @Store.Setting.Action selectChannel!: (id: number) => Promise<void>
   @Store.Setting.Getter selectedChannel!: Channel.element
 

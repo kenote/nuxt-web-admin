@@ -7,7 +7,7 @@ import { loadError } from '~/utils/error'
 import { authenticate } from '~/middleware/auth'
 import userProxy from '~/proxys/user'
 import { loadData } from 'kenote-config-helper/dist/utils.server'
-import { Register, Security } from '@/types/restful';
+import { Register, Security } from '@/types/restful'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import verifyProxy from '~/proxys/verify'
 import __ErrorCode from '~/utils/error/code'

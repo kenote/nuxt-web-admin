@@ -123,3 +123,11 @@ export async function setMobile (data: Security.setMobile, options: HeaderOption
   let restful = await httpClient.post(`/api/v1/security/setmobile`, data, options)
   return formatRestful(restful)
 }
+
+/**
+ * 用户组列表
+ */
+export async function groupList (data: any, type: 'list' | 'lite', options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/group/list`, data, options)
+  return formatRestful(restful)
+}

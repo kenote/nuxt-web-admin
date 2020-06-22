@@ -13,13 +13,69 @@ description   : 管理所有用户的信息，以及登录、注册等等
 default       : /ucenter/group
 # 频道导航
 navs:
-  # 导航分栏 -- 帐户管理
+  # 导航分栏 -- 用户管理
   - index         : 2-1
-    name          : 帐户管理
+    name          : 用户管理
     icon          : iconfont iconfont icon-team
     children:
       - index         : /ucenter/group
         name          : 用户组
+        # 表格列配置
+        columns:
+          - key           : id
+            name          : ID
+            fixed         : left
+            width         : 80
+            sortable      : true
+          - key           : name
+            name          : 角色名称
+            width         : 120
+            align         : left
+          - key           : level
+            name          : 权级
+            width         : 80
+            sortable      : true
+          - key           : description
+            name          : 描述
+            minwidth      : 300
+            align         : left
+          - key           : actions
+            name          : 操作
+            fixed         : right
+            align         : right
+            width         : 240
+            emit:
+              - key           : edit
+                name          : 编辑
+                type          : dropdown
+                conditions:
+                  $or:
+                    - __authLevel   : 9999
+                    - level:
+                        $lt           : 9998
+                options:
+                  - key           : platform
+                    name          : 频道入口
+                    conditions:
+                      level:
+                        $lte          : 9000   
+                  - key           : access
+                    name          : 访问权限
+                    conditions:
+                      level:
+                        $lte          : 9000
+              - key           : delete
+                name          : 删除
+                type          : danger
+                conditions:
+                  $and:
+                    - level:
+                        $lt           : 9998
+                    - default       : 
+                        $ne           : true
+        # 检索选项
+        search:
+          field         : name
       - index         : /ucenter/user
         name          : 查询用户
       - index         : /ucenter/ticket
