@@ -1,4 +1,4 @@
-import { QueryOptions, MongooseDao, autoNumber, UpdateWriteResult } from 'kenote-mongoose-helper'
+import { QueryOptions, MongooseDao, autoNumber, UpdateWriteResult, DeleteWriteResult } from 'kenote-mongoose-helper'
 import __Models from '~/models'
 import __ErrorCode from '~/utils/error/code'
 import { loadError, ErrorState } from '~/utils/error'
@@ -148,6 +148,11 @@ class UserProxy {
     let { hash: encrypt, salt } = passportUtil.bcrypt.hash(doc.password || '')
     let result = await this.Dao.updateOne(conditions, { encrypt, salt })
     return result
+  }
+
+  public async remove (conditions: any): Promise<DeleteWriteResult> {
+    let query = await this.Dao.remove(conditions)
+    return query
   }
   
 }

@@ -1,13 +1,21 @@
 import * as passport from 'passport'
 import * as passportJWT from 'passport-jwt'
 import * as jwt from 'jsonwebtoken'
-import { Request } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { oc } from 'ts-optchain'
-import { pick } from 'lodash'
+import { pick, minBy } from 'lodash'
 import { session_secret, language } from '~/config'
 import userProxy, { userBaseField } from '~/proxys/user'
 import { loadError } from '~/utils/error'
-
+import * as PassportAPI from '@/types/apis/passport'
+import { Maps } from 'kenote-config-helper'
+import { loadData } from 'kenote-config-helper/dist/utils.server'
+import { PageFlag } from '@/types/restful'
+import { IResponse } from '~/middleware/restful'
+import { ResponseUserDocument } from '@/types/proxys/user'
+import __ErrorCode from '~/utils/error/code'
+import { ErrorInfo } from '~/utils/error'
+ 
 interface Payload {
 
   /**
@@ -53,3 +61,31 @@ export const authPayload = (token: string, options?: jwt.SignOptions) => jwt.ver
 ) as Payload
 
 export const authenticate = passport.authenticate('jwt', { session: false })
+
+export const permission = (key: string, tag: PageFlag.type) => (req: Request, res: IResponse, next: NextFunction): void | Response => {
+  let user = req.user as ResponseUserDocument
+  if (!isFlag(user.group.level, key, tag)) {
+    return res.api(null, tag === 'access' ? __ErrorCode.ERROR_AUTH_FLAG_ACCESS : __ErrorCode.ERROR_AUTH_FLAG_OPERATE)
+  }
+  return next()
+}
+
+export function filterUserLevel (auth: ResponseUserDocument, level: number, minLevel: number, ErrorInfo: ErrorInfo): void {
+  let authLevel = auth.group.level
+  if (authLevel === 9999) return
+  if (authLevel < minLevel) {
+    throw ErrorInfo(__ErrorCode.ERROR_ONLY_ADVANCED_ADMIN)
+  }
+  if (level >= authLevel) {
+    throw ErrorInfo(__ErrorCode.ERROR_BYLOND_LEVEL_OPERATE)
+  }
+}
+
+function isFlag (level: number, key: string, tag: PageFlag.type = 'access'): boolean {
+  let flags = loadData('config/flags') as Maps<PageFlag.item>
+  let flagLevel = oc(flags)[key][tag]()
+  if (flagLevel) {
+    return level >= flagLevel
+  }
+  return true
+}

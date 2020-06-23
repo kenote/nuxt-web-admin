@@ -1,7 +1,9 @@
 import httpClient, { HeaderOptions, formatRestful } from '@/utils/http'
 import { RestfulInfoByError, Security } from '@/types/restful'
 import * as PassportAPI  from '@/types/apis/passport'
+import * as Ucenter from '@/types/apis/ucenter'
 import { omit } from 'lodash'
+import { RemoveOptions } from '@/types/proxys'
 
 /**
  * 校验访问令牌
@@ -129,5 +131,29 @@ export async function setMobile (data: Security.setMobile, options: HeaderOption
  */
 export async function groupList (data: any, type: 'list' | 'lite', options: HeaderOptions): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(`/api/v1/ucenter/group/list`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 创建用户组
+ */
+export async function createGroup (data: Ucenter.createGroup, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/group/create`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 编辑用户组
+ */
+export async function editGroup (_id: string, data: Ucenter.createGroup, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/group/edit/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 删除用户组
+ */
+export async function removeGroup (_id: string, data: RemoveOptions, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.delete(`/api/v1/ucenter/group/${_id}`, data, options)
   return formatRestful(restful)
 }

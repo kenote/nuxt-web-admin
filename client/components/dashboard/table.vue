@@ -79,6 +79,9 @@ import { ruleJudgment } from '@/utils/query'
 
 @Component<DashboardTable>({
   name: 'dashboard-table',
+  created () {
+    this.$emit('getdata', null)
+  },
   beforeDestroy () {
     this.showFooter = false
   }

@@ -49,6 +49,10 @@ export default class DashboardFooterBar extends Vue {
   transition: all .3s;
   z-index: 1000;
   padding: 15px 30px;
+
+  .el-button {
+    border-radius: 0;
+  }
 }
 
 .dashboard-footerbar-open {

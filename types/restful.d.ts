@@ -181,7 +181,7 @@ export declare namespace SinglePage {
 
 export declare namespace PageFlag {
   
-  type type = 'access' | 'list' | 'create' | 'edit' | 'remove'
+  type type = keyof item
 
   interface item {
     access           ?: number

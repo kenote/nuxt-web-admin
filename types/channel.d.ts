@@ -9,6 +9,7 @@ export declare namespace Channel {
 
   interface navigation extends KenoteConfig.Navigation {
     columns          ?: columns[]
+    queryer          ?: queryer[]
   }
 
   interface columns extends KenoteConfig.Columns {
@@ -21,5 +22,9 @@ export declare namespace Channel {
     type             ?: string
     conditions       ?: any,
     options          ?: any
+  }
+
+  interface queryer extends KenoteConfig.Queryer {
+
   }
 }
