@@ -157,3 +157,19 @@ export async function removeGroup (_id: string, data: RemoveOptions, options: He
   let restful = await httpClient.delete(`/api/v1/ucenter/group/${_id}`, data, options)
   return formatRestful(restful)
 }
+
+/**
+ * 编辑用户组频道入口
+ */
+export async function platformGroup (_id: string, data: Ucenter.platform, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/group/platform/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 编辑用户组访问权限
+ */
+export async function accessGroup (_id: string, data: Ucenter.access, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/group/access/${_id}`, data, options)
+  return formatRestful(restful)
+}

@@ -41,7 +41,7 @@
                 :key="item.key" 
                 :size="item.type === 'text' ? '' : 'small'" 
                 :type="item.type" @click="handleEmitClick(scope.$index, item, scope.row)"
-                :disabled="!disabledRule(item.conditions, scope.row)">
+                :disabled="!disabledRule(item.conditions, scope.row, getFlagTag(item.key))">
                 {{ item.name }}
               </el-button>
             </template>
@@ -76,6 +76,7 @@ import { oc } from 'ts-optchain'
 import { orderBy, chunk, isObject } from 'lodash'
 import { Table as ElTable } from 'element-ui'
 import { ruleJudgment } from '@/utils/query'
+import { PageFlag } from '@/types/restful'
 
 @Component<DashboardTable>({
   name: 'dashboard-table',
@@ -96,6 +97,7 @@ export default class DashboardTable extends Vue {
   @Prop({ default: 1 }) pageno!: number
   @Prop({ default: true }) pagination!: boolean
   @Prop({ default: 0 }) authLevel!: number
+  @Prop({ default: {} }) flag!: PageFlag.item
 
   @Provide() search: string = ''
   @Provide() showFooter: boolean = false
@@ -174,10 +176,21 @@ export default class DashboardTable extends Vue {
     this.$emit('command', type, row)
   }
 
-  disabledRule (rule: Maps<any>, row: Maps<any>) {
+  disabledRule (rule: Maps<any>, row: Maps<any>, tag?: string) {
     if (!rule) return false
+    if (['edit', 'remove'].includes(tag || 'edit')) {
+      let result = this.authLevel < oc(this.flag)[tag || 'edit'](0)
+      if (result) return !result
+    }
     row['__authLevel'] = this.authLevel
     return ruleJudgment(row, rule)
+  }
+
+  getFlagTag (key: string) {
+    if (['remove', 'delete'].includes(key)) {
+      return 'remove'
+    }
+    return 'edit'
   }
   
 }

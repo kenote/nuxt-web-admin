@@ -1,10 +1,11 @@
 import { Component, Vue, Provide, Watch } from 'nuxt-property-decorator'
 import { Store } from '~/store'
 import { Channel } from '@/types/channel'
-import { Channel as IChannel } from 'kenote-config-helper'
+import { Channel as IChannel, Maps } from 'kenote-config-helper'
 import { oc } from 'ts-optchain'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { HeaderOptions } from '@/utils/http'
+import { PageFlag } from '@/types/restful'
 
 
 @Component<PageMixin>({
@@ -20,6 +21,8 @@ export default class PageMixin extends Vue {
   @Store.Auth.State auth!: ResponseUserDocument
   @Store.Auth.Getter token!: string
   @Store.Auth.Getter authLevel!: number
+  @Store.Setting.State channels!: Channel.element[]
+  @Store.Setting.State flags!: Maps<PageFlag.item>
   @Store.Setting.Getter selectedChannel!: Channel.element
 
   @Provide() initinal: boolean = true

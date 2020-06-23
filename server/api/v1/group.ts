@@ -116,6 +116,28 @@ class GroupController extends Controller {
       return next(error)
     }
   }
+
+  /**
+   * 编辑权限
+   */
+  @Router({ method: 'post', path: '/group/:authority(platform|access)/:_id' })
+  @Filter( authenticate, permission('/ucenter/group', 'edit'), groupFilter.authority )
+  public async authority (edit: UpdateDocument<EditGroupDocument>, req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { conditions, data } = edit
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let GroupProxy = groupProxy(errorState)
+    try {
+      let result = await GroupProxy.update(conditions, data)
+      return res.api(result)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
 }
 
 export = GroupController

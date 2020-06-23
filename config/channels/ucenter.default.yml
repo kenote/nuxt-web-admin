@@ -64,6 +64,8 @@ navs:
                     conditions:
                       level:
                         $lte          : 9000
+                      platform:
+                        $size         : 0
               - key           : delete
                 name          : 删除
                 type          : danger

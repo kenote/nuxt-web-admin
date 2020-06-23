@@ -10,6 +10,14 @@ declare namespace Ucenter {
     upload_type   ?: string[]
     download_type ?: string[]
   }
+
+  interface platform {
+    platform       : number[]
+  }
+
+  interface access {
+    access         : string[]
+  }
 }
 
 export = Ucenter

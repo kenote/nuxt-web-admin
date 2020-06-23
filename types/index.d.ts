@@ -1,5 +1,9 @@
 
-
+export interface Option {
+  key               : number | string
+  label             : string
+  disabled         ?: boolean
+}
 
 export declare namespace Dropdown {
 

@@ -89,6 +89,37 @@ class GroupFilter {
       return next(error)
     }
   }
+
+  public async authority (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { _id, authority } = req.params
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { ErrorInfo, CustomError } = errorState
+    if (!isMongoId(_id)) {
+      return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
+    }
+    let auth = req.user as ResponseUserDocument
+    let doc: UpdateDocument<EditGroupDocument> = {
+      conditions: { _id },
+      data: {
+        [authority]: oc(req).body[authority]([])
+      }
+    }
+    let GroupProxy = groupProxy(errorState)
+    try {
+      let group = await GroupProxy.Dao.findOne(doc.conditions) as ResponseGroupDocument
+      if (!group) {
+        return res.api(null, __ErrorCode.ERROR_AUTH_OPERATE_GROUP_NULL)
+      }
+      filterUserLevel(auth, group.level, 9998, ErrorInfo)
+      return next(doc)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
 }
 
 export default new GroupFilter()

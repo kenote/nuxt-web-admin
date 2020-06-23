@@ -33,7 +33,11 @@ import {
   Submenu,
   Switch,
   Table,
-  TableColumn
+  TableColumn,
+  TabPane,
+  Tabs,
+  Transfer,
+  Tree
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 
@@ -70,6 +74,10 @@ export default () => {
   Vue.use(Switch)
   Vue.use(Table)
   Vue.use(TableColumn)
+  Vue.use(TabPane)
+  Vue.use(Tabs)
+  Vue.use(Transfer)
+  Vue.use(Tree)
 
   Vue.component(CollapseTransition.name, CollapseTransition)
 

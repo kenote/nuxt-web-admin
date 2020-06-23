@@ -19,6 +19,8 @@ const operatorMaps = {
   ['$ne']: (a: string | number, b: string | number): boolean => a !== b,
   // 等于
   ['$eq']: (a: string | number, b: string | number): boolean => a === b,
+  // 长度大于
+  ['$size']: (a: never[], b: number) => a.length > b,
   // tslint:disable-next-line: no-eval
   ['$or']: (...result: boolean[]) => eval(result.map(String).join(' || ')),
   // tslint:disable-next-line: no-eval
