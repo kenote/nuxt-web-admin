@@ -1,7 +1,5 @@
 <template>
-  <page v-loading="initinal">
-    <dashboard-breadcrumb :route-path="$route.path" :channel="selectedChannel" />
-
+  <dashboard-page v-loading="initinal">
     <!-- 创建用户组 -->
     <dashboard-form v-if="mode === 'create'"
       name="创建用户组"
@@ -73,7 +71,7 @@
     <dashboard-platform v-else-if="mode === 'platform'"
       type="group"
       :channels="channels"
-      :name="oc(selected).name([])"
+      :name="oc(selected).name('')"
       :data="oc(selected).platform([])"
       @submit="handlePlatform"
       @goback="handleGoback"
@@ -82,7 +80,7 @@
     <dashboard-access v-else-if="mode === 'access'"
       type="group"
       :channels="openChannels()"
-      :name="oc(selected).name([])"
+      :name="oc(selected).name('')"
       :data="oc(selected).access([])"
       @submit="handleAccess"
       @goback="handleGoback"
@@ -125,7 +123,7 @@
         <el-button type="primary" @click="handleRemove" v-loading="loading">确 定</el-button>
       </div>
     </el-dialog>
-  </page>
+  </dashboard-page>
 </template>
 
 <script lang="ts">
@@ -138,6 +136,8 @@ import { oc } from 'ts-optchain'
 import { Maps } from 'kenote-config-helper'
 import { PageFlag } from '@/types/restful'
 import { Channel } from '@/types/channel'
+
+type ModeType = 'list' | 'create' | 'edit' | 'platform' | 'access'
 
 @Component<GroupPage>({
   name: 'group-page',
@@ -153,7 +153,7 @@ import { Channel } from '@/types/channel'
 export default class GroupPage extends mixins(PageMixin) {
 
   @Provide() list: ResponseGroupDocument[] = []
-  @Provide() mode: 'list' | 'create' | 'edit' | 'platform' | 'access' = 'list'
+  @Provide() mode: ModeType = 'list'
   @Provide() selected: ResponseGroupDocument | null = null
   @Provide() dialogRemoveVisible: boolean = false
   @Provide() removeOptions = {
@@ -181,25 +181,13 @@ export default class GroupPage extends mixins(PageMixin) {
   }
 
   handleCommand (type: string, row: ResponseGroupDocument): void {
-    switch (type) {
-      case 'edit':
-        this.mode = 'edit'
-        this.selected = row
-        break
-      case 'access':
-        this.mode = 'access'
-        this.selected = row
-        break
-      case 'platform':
-        this.mode = 'platform'
-        this.selected = row
-        break
-      case 'delete':
-        this.dialogRemoveVisible = true
-        this.selected = row
-        break
-      default:
-        break
+    if (['edit', 'platform', 'access'].includes(type)) {
+      this.mode = (type as ModeType)
+      this.selected = row
+    }
+    else if (type === 'delete') {
+      this.dialogRemoveVisible = true
+      this.selected = row
     }
   }
 
@@ -243,7 +231,6 @@ export default class GroupPage extends mixins(PageMixin) {
 
   handlePlatform(values: Ucenter.platform): void {
     let _id = oc(this.selected)._id()!
-    console.log(_id, values)
     this.loading = true
     setTimeout(async () => {
       try {
@@ -264,7 +251,6 @@ export default class GroupPage extends mixins(PageMixin) {
 
   handleAccess(values: Ucenter.access): void {
     let _id = oc(this.selected)._id()!
-    console.log(_id, values)
     this.loading = true
     setTimeout(async () => {
       try {
@@ -283,7 +269,7 @@ export default class GroupPage extends mixins(PageMixin) {
     }, 300)
   }
 
-  handleRemove () {
+  handleRemove (): void {
     let _id = oc(this.selected)._id()!
     let { move } = this.removeOptions
     this.loading = true

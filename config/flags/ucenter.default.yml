@@ -13,3 +13,17 @@
   edit            : 9998
   # 删除
   remove          : 9998
+
+
+# 团队
+'/ucenter/team':
+  # 访问权限
+  access          : 9000
+  # 列表
+  list            : 9000
+  # 创建
+  create          : 9000
+  # 编辑
+  edit            : 9000
+  # 删除
+  remove          : 9000

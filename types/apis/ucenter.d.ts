@@ -11,12 +11,21 @@ declare namespace Ucenter {
     download_type ?: string[]
   }
 
+  interface createTeam {
+    name           : string
+    description   ?: string
+  }
+
   interface platform {
     platform       : number[]
   }
 
   interface access {
     access         : string[]
+  }
+
+  interface peoples {
+    peoples        : string[]
   }
 }
 

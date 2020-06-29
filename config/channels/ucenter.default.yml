@@ -84,3 +84,45 @@ navs:
         name          : 注册邀请
       - index         : /ucenter/team
         name          : 团队
+        # 表格列配置
+        columns:
+          - key           : id
+            name          : ID
+            fixed         : left
+            width         : 80
+            sortable      : true
+          - key           : name
+            name          : 团队名称
+            width         : 120
+            align         : left
+          - key           : description
+            name          : 描述
+            minwidth      : 300
+            align         : left
+          - key           : actions
+            name          : 操作
+            fixed         : right
+            align         : right
+            width         : 240
+            emit:
+              - key           : edit
+                name          : 编辑
+                type          : dropdown
+                options:
+                  - key           : platform
+                    name          : 频道入口
+                  - key           : access
+                    name          : 访问权限
+                    conditions:
+                      platform:
+                        $size         : 0
+                  - key           : people
+                    name          : 成员管理
+              - key           : delete
+                name          : 删除
+                type          : danger
+                options:
+                  confirm       : [ '此操作将永久删除该团队, 是否继续?', 提示 ]
+        # 检索选项
+        search:
+          field         : name

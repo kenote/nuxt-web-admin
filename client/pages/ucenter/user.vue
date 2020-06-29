@@ -1,23 +1,19 @@
 <template>
-  <page>
-    <dashboard-breadcrumb :route-path="$route.path" :channel="selectedChannel" />
+  <dashboard-page v-loading="initinal">
 
-  </page>
+  </dashboard-page>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
-import { Store } from '~/store'
-import { Channel } from '@/types/channel'
+import { Component, Vue, Provide, mixins } from 'nuxt-property-decorator'
+import PageMixin from '~/mixins/page'
 
 @Component<UserPage>({
   name: 'user-page',
   layout: 'dashboard',
   middleware: ['authenticated'],
 })
-export default class UserPage extends Vue {
-
-  @Store.Setting.Getter selectedChannel!: Channel.element
+export default class UserPage extends mixins(PageMixin) {
   
 }
 </script>

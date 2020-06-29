@@ -77,11 +77,20 @@ import { orderBy, chunk, isObject } from 'lodash'
 import { Table as ElTable } from 'element-ui'
 import { ruleJudgment } from '@/utils/query'
 import { PageFlag } from '@/types/restful'
+import { ElMessageBoxOptions } from 'element-ui/types/message-box'
 
 @Component<DashboardTable>({
   name: 'dashboard-table',
   created () {
     this.$emit('getdata', null)
+  },
+  mounted () {
+    if (!this.footerOpen) return
+    if (this.footerBar) {
+      setTimeout(() => {
+        this.showFooter = true
+      }, 800)
+    }
   },
   beforeDestroy () {
     this.showFooter = false
@@ -95,9 +104,11 @@ export default class DashboardTable extends Vue {
   @Prop({ default: undefined }) searchOptions!: Search
   @Prop({ default: 10 }) pagesize!: number
   @Prop({ default: 1 }) pageno!: number
-  @Prop({ default: true }) pagination!: boolean
+  @Prop({ default: false }) pagination!: boolean
   @Prop({ default: 0 }) authLevel!: number
   @Prop({ default: {} }) flag!: PageFlag.item
+  @Prop({ default: false }) footerBar!: boolean
+  @Prop({ default: true }) footerOpen!: boolean
 
   @Provide() search: string = ''
   @Provide() showFooter: boolean = false
@@ -115,6 +126,7 @@ export default class DashboardTable extends Vue {
     pageno = pageno || 1
     this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno)
     // 
+    if (!this.footerOpen) return
     setTimeout(() => {
       this.showFooter = true
     }, 800)
@@ -164,9 +176,26 @@ export default class DashboardTable extends Vue {
     this.$emit('selection', values)
   }
 
-  handleEmitClick (index: number, emit: Channel.columnEmit, row: any) {
+  async handleEmitClick (index: number, emit: Channel.columnEmit, row: any) {
     if (!this.disabledRule(emit.conditions, row)) return
-    this.$emit('command', emit.key, row)
+    let { confirm } = oc(emit).options({})
+    if (confirm) {
+      let [ message, title ] = oc(confirm)([])
+      let options: ElMessageBoxOptions = {
+        confirmButtonText    : '确定',
+        cancelButtonText     : '取消',
+        type                 : 'warning'
+      }
+      try {
+        await this.$confirm(message, title, options)
+        this.$emit('command', emit.key, row)
+      } catch (error) {
+        this.$message.warning(`您已取消${emit.name}`)
+      }
+    }
+    else {
+      this.$emit('command', emit.key, row)
+    }
   }
 
   handleCommand (command: string): void {
@@ -177,11 +206,11 @@ export default class DashboardTable extends Vue {
   }
 
   disabledRule (rule: Maps<any>, row: Maps<any>, tag?: string) {
-    if (!rule) return false
     if (['edit', 'remove'].includes(tag || 'edit')) {
       let result = this.authLevel < oc(this.flag)[tag || 'edit'](0)
       if (result) return !result
     }
+    if (!rule) return true
     row['__authLevel'] = this.authLevel
     return ruleJudgment(row, rule)
   }

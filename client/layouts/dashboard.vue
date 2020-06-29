@@ -95,7 +95,7 @@ export default class DashboardLayout extends Vue {
   @Watch('permission')
   onPermissionChange (val: Route, oldVal: Route): void {
     if (!val) {
-      location.href = this.homepage
+      // location.href = this.homepage
     }
   }
 

@@ -1,6 +1,5 @@
 <template>
-  <page>
-    <dashboard-breadcrumb :route-path="$route.path" :channel="selectedChannel" />
+  <dashboard-page v-loading="initinal">
     <div class="security-container" v-if="!auth.binds.includes('email')" v-loading="refresh">
       <div class="main-content">
         <p>您的邮箱尚未被激活，请尽快激活；</p>
@@ -95,15 +94,14 @@
         </div>
       </div>
     </transition-group>
-  </page>
+  </dashboard-page>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Provide, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Provide, Watch, mixins } from 'nuxt-property-decorator'
+import PageMixin from '~/mixins/page'
 import { Store } from '~/store'
-import { Channel } from '@/types/channel'
 import { Register, Security } from '@/types/restful'
-import { HeaderOptions } from '@/utils/http'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import * as api from '~/api'
 import * as auth from '~/store/modules/auth'
@@ -116,23 +114,15 @@ import * as PassportAPI from '@/types/apis/passport'
   layout: 'dashboard',
   middleware: ['authenticated'],
   created () {
-    this.httpOptions = {
-      token: this.token
-    }
     this.updateSecurity()
   }
 })
-export default class SecurityPage extends Vue {
+export default class SecurityPage extends mixins(PageMixin) {
 
-  @Store.Auth.State auth!: ResponseUserDocument
-  @Store.Auth.Getter token!: string
   @Store.Setting.State register!: Register.config
-  @Store.Setting.Getter selectedChannel!: Channel.element
 
-  @Provide() loading: boolean = false
   @Provide() refresh: boolean = false
   @Provide() times: number = 0
-  @Provide() httpOptions: HeaderOptions = {}
   @Provide() viewtype: Security.viewType = 'overview'
   @Provide() overview: Security.overview[] = []
   @Provide() active: number = 0

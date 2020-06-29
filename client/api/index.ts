@@ -173,3 +173,84 @@ export async function accessGroup (_id: string, data: Ucenter.access, options: H
   let restful = await httpClient.post(`/api/v1/ucenter/group/access/${_id}`, data, options)
   return formatRestful(restful)
 }
+
+/**
+ * 团队列表
+ */
+export async function teamList (channel: string | null, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let url = channel ? `/api/v1/ucenter/team/list/${channel}` : `/api/v1/ucenter/team/list`
+  let restful = await httpClient.get(url, null, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 创建团队
+ */
+export async function createTeam (data: Ucenter.createTeam, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/team/create`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 编辑团队
+ */
+export async function editTeam (_id: string, data: Ucenter.createTeam, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/team/edit/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 删除团队
+ */
+export async function removeTeam (_id: string, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.delete(`/api/v1/ucenter/team/${_id}`, null, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 编辑团队频道入口
+ */
+export async function platformTeam (_id: string, data: Ucenter.platform, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/team/platform/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 编辑团队访问权限
+ */
+export async function accessTeam (_id: string, data: Ucenter.access, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/team/access/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 获取团队成员
+ */
+export async function peopleList (_id: string, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/team/people/${_id}`, null, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 检索可选用户
+ */
+export async function inviteeSuggestions (keywords: string, _id: string, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.get(`/api/v1/ucenter/team/invitee_suggestions/${_id}`, { q: keywords }, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 设置团队成团
+ */
+export async function setPeople (_id: string, data: Ucenter.peoples, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/team/people/${_id}/set`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 移除团队成员
+ */
+export async function removePeople (_id: string, data: Ucenter.peoples, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.delete(`/api/v1/ucenter/team/people/${_id}`, data, options)
+  return formatRestful(restful)
+}
