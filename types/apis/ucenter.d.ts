@@ -1,6 +1,4 @@
 
-
-
 declare namespace Ucenter {
 
   interface createGroup {
@@ -26,6 +24,12 @@ declare namespace Ucenter {
 
   interface peoples {
     peoples        : string[]
+  }
+
+  interface createTicket {
+    group         ?: string
+    stint          : number
+    last_at        : Date
   }
 }
 

@@ -102,7 +102,6 @@ import { Component, Vue, Provide, mixins } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { ResponseTeamDocument } from '@/types/proxys/team'
 import * as api from '~/api'
-import { PageFlag } from '@/types/restful'
 import * as Ucenter from '@/types/apis/ucenter'
 import { oc } from 'ts-optchain'
 import { Channel } from '@/types/channel'
@@ -114,16 +113,12 @@ type ModeType = 'list' | 'create' | 'edit' | 'platform' | 'access' | 'people'
   name: 'team-page',
   layout: 'dashboard',
   middleware: ['authenticated'],
-  created () {
-    this.flag = this.flags[this.$route.path]
-  },
 })
 export default class TeamPage extends mixins(PageMixin) {
   
   @Provide() list: ResponseTeamDocument[] = []
   @Provide() mode: ModeType = 'list'
   @Provide() selected: ResponseTeamDocument | null = null
-  @Provide() flag: PageFlag.item = {}
 
   handleList (): void {
     this.loading = true

@@ -14,6 +14,7 @@ import { PageFlag } from '@/types/restful'
     this.httpOptions = {
       token: this.token
     }
+    this.flag = oc(this.flags)[this.$route.path]({})
   },
 })
 export default class PageMixin extends Vue {
@@ -29,6 +30,7 @@ export default class PageMixin extends Vue {
   @Provide() pageSetting: Channel.navigation = { index: '0', name: '' }
   @Provide() loading: boolean = false
   @Provide() httpOptions: HeaderOptions = {}
+  @Provide() flag: PageFlag.item = {}
 
   oc = oc
 

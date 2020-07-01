@@ -2,8 +2,18 @@ import httpClient, { HeaderOptions, formatRestful } from '@/utils/http'
 import { RestfulInfoByError, Security } from '@/types/restful'
 import * as PassportAPI  from '@/types/apis/passport'
 import * as Ucenter from '@/types/apis/ucenter'
-import { omit } from 'lodash'
+import { omit, result } from 'lodash';
 import { RemoveOptions } from '@/types/proxys'
+import { Channel } from '@/types/channel'
+
+/**
+ *  获取API数据
+ */
+export async function getData (api: Channel.api): Promise<RestfulInfoByError> {
+  let { method, url, params, options } = api
+  let restful = await httpClient.sendData(method, url, params, options)
+  return formatRestful(restful)
+}
 
 /**
  * 校验访问令牌
@@ -130,7 +140,7 @@ export async function setMobile (data: Security.setMobile, options: HeaderOption
  * 用户组列表
  */
 export async function groupList (data: any, type: 'list' | 'lite', options: HeaderOptions): Promise<RestfulInfoByError> {
-  let restful = await httpClient.post(`/api/v1/ucenter/group/list`, data, options)
+  let restful = await httpClient.post(`/api/v1/ucenter/group/${type}`, data, options)
   return formatRestful(restful)
 }
 
@@ -252,5 +262,36 @@ export async function setPeople (_id: string, data: Ucenter.peoples, options: He
  */
 export async function removePeople (_id: string, data: Ucenter.peoples, options: HeaderOptions): Promise<RestfulInfoByError> {
   let restful = await httpClient.delete(`/api/v1/ucenter/team/people/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 邀请码列表
+ */
+export async function ticketList (channel: string | null, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.get(`/api/v1/ucenter/ticket/list`, null, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 创建邀请码
+ */
+export async function createTicket (data: Ucenter.createTicket, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/ticket/create`, data, options)
+  return formatRestful(restful)
+}
+
+
+/**
+ * 删除邀请码
+ */
+export async function removeTicket (_id: string | string[], options: HeaderOptions): Promise<RestfulInfoByError> {
+  let url = `/api/v1/ucenter/ticket/${_id}`
+  let params = {}
+  if (Array.isArray(_id)) {
+    url = `/api/v1/ucenter/ticket`
+    params = { _ids: _id }
+  }
+  let restful = await httpClient.delete(url, params, options)
   return formatRestful(restful)
 }

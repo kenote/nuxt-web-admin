@@ -1,6 +1,5 @@
-
 import { Maps } from 'kenote-config-helper'
-import { toPairs } from 'lodash'
+import { toPairs, isString } from 'lodash'
 
 const operatorMaps = {
   // 大于
@@ -39,15 +38,7 @@ export function ruleJudgment (data: Maps<any>, query: Maps<any>): boolean {
       result.push(ruleJudgmentByArray(data, query[key], key as '$and' | '$or'))
     }
     else {
-      if (Object.prototype.toString.call(query[key]) === '[object Object]') {
-        for (let pairs of toPairs(query[key])) {
-          let [ operator, value ] = pairs
-          result.push(operatorMaps[operator](data[key], value))
-        }
-      }
-      else {
-        result.push(operatorMaps['$eq'](data[key], query[key]))
-      }
+      ruleJudgmentPush(data[key], query[key], result)
     }
   }
   return operatorMaps['$and'](...result)
@@ -57,16 +48,35 @@ function ruleJudgmentByArray (data: Maps<any>, query: Array<Maps<any>>, mode: '$
   let result: boolean[] = []
   for (let item of query) {
     for (let key in item) {
-      if (Object.prototype.toString.call(item[key]) === '[object Object]') {
-        for (let pairs of toPairs(item[key])) {
-          let [ operator, value ] = pairs
-          result.push(operatorMaps[operator](data[key], value))
-        }
-      }
-      else {
-        result.push(operatorMaps['$eq'](data[key], item[key]))
-      }
+      ruleJudgmentPush(data[key], item[key], result)
     }
   }
   return operatorMaps[mode](...result)
+}
+
+function ruleJudgmentPush (data: any, query: any, result: boolean[]): void {
+  if (Object.prototype.toString.call(query) === '[object Object]') {
+    for (let pairs of toPairs(query)) {
+      let [ operator, value ] = pairs
+      let _data = data
+      if (isString(_data) && isDateString(_data)) {
+        _data = new Date(_data).getTime()
+      }
+      if (value === '$now') {
+        value = Date.now()
+      }
+      else if (isString(value) && isDateString(value)) {
+        value = new Date(value).getTime()
+      }
+      result.push(operatorMaps[operator](_data, value))
+    }
+  }
+  else {
+    result.push(operatorMaps['$eq'](data, query))
+  }
+}
+
+export function isDateString (value: string): boolean {
+  let date = new Date(value)
+  return String(date) === 'Invalid Date' ? false : true
 }

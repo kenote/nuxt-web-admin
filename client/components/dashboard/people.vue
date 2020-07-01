@@ -54,9 +54,6 @@ import { map, isEqual } from 'lodash'
 
 @Component<DashboardPeople>({
   name: 'dashboard-people',
-  created () {
-    
-  }
 })
 export default class DashboardPeople extends Vue {
 
@@ -83,22 +80,37 @@ export default class DashboardPeople extends Vue {
     {
       key: 'nickname',
       name: '昵称',
-      width: 120
+      width: 120,
+      default: '--'
     },
     {
       key: 'sex',
       name: '性别',
-      width: 80
+      width: 80,
+      format: {
+        maps: {
+          0: '未知',
+          1: '男',
+          2: '女'
+        }
+      }
     },
     {
-      key: 'group.name',
+      key: 'group',
       name: '角色',
-      width: 120
+      width: 120,
+      format: {
+        result: 'name'
+      }
     },
     {
       key: 'email',
       name: '电子邮箱',
-      width: 240
+      width: 240,
+      format: {
+        regexp: /\w{4}@/g,
+        substr: '****@'
+      }
     },
     {
       key: 'actions',
@@ -133,7 +145,6 @@ export default class DashboardPeople extends Vue {
       this.values.peoples = map(this.list, '_id') as never[]
     }
   }
-  
 
   oc = oc
   map = map

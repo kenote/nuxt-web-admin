@@ -49,13 +49,17 @@
     font-family: 'Comic Sans MS';
 
     .cell {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      text-overflow: unset;
 
       * {
         margin-right: 2px;
       }
+    }
+
+    td>.cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 

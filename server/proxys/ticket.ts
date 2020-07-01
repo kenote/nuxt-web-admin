@@ -1,11 +1,11 @@
-import { QueryOptions, MongooseDao, autoNumber } from 'kenote-mongoose-helper'
+import { QueryOptions, MongooseDao, autoNumber, UpdateWriteResult } from 'kenote-mongoose-helper'
 import __Models from '~/models'
 import __ErrorCode from '~/utils/error/code'
 import { loadError, ErrorState } from '~/utils/error'
-import { TicketOptions, ResponseTicketDocument } from '@/types/proxys/ticket'
+import { TicketOptions, ResponseTicketDocument, CreateTicketDocument, EditTicketDocument } from '@/types/proxys/ticket'
 import { Filter, asyncFilterData } from 'kenote-validate-helper'
-import { format } from 'util'
 import * as PassportAPI from '@/types/apis/passport'
+import * as uuid from 'uuid'
 
 const Model = __Models.ticketModel
 const options: QueryOptions = {
@@ -50,6 +50,19 @@ class TicketProxy {
     }
     return ticket
   }
+
+  public async create (doc: CreateTicketDocument): Promise<ResponseTicketDocument> {
+    let cdkey = uuid.v4()
+    let ticket = await this.Dao.insert({ ...doc, cdkey }) as ResponseTicketDocument
+    return ticket
+  }
+
+  // public async update (conditions: any, doc: EditTicketDocument): Promise<UpdateWriteResult> {
+  //   let ticket = await this.Dao.findOne(conditions) as ResponseTicketDocument
+  //   let used = doc.stint <= ticket.uses
+  //   let result = await this.Dao.updateOne(conditions, { ...doc, used })
+  //   return result
+  // }
 }
 
 export default (errorState?: ErrorState) => new TicketProxy(errorState || loadError('zh-cn'))

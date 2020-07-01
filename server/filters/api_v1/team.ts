@@ -49,7 +49,7 @@ class TeamFilter {
       {
         key: 'name',
         rules: [
-          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_NAME_REQUIRED, ['团队'])}
+          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_NAME_REQUIRED, ['团队'], true) }
         ],
         value: name
       }
@@ -77,7 +77,7 @@ class TeamFilter {
       {
         key: 'name',
         rules: [
-          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_NAME_REQUIRED, ['团队'])}
+          { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_NAME_REQUIRED, ['团队'], true) }
         ],
         value: name
       }
@@ -178,6 +178,7 @@ class TeamFilter {
       if (CustomError(error)) {
         return res.api(null, error)
       }
+      return next(error)
     }
   }
 

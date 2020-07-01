@@ -39,6 +39,7 @@ navs:
             name          : 描述
             minwidth      : 300
             align         : left
+            default       : --
           - key           : actions
             name          : 操作
             fixed         : right
@@ -82,6 +83,69 @@ navs:
         name          : 查询用户
       - index         : /ucenter/ticket
         name          : 注册邀请
+        # 表格列配置
+        columns:
+          - key           : id
+            name          : ID
+            fixed         : left
+            width         : 80
+            sortable      : true
+          - key           : name
+            name          : 名称
+            width         : 150
+            align         : left
+          - key           : cdkey
+            name          : cdKey
+            width         : 320
+            align         : left
+          - key           : $count
+            name          : 使用次数
+            width         : 80
+            options:
+              tooltip       : '已使用 / 总次数'
+              template      : '{{ uses }} / {{ stint }}'
+          - key           : last_at
+            name          : 过期时间
+            width         : 160
+            align         : left
+            format:
+              function    : dateFormat
+              options     : [ 'YYYY-MM-DD HH:mm:ss' ]
+            sortable      : true
+          - key           : $expired_status
+            name          : 过期状态
+            width         : 100
+            field         : right
+            options:
+              status        : [ 已过期, 未过期, danger ]
+              conditions:
+                last_at:
+                  $lte          : $now
+          - key           : $used_status
+            name          : 使用状态
+            width         : 100
+            field         : right
+            options:
+              status        : [ 已使用, 可使用, info ]
+              conditions:
+                $or:
+                  - used          : true
+                  - last_at:
+                      $lte          : $now
+          - key           : actions
+            name          : 操作
+            fixed         : right
+            align         : right
+            width         : 240
+            emit:
+              - key           : delete
+                name          : 删除
+                type          : danger
+                options:
+                  confirm       : [ '此操作将永久删除该邀请码, 是否继续?', 提示 ]
+        # 检索选项
+        search:
+          field         : name
       - index         : /ucenter/team
         name          : 团队
         # 表格列配置
@@ -99,6 +163,7 @@ navs:
             name          : 描述
             minwidth      : 300
             align         : left
+            default       : --
           - key           : actions
             name          : 操作
             fixed         : right

@@ -134,7 +134,6 @@ import { ResponseGroupDocument } from '@/types/proxys/group'
 import * as Ucenter from '@/types/apis/ucenter'
 import { oc } from 'ts-optchain'
 import { Maps } from 'kenote-config-helper'
-import { PageFlag } from '@/types/restful'
 import { Channel } from '@/types/channel'
 
 type ModeType = 'list' | 'create' | 'edit' | 'platform' | 'access'
@@ -143,12 +142,6 @@ type ModeType = 'list' | 'create' | 'edit' | 'platform' | 'access'
   name: 'group-page',
   layout: 'dashboard',
   middleware: ['authenticated'],
-  created () {
-    this.flag = this.flags[this.$route.path]
-  },
-  mounted () {
-    
-  }
 })
 export default class GroupPage extends mixins(PageMixin) {
 
@@ -160,7 +153,6 @@ export default class GroupPage extends mixins(PageMixin) {
     type: 0,
     move: undefined
   }
-  @Provide() flag: PageFlag.item = {}
 
   handleList (): void {
     this.loading = true

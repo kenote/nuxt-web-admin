@@ -36,6 +36,8 @@ import {
   TableColumn,
   TabPane,
   Tabs,
+  Tag,
+  Tooltip,
   Transfer,
   Tree
 } from 'element-ui'
@@ -76,6 +78,8 @@ export default () => {
   Vue.use(TableColumn)
   Vue.use(TabPane)
   Vue.use(Tabs)
+  Vue.use(Tag)
+  Vue.use(Tooltip)
   Vue.use(Transfer)
   Vue.use(Tree)
 

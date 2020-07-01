@@ -4,5 +4,6 @@ export default MountController(
   require('./passport'),
   require('./security'),
   require('./group'),
-  require('./team')
+  require('./team'),
+  require('./ticket')
 )

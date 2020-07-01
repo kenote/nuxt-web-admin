@@ -1,6 +1,7 @@
 <template>
   <fragment>
     <el-table ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="handleSelectionChange" v-loading="loading" stripe>
+      <el-table-column v-if="selection" type="selection" width="40" />
       <el-table-column v-for="(column, key) in columns" :key="key"
         :label="column.name" 
         :prop="column.key"
@@ -46,7 +47,17 @@
               </el-button>
             </template>
           </template>
-          <span v-else>{{ scope.row[column.key] }}</span>
+          <template v-else-if="oc(column).options.template()">
+            <el-tooltip v-if="oc(column).options.tooltip()" :content="column.options.tooltip" placement="top">
+              <span>{{ parseTemplate(oc(column).options.template(''), scope.row) }}</span>
+            </el-tooltip>
+            <span v-else>{{ parseTemplate(oc(column).options.template(''), scope.row) }}</span>
+          </template>
+          <template v-else-if="oc(column).options.status()">
+            <el-tag v-if="ruleJudgment(scope.row, oc(column).options.conditions({}))" :type="oc(column).options.status[2]('danger')">{{ oc(column).options.status[0]('') }}</el-tag>
+            <el-tag v-else type="successs">{{ oc(column).options.status[1]('') }}</el-tag>
+          </template>
+          <span v-else>{{ formatString(scope.row[column.key], column.format, column.default) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -78,6 +89,8 @@ import { Table as ElTable } from 'element-ui'
 import { ruleJudgment } from '@/utils/query'
 import { PageFlag } from '@/types/restful'
 import { ElMessageBoxOptions } from 'element-ui/types/message-box'
+import { formatString } from '@/utils/format'
+import { parseTemplate } from '@/utils'
 
 @Component<DashboardTable>({
   name: 'dashboard-table',
@@ -109,6 +122,7 @@ export default class DashboardTable extends Vue {
   @Prop({ default: {} }) flag!: PageFlag.item
   @Prop({ default: false }) footerBar!: boolean
   @Prop({ default: true }) footerOpen!: boolean
+  @Prop({ default: false }) selection!: boolean
 
   @Provide() search: string = ''
   @Provide() showFooter: boolean = false
@@ -116,6 +130,11 @@ export default class DashboardTable extends Vue {
   @Provide() current: number = 1
   @Provide() total: number = 0
   @Provide() sort: DefaultSortOptions | undefined = undefined
+
+  formatString = formatString
+  parseTemplate = parseTemplate
+  ruleJudgment = ruleJudgment
+  oc = oc
 
   @Watch('data')
   onDataChange (val: Maps<any>[], oldVal: Maps<any>[]): void {

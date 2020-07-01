@@ -110,7 +110,7 @@ class HTTPClient {
    * @param data Maps<any> | null
    * @param options HeaderOptions
    */
-  private async sendData (method: 'get' | 'post' | 'put' | 'delete', url: string, data: Maps<any> | null, options?: HeaderOptions): Promise<any> {
+  public async sendData (method: 'get' | 'post' | 'put' | 'delete', url: string, data: Maps<any> | null, options?: HeaderOptions): Promise<any> {
     let config: AxiosRequestConfig = {
       method,
       url,

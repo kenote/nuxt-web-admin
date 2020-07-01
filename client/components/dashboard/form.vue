@@ -4,23 +4,7 @@
     <el-form ref="theForm" :model="values" :rules="rules" @submit.native.prevent="handleSubmit" label-width="150px">
       <template v-for="(item, key) in columns">
         <el-form-item :key="key" :prop="item.key" :rules="rules[item.key] || []" :label="item.name">
-          <el-input-number v-if="item.type === 'input-number'"
-            size="medium" 
-            v-model="values[item.key]" 
-            :min="item.min" 
-            :max="item.max"
-            :disabled="item.disabled"
-            />
-          <el-input v-else-if="item.type === 'textarea'"
-            type="textarea"
-            v-model="values[item.key]"
-            :placeholder="item.placeholder"
-            :autosize="{ minRows: 4, maxRows: 4 }"
-            style="width:450px;"
-            resize="none"
-            :disabled="item.disabled"
-            />
-          <el-input v-else :placeholder="item.placeholder" v-model="values[item.key]" style="width:300px;" :disabled="item.disabled" />
+          <dashboard-form-item v-model="values[item.key]" :column="item" @get-data="handleGetData" />
         </el-form-item>
       </template>
       <el-form-item >
@@ -36,6 +20,7 @@ import { Component, Vue, Prop, Provide, Model } from 'nuxt-property-decorator'
 import { Form as ElForm } from 'element-ui'
 import { Maps, Rule } from 'kenote-config-helper'
 import { Channel } from '@/types/channel'
+import { oc } from 'ts-optchain'
 
 @Component<DashboardForm>({
   name: 'dashboard-form',
@@ -52,6 +37,9 @@ export default class DashboardForm extends Vue {
   @Prop({ default: [] }) columns!: Channel.queryer[]
 
   @Provide() values: Maps<any> = {}
+  @Provide() data: Maps<any> = {}
+
+  oc = oc
 
   handleSubmit (): void {
     let theForm = this.$refs['theForm'] as ElForm
@@ -63,6 +51,10 @@ export default class DashboardForm extends Vue {
         return false
       }
     })
+  }
+
+  handleGetData (api: Channel.api, next: (data: Maps<any>[]) => void): void {
+    this.$emit('get-data', api, next)
   }
   
 }

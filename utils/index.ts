@@ -4,6 +4,7 @@ import { MetaInfo } from 'vue-meta'
 import { oc } from 'ts-optchain'
 import { Command } from '@/types'
 import { assign } from 'lodash'
+import * as nunjucks from 'nunjucks'
 
 export function getMetaInfo (data: Maps<string | undefined>, metas?: any[]): MetaInfo {
   let metaInfo: MetaInfo = {
@@ -45,4 +46,27 @@ export function mergeCollection (fields: string, ...collections: Array<Maps<any>
     is_push && newCollection.push(assign({}, ...items))
   }
   return newCollection
+}
+
+/**
+ * 映射对象
+ * @param data Maps<any>
+ * @param props Maps<any>
+ */
+export function parseProps (data: Maps<any>, props: Maps<any>): Maps<any> {
+  let result = {}
+  for (let key in props) {
+    let _key: string = props[key]
+    result[key] = /(\{)/.test(_key) ? nunjucks.renderString(_key, data) : data[_key]
+  }
+  return result
+}
+
+/**
+ * 解析模版
+ * @param tpl string
+ * @param data Maps<any>
+ */
+export function parseTemplate (tpl: string, data: Maps<any>): string {
+  return nunjucks.renderString(tpl, data)
 }
