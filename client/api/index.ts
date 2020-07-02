@@ -281,7 +281,6 @@ export async function createTicket (data: Ucenter.createTicket, options: HeaderO
   return formatRestful(restful)
 }
 
-
 /**
  * 删除邀请码
  */
@@ -293,5 +292,13 @@ export async function removeTicket (_id: string | string[], options: HeaderOptio
     params = { _ids: _id }
   }
   let restful = await httpClient.delete(url, params, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 用户列表
+ */
+export async function userList (data: Ucenter.findUser, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/user/list`, data, options)
   return formatRestful(restful)
 }

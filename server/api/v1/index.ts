@@ -5,5 +5,6 @@ export default MountController(
   require('./security'),
   require('./group'),
   require('./team'),
-  require('./ticket')
+  require('./ticket'),
+  require('./user')
 )

@@ -1,12 +1,12 @@
 import { oc } from 'ts-optchain'
-import { result, isObject } from 'lodash'
+import { result, isObject, isString, isRegExp } from 'lodash'
 import { Channel } from '@/types/channel'
 import dayjs from 'dayjs'
 
 export const formatUtils = { dateFormat }
 
 export function formatString (value: any, formats?: Channel.format | Channel.format[] | null, replace?: string | number) {
-  if (!value) return replace || value
+  if (!value && value != 0) return replace || value
   if (!formats) return value
   let _formats = Array.isArray(formats) ? formats : [ formats ]
   for (let fmt of _formats) {
@@ -24,7 +24,11 @@ export function formatString (value: any, formats?: Channel.format | Channel.for
       }
     }
     if (fmt.regexp) {
-      value = String(value).replace(fmt.regexp, fmt.substr || '')
+      let regexp = fmt.regexp
+      if (!isRegExp(fmt.regexp)) {
+        regexp = new RegExp(regexp)
+      }
+      value = String(value).replace(regexp, fmt.substr || '')
     }
     if (fmt.maps) {
       value = oc(fmt).maps[value](value)

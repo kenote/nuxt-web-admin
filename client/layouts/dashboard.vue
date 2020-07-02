@@ -73,6 +73,7 @@ export default class DashboardLayout extends Vue {
 
   @Store.Auth.State auth!: ResponseUserDocument
   @Store.Auth.Getter token!: string
+  @Store.Auth.Getter authLevel!: number
   @Store.Setting.State channels!: Channel.element[]
   @Store.Setting.State flags!: Maps<PageFlag.item>
   @Store.Setting.State dashboardOpts!: DashboardOptions
@@ -140,7 +141,13 @@ export default class DashboardLayout extends Vue {
       }
       else {
         if (!nav.disabled) {
-          nav.disabled = access && !access.includes(nav.index) || false
+          if (this.authLevel >= 9000) {
+            let pageFlag = this.flags[nav.index]
+            nav.disabled = oc(pageFlag).access(1000) >= this.authLevel
+          }
+          else {
+            nav.disabled = access && !access.includes(nav.index) || false
+          }
         }
       }
     }

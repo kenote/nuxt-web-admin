@@ -193,12 +193,18 @@ export declare namespace PageFlag {
 }
 
 export interface DashboardOptions {
-  userEntrance       ?: DashboardOptions.userEntrance
-  disableMode         : DashboardOptions.disableMode
+  userEntrance     ?: DashboardOptions.userEntrance
+  disableMode       : DashboardOptions.disableMode
 }
 
 export declare namespace DashboardOptions {
 
   type userEntrance = Dropdown.menuItem[]
   type disableMode = 'hide' | 'disable'
+}
+
+export interface PageInfo {
+  page              : number
+  limit             : number
+  skip              : number
 }

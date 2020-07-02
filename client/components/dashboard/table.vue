@@ -1,7 +1,12 @@
 <template>
   <fragment>
+    <!-- 顶部工具栏 -->
+    <slot name="header"></slot>
     <el-table ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="handleSelectionChange" v-loading="loading" stripe>
-      <el-table-column v-if="selection" type="selection" width="40" />
+      <el-table-column v-if="selection" 
+        type="selection" 
+        width="40" 
+        :selectable="isSelectable" />
       <el-table-column v-for="(column, key) in columns" :key="key"
         :label="column.name" 
         :prop="column.key"
@@ -62,7 +67,7 @@
       </el-table-column>
     </el-table>
     <!-- 分页条 -->
-    <el-pagination v-if="total > pagesize && pagination"
+    <el-pagination v-if="pagination"
       background
       @current-change="handleCurrentChange"
       :current-page="current"
@@ -92,10 +97,16 @@ import { ElMessageBoxOptions } from 'element-ui/types/message-box'
 import { formatString } from '@/utils/format'
 import { parseTemplate } from '@/utils'
 
+interface Conditions {
+  size     ?: number
+  page     ?: number
+  sort     ?: string[]
+}
+
 @Component<DashboardTable>({
   name: 'dashboard-table',
   created () {
-    this.$emit('getdata', null)
+    this.$emit('getdata', this.counts > -1 ? { size: this.pagesize } : null)
   },
   mounted () {
     if (!this.footerOpen) return
@@ -123,6 +134,7 @@ export default class DashboardTable extends Vue {
   @Prop({ default: false }) footerBar!: boolean
   @Prop({ default: true }) footerOpen!: boolean
   @Prop({ default: false }) selection!: boolean
+  @Prop({ default: -1 }) counts!: number
 
   @Provide() search: string = ''
   @Provide() showFooter: boolean = false
@@ -130,20 +142,43 @@ export default class DashboardTable extends Vue {
   @Provide() current: number = 1
   @Provide() total: number = 0
   @Provide() sort: DefaultSortOptions | undefined = undefined
+  @Provide() removeEmit: Channel.columnEmit | undefined = undefined
 
   formatString = formatString
   parseTemplate = parseTemplate
   ruleJudgment = ruleJudgment
   oc = oc
 
+  @Watch('columns')
+  onColumnsChange (val: Channel.columns[], oldVal: Channel.columns[]): void {
+    let actionsColumn = val.find( o => o.key === 'actions' )
+    if (oc(actionsColumn).emit()) {
+      let columnEmit = actionsColumn?.emit?.find( o => o.key === 'delete' )
+      this.removeEmit = columnEmit
+    }
+  }
+
+  isSelectable (row: Maps<any>, index: number): boolean {
+    if (this.removeEmit) {
+      return this.disabledRule(this.removeEmit.conditions, row, 'remove')
+    }
+    return true
+  }
+
   @Watch('data')
   onDataChange (val: Maps<any>[], oldVal: Maps<any>[]): void {
-    this.total = val.length
-    let theTable = this.$refs['filterTable'] as ElTable
-    theTable.clearFilter()
-    let pageno: number = parseInt(String((val.length + this.pagesize - 1) / this.pagesize))
-    pageno = pageno || 1
-    this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno)
+    if (this.counts > -1) {
+      this.total = this.counts
+      this.pdata = val
+    }
+    else {
+      this.total = val.length
+      let theTable = this.$refs['filterTable'] as ElTable
+      theTable.clearFilter()
+      let pageno: number = parseInt(String((this.total + this.pagesize - 1) / this.pagesize))
+      pageno = pageno || 1
+      this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno)
+    }
     // 
     if (!this.footerOpen) return
     setTimeout(() => {
@@ -157,6 +192,17 @@ export default class DashboardTable extends Vue {
   }
 
   handleCurrentChange (page: number): void {
+    if (this.counts > -1) {
+      if (this.current === page) return
+      this.current = page
+      let conditions: Conditions = { size: this.pagesize, page }
+      if (this.sort) {
+        let { prop, order } = this.sort
+        conditions.sort = [ prop, order ]
+      }
+      this.$emit('getdata', conditions)
+      return
+    }
     this.current = page
     if (this.pageno !== page) {
       this.$emit('topage', page)
@@ -187,6 +233,14 @@ export default class DashboardTable extends Vue {
     }
     else {
       this.sort = undefined
+    }
+    if (this.counts > this.pagesize) {
+      let conditions: Conditions = { size: this.pagesize, page: this.current }
+      if (order) {
+        conditions.sort = [ prop, order ]
+      }
+      this.$emit('getdata', conditions)
+      return
     }
     this.handleCurrentChange(this.current)
   }
@@ -231,7 +285,8 @@ export default class DashboardTable extends Vue {
     }
     if (!rule) return true
     row['__authLevel'] = this.authLevel
-    return ruleJudgment(row, rule)
+    let r = ruleJudgment(row, rule, { $__authLevel: this.authLevel })
+    return r
   }
 
   getFlagTag (key: string) {

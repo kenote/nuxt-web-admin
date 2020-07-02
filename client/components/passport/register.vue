@@ -1,7 +1,7 @@
 <template>
   <div class="landing-body">
     <h3>注册帐号</h3>
-    <el-form ref="theForm" :model="values" :rules="rules" @submit.native.prevent="submitForm">
+    <el-form ref="theForm" :model="values" :rules="rules" @submit.native.prevent="handleSubmit">
       <el-form-item prop="username" :rules="rules.username">
         <el-input placeholder="请输入您的个人账号" v-model="values.username" />
       </el-form-item>

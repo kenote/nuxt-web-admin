@@ -1,5 +1,6 @@
 import { Maps } from 'kenote-config-helper'
-import { toPairs, isString } from 'lodash'
+import { toPairs, isString, result as __Result } from 'lodash'
+import { oc } from 'ts-optchain'
 
 const operatorMaps = {
   // 大于
@@ -26,35 +27,40 @@ const operatorMaps = {
   ['$and']: (...result: boolean[]) => eval(result.map(String).join(' && '))
 }
 
+const toValueMaps = {
+  // $now
+  ['$now']: Date.now()
+}
+
 /**
  * 规则判断
  * @param data 
  * @param query 
  */
-export function ruleJudgment (data: Maps<any>, query: Maps<any>): boolean {
+export function ruleJudgment (data: Maps<any>, query: Maps<any>, options?: Maps<any>): boolean {
   let result: boolean[] = []
   for (let key in query) {
     if (['$and', '$or'].includes(key)) {
-      result.push(ruleJudgmentByArray(data, query[key], key as '$and' | '$or'))
+      result.push(ruleJudgmentByArray(data, query[key], key as '$and' | '$or', options))
     }
     else {
-      ruleJudgmentPush(data[key], query[key], result)
+      ruleJudgmentPush(__Result(data, key), query[key], result, options)
     }
   }
   return operatorMaps['$and'](...result)
 }
 
-function ruleJudgmentByArray (data: Maps<any>, query: Array<Maps<any>>, mode: '$and' | '$or' = '$and'): boolean {
+function ruleJudgmentByArray (data: Maps<any>, query: Array<Maps<any>>, mode: '$and' | '$or' = '$and', options?: Maps<any>): boolean {
   let result: boolean[] = []
   for (let item of query) {
     for (let key in item) {
-      ruleJudgmentPush(data[key], item[key], result)
+      ruleJudgmentPush(__Result(data, key), item[key], result, options)
     }
   }
   return operatorMaps[mode](...result)
 }
 
-function ruleJudgmentPush (data: any, query: any, result: boolean[]): void {
+function ruleJudgmentPush (data: any, query: any, result: boolean[], options?: Maps<any>): void {
   if (Object.prototype.toString.call(query) === '[object Object]') {
     for (let pairs of toPairs(query)) {
       let [ operator, value ] = pairs
@@ -62,11 +68,12 @@ function ruleJudgmentPush (data: any, query: any, result: boolean[]): void {
       if (isString(_data) && isDateString(_data)) {
         _data = new Date(_data).getTime()
       }
-      if (value === '$now') {
-        value = Date.now()
-      }
-      else if (isString(value) && isDateString(value)) {
+      if (isString(value) && isDateString(value)) {
         value = new Date(value).getTime()
+      }
+      else if (isString(value) && /^(\$)/.test(value)) {
+        options = { ...options, ...toValueMaps }
+        value = oc(options)[value](value)
       }
       result.push(operatorMaps[operator](_data, value))
     }

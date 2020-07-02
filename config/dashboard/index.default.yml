@@ -19,4 +19,4 @@ userEntrance      :
     command           : 
 
 # 菜单冻结模式  hide | disable
-disableMode       : disable
+disableMode       : hide

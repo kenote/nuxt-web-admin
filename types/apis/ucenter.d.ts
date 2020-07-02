@@ -1,3 +1,4 @@
+import { FindUserType } from '@/types/proxys/user'
 
 declare namespace Ucenter {
 
@@ -30,6 +31,16 @@ declare namespace Ucenter {
     group         ?: string
     stint          : number
     last_at        : Date
+  }
+
+  interface findUser {
+    create_at     ?: Date[]
+    groups        ?: string[]
+    findtype      ?: FindUserType
+    findname      ?: string
+    page          ?: number
+    size          ?: number
+    sort          ?: string[]
   }
 }
 
