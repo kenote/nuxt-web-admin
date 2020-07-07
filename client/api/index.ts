@@ -50,9 +50,9 @@ export async function invitation (cdkey: string): Promise<RestfulInfoByError> {
 /**
  * 验证名称是否占用
  */
-export async function check (name: string, type: PassportAPI.checkUserType, options?: HeaderOptions): Promise<RestfulInfoByError> {
+export async function check (values: PassportAPI.checkValues, type: PassportAPI.checkUserType, options?: HeaderOptions): Promise<RestfulInfoByError> {
   let url = options ? `/api/v1/security/check/${type}` : `/api/v1/passport/check/${type}`
-  let restful = await httpClient.put(url, { name }, options)
+  let restful = await httpClient.put(url, values, options)
   return formatRestful(restful)
 }
 
@@ -300,5 +300,51 @@ export async function removeTicket (_id: string | string[], options: HeaderOptio
  */
 export async function userList (data: Ucenter.findUser, options: HeaderOptions): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(`/api/v1/ucenter/user/list`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 编辑用户信息
+ */
+export async function editUser (_id: string, data: Ucenter.createUser, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/user/edit/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 创建新用户
+ */
+export async function createUser (data: Ucenter.createUser, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/user/create`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 删除用户
+ */
+export async function removeUser (_id: string | string[], options: HeaderOptions): Promise<RestfulInfoByError> {
+  let url = `/api/v1/ucenter/user/${_id}`
+  let params = {}
+  if (Array.isArray(_id)) {
+    url = `/api/v1/ucenter/user`
+    params = { _ids: _id }
+  }
+  let restful = await httpClient.delete(url, params, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 修改用户密码
+ */
+export async function setPass (_id: string, data: Ucenter.setPass, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ucenter/user/setpass/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 发送激活邮件 email_verify
+ */
+export async function userVerifyEmail (_id: string, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.get(`/api/v1/ucenter/user/email_verify/${_id}`, null, options)
   return formatRestful(restful)
 }

@@ -270,7 +270,7 @@ export default class SecurityPage extends mixins(PageMixin) {
 
   async handleUnique (name: string, type: PassportAPI.checkUserType): Promise<boolean | undefined> {
     try {
-      let result = await api.check(name, type, this.httpOptions)
+      let result = await api.check({ name }, type, this.httpOptions)
       if (result.error === 0) {
         return result.data as boolean
       }

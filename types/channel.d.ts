@@ -1,5 +1,6 @@
 import { KenoteConfig, Maps } from 'kenote-config-helper'
 import { HeaderOptions } from '@/utils/http'
+import { Option } from '@/types'
 
 export declare namespace Channel {
 
@@ -29,6 +30,7 @@ export declare namespace Channel {
 
   interface queryer extends KenoteConfig.Queryer {
     api              ?: api
+    label            ?: queryLabelOptions
   }
 
   interface format extends KenoteConfig.Format {
@@ -48,5 +50,11 @@ export declare namespace Channel {
     template         ?: string
     status           ?: string[]
     conditions       ?: any
+  }
+
+  interface queryLabelOptions {
+    key               : string
+    options           : Maps<string>
+    value             : string
   }
 }

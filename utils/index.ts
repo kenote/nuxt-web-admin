@@ -3,8 +3,9 @@ import { Maps } from 'kenote-config-helper'
 import { MetaInfo } from 'vue-meta'
 import { oc } from 'ts-optchain'
 import { Command } from '@/types'
-import { assign } from 'lodash'
+import { assign, random, isRegExp } from 'lodash'
 import * as nunjucks from 'nunjucks'
+import * as rules from '@/utils/rules'
 
 export function getMetaInfo (data: Maps<string | undefined>, metas?: any[]): MetaInfo {
   let metaInfo: MetaInfo = {
@@ -69,4 +70,22 @@ export function parseProps (data: Maps<any>, props: Maps<any>): Maps<any> {
  */
 export function parseTemplate (tpl: string, data: Maps<any>): string {
   return nunjucks.renderString(tpl, data)
+}
+
+/**
+ * 随机密码
+ */
+export function randomPassword (): string {
+  let password = Math.random().toString(36).substr(4).split('').map(toUpper).join('')
+  let { pattern } = rules.password
+  let rule = isRegExp(pattern) ? pattern : new RegExp(oc(pattern)('/^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/'))
+  if (!rule.test(password)) {
+    return randomPassword()
+  }
+  return password
+}
+
+function toUpper (value: string): string {
+  let rand = random(0, 1)
+  return rand === 1 && !/\d/.test(value) ? value.toLocaleUpperCase() : value
 }

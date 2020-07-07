@@ -13,6 +13,7 @@ import ticketProxy from '~/proxys/ticket'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { ResponseVerifyDocument } from '@/types/proxys/verify'
 import __ErrorCode from '~/utils/error/code'
+import { isMongoId } from 'validator'
 
 @Path('/passport')
 class PassportController extends Controller {
@@ -144,7 +145,7 @@ class PassportController extends Controller {
   @Router({ method: 'put', path: '/check/:type(username|email|mobile)' })
   public async check (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
     let { type } = req.params
-    let { name } = req.body
+    let { name, _id } = req.body
     let lang = oc(req).query.lang('') as string || language
     let errorState = loadError(lang)
     let { CustomError } = errorState
@@ -154,8 +155,14 @@ class PassportController extends Controller {
       email     : __ErrorCode.ERROR_VALID_EMAIL_UNIQUE,
       mobile    : __ErrorCode.ERROR_VALID_MOBILE_UNIQUE
     }
+    let conditions: any = {
+      [type]: { $eq: name }
+    }
+    if (isMongoId(_id || '')) {
+      conditions['_id'] = { $ne: _id }
+    }
     try {
-      let user = await UserProxy.Dao.findOne({ [type]: name })
+      let user = await UserProxy.Dao.findOne(conditions)
       return res.api(!user, user ? warnings[type] : null)
     } catch (error) {
       if (CustomError(error)) {
@@ -235,7 +242,6 @@ class PassportController extends Controller {
       }
       return next(error)
     }
-  
   }
 
 }

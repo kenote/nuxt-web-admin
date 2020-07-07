@@ -80,7 +80,7 @@ export default class RegisterPage extends Vue {
 
   async handleUnique (name: string, type: PassportAPI.checkUserType): Promise<boolean | undefined> {
     try {
-      let result = await api.check(name, type)
+      let result = await api.check({ name }, type)
       if (result.error === 0) {
         return result.data as boolean
       }

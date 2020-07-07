@@ -10,6 +10,10 @@ export interface RegisterUserDocument {
   mobile          ?: string
   group            : ObjectId | string
   teams           ?: Array<ObjectId | string>
+  nickname        ?: string
+  sex             ?: number
+  avatar          ?: string
+  binds           ?: string[]
 }
 
 export interface CreateUserDocument {
@@ -20,6 +24,10 @@ export interface CreateUserDocument {
   mobile          ?: string
   group            : ObjectId | string
   teams           ?: Array<ObjectId | string>
+  nickname        ?: string
+  sex             ?: number
+  avatar          ?: string
+  binds           ?: string[]
 }
 
 export interface EditUserDocument {
@@ -29,6 +37,13 @@ export interface EditUserDocument {
   avatar          ?: string
   email           ?: string
   mobile          ?: string
+  group           ?: string
+  binds           ?: string[]
+}
+
+export interface SetPassDocument {
+  password         : string
+  user            ?: ResponseUserDocument
 }
 
 export interface ResponseUserDocument extends Document {

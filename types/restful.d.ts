@@ -208,3 +208,15 @@ export interface PageInfo {
   limit             : number
   skip              : number
 }
+
+export interface Rule {
+  /**
+   * 正则验证规则
+   */
+  pattern           ?: string | RegExp
+
+  /**
+   * 验证函数
+   */
+  validator         ?: (value: any) => boolean
+}

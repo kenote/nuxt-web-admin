@@ -10,7 +10,7 @@ label         : ucenter
 # 频道描述
 description   : 管理所有用户的信息，以及登录、注册等等
 # 默认打开页面
-default       : /ucenter/group
+default       : /ucenter/user
 # 频道导航
 navs:
   # 导航分栏 -- 用户管理
@@ -145,16 +145,18 @@ navs:
                         $lt           : $__authLevel
                     - __authLevel   : 9999
                 options:
+                  - key           : setpass
+                    name          : 设置密码
+                    conditions:
+                      $or:
+                        - group.level:
+                            $lt           : $__authLevel
+                        - __authLevel   : 9999
                   - key           : verify-email
                     name          : 激活邮件
                     conditions:
                       binds:
-                        $in           : email
-                  - key           : access
-                    name          : 访问权限
-                    conditions:
-                      group.level:
-                        $lte          : 9000
+                        $_nin         : email
               - key           : delete
                 name          : 删除
                 type          : danger

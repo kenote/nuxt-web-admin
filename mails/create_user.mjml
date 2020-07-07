@@ -1,0 +1,21 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{ site_name }}新用户</mj-title>
+    <mj-attributes>
+      <mj-all font-size="15px" color="#646464" line-height="1.4" />
+      <mj-class name="title" font-size="20px" color="#4e9c74" font-weight="bold" />
+    <mj-attributes>
+  </mj-head>
+  <mj-body background-color="#ffffff" width="100%">
+    <mj-section>
+      <mj-column>
+        <mj-text>亲爱的 {{ username }}:</mj-text>
+        <mj-text>欢迎使用{{ site_name }}服务!</mj-text>
+        <mj-text>你的{{ site_name }}帐号是: {{ username }}:</mj-text>
+        <mj-text>初始密码: <b>{{ password }}</b></mj-text>
+        <mj-spacer height="30px" />
+        <mj-text>- {{ site_name }}<br/>(这是一封自动产生的Email，请勿回复)</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

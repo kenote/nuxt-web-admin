@@ -15,8 +15,6 @@ class Bcrypt {
 
   public compare (value: string, hash: string, salt: string): boolean {
     let password = this.hash(value, salt)
-    console.log(password.hash, hash)
-    console.log(password.hash === hash)
     return password.hash === hash
   }
 

@@ -42,6 +42,20 @@ declare namespace Ucenter {
     size          ?: number
     sort          ?: string[]
   }
+
+  interface createUser {
+    username      ?: string
+    nickname      ?: string
+    email         ?: string
+    mobile        ?: string
+    binds         ?: string[]
+    sex           ?: number
+    group         ?: string
+  }
+
+  interface setPass {
+    password       : string
+  }
 }
 
 export = Ucenter

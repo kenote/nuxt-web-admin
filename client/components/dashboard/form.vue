@@ -3,9 +3,11 @@
     <h2>{{ name }}</h2>
     <el-form ref="theForm" :model="values" :rules="rules" @submit.native.prevent="handleSubmit" label-width="150px">
       <template v-for="(item, key) in columns">
-        <el-form-item :key="key" :prop="item.key" :rules="rules[item.key] || []" :label="item.name">
-          <dashboard-form-item v-model="values[item.key]" :column="item" @get-data="handleGetData" />
-        </el-form-item>
+        <template v-if="oc(item).key()">
+          <el-form-item :key="key" :prop="item.key" :rules="rules[item.key] || []" :label="item.name">
+            <dashboard-form-item v-model="values[item.key]" :column="item" @get-data="handleGetData" />
+          </el-form-item>
+        </template>
       </template>
       <el-form-item >
         <el-button type="primary" native-type="submit" :loading="loading">提 交</el-button>

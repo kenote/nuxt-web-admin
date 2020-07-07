@@ -5,6 +5,9 @@ import {
   Button,
   Carousel,
   CarouselItem,
+  Checkbox,
+  CheckboxButton,
+  CheckboxGroup,
   Col,
   DatePicker,
   Dialog,
@@ -49,6 +52,9 @@ export default () => {
   Vue.use(Button)
   Vue.use(Carousel)
   Vue.use(CarouselItem)
+  Vue.use(Checkbox)
+  Vue.use(CheckboxButton)
+  Vue.use(CheckboxGroup)
   Vue.use(Col)
   Vue.use(DatePicker)
   Vue.use(Dialog)

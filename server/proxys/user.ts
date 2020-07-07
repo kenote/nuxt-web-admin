@@ -124,6 +124,36 @@ class UserProxy {
     mailer.sendMail('email_verify.mjml', mail, content)
   }
 
+  public async sendNewUser (user: ResponseUserDocument, password: string): Promise<void> {
+    let mail: Mail.Options = {
+      from: mailSender,
+      to: parseMailUser(user),
+      subject: `${site_name}新用户`
+    }
+    let content: MailerContext.newUser = {
+      site_name: site_name!,
+      site_url: site_url!,
+      username: user.username,
+      password
+    }
+    mailer.sendMail('create_user.mjml', mail, content)
+  }
+
+  public async sendPassword (user: ResponseUserDocument, password: string): Promise<void> {
+    let mail: Mail.Options = {
+      from: mailSender,
+      to: parseMailUser(user),
+      subject: `${site_name}修改密码`
+    }
+    let content: MailerContext.newUser = {
+      site_name: site_name!,
+      site_url: site_url!,
+      username: user.username,
+      password
+    }
+    mailer.sendMail('set_pass.mjml', mail, content)
+  }
+
   public async verifyEmailMobile (document: PassportAPI.verifyDocument, warnings: PassportAPI.verifyWarning, setting: Register.config): Promise<ResponseVerifyDocument> {
     let { ErrorInfo } = this.errorState
     let VerifyProxy = verifyProxy(this.errorState)

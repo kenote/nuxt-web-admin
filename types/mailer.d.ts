@@ -16,4 +16,11 @@ export declare namespace MailerContext {
     email_verify_url  : string
     timeout           : number
   }
+
+  interface newUser {
+    site_name         : string
+    site_url         ?: string
+    username          : string
+    password          : string
+  }
 }

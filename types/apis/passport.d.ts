@@ -61,6 +61,11 @@ declare namespace PassportAPI {
     mobile       : number
   }
 
+  interface checkValues {
+    name         : string
+    _id         ?: string
+  }
+
   interface registerDocument {
     username    ?: string
     email       ?: string

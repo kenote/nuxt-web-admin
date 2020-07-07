@@ -15,6 +15,10 @@ const operatorMaps = {
   ['$in']: (a: string | number, b: Array<string | number>): boolean => b.includes(a),
   // 不包含
   ['$nin']: (a: string | number, b: Array<string | number>): boolean => !b.includes(a),
+  // 反包含
+  ['$_in']: (a: Array<string | number>, b: string): boolean => a.includes(b),
+  // 反不包含
+  ['$_nin']: (a: Array<string | number>, b: string): boolean => !a.includes(b),
   // 不等于
   ['$ne']: (a: string | number, b: string | number): boolean => a !== b,
   // 等于
