@@ -7,13 +7,15 @@ import { loadError } from '~/utils/error'
 import { authenticate, setToken } from '~/middleware/auth'
 import passportFilter from '~/filters/api_v1/passport'
 import * as PassportAPI from '@/types/apis/passport'
-import userProxy from '~/proxys/user'
+import userProxy, { userBaseField } from '~/proxys/user'
 import verifyProxy from '~/proxys/verify'
 import ticketProxy from '~/proxys/ticket'
-import { ResponseUserDocument } from '@/types/proxys/user'
+import { ResponseUserDocument, EditUserDocument } from '@/types/proxys/user'
 import { ResponseVerifyDocument } from '@/types/proxys/verify'
 import __ErrorCode from '~/utils/error/code'
 import { isMongoId } from 'validator'
+import { UpdateDocument } from '@/types/proxys'
+import { pick } from 'lodash'
 
 @Path('/passport')
 class PassportController extends Controller {
@@ -238,6 +240,29 @@ class PassportController extends Controller {
         if ([ warnings[type].timeout, __ErrorCode.ERROR_VERIFY_TOKEN_VERIFIED ].includes(error.code)) {
           return res.api('warning', error)
         }
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
+   * 修改基本信息
+   */
+  @Router({ method: 'post', path: '/baseinfo' })
+  @Filter( authenticate, passportFilter.baseinfo )
+  public async baseinfo (baseinfo: UpdateDocument<EditUserDocument>, req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { conditions, data } = baseinfo
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let UserProxy = userProxy(errorState)
+    try {
+      await UserProxy.Dao.updateOne(conditions, data)
+      let user = await UserProxy.Dao.findOne(conditions)
+      return res.api(pick(user, userBaseField))
+    } catch (error) {
+      if (CustomError(error)) {
         return res.api(null, error)
       }
       return next(error)

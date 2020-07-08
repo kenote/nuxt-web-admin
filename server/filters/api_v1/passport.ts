@@ -12,7 +12,10 @@ import { isEmail, isMobilePhone } from 'validator'
 import ticketProxy from '~/proxys/ticket'
 import groupProxy from '~/proxys/group'
 import { ResponseTicketDocument } from '@/types/proxys/ticket'
-import { RegisterUserDocument } from '@/types/proxys/user'
+import { RegisterUserDocument, ResponseUserDocument, EditUserDocument } from '@/types/proxys/user'
+import { QueryDocument, UpdateDocument } from '@/types/proxys'
+import * as Ucenter from '@/types/apis/ucenter'
+import { pick, map, intersection } from 'lodash'
 
 class PassportFilter {
 
@@ -171,6 +174,21 @@ class PassportFilter {
     let setting = loadData('config/register') as Register.config
     return next({ setting, warnings, document: { type, token, id } })
   }
+
+  public async baseinfo (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let auth = req.user as ResponseUserDocument
+    let doc: UpdateDocument<EditUserDocument> = {
+      conditions: { _id: auth._id },
+      data: getUserDocument(req.body, auth)
+    }
+    return next(doc)
+  }
 }
 
 export default new PassportFilter()
+
+function getUserDocument (body: Ucenter.createUser, auth: ResponseUserDocument): EditUserDocument {
+  let { nickname, sex, teams } = body
+  let teamsValues = intersection(map(auth.teams, '_id').map(String), teams || [])
+  return { nickname, sex, teams: teamsValues }
+}

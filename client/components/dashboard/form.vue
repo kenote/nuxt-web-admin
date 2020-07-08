@@ -10,19 +10,20 @@
         </template>
       </template>
       <el-form-item >
-        <el-button type="primary" native-type="submit" :loading="loading">提 交</el-button>
-        <el-button type="success" @click="$emit('goback', null)">返回</el-button>
+        <el-button type="primary" native-type="submit" :loading="loading" :disabled="noBack && isEqual(values, defaultValues)">{{ submitName }}</el-button>
+        <el-button v-if="!noBack" type="success" @click="$emit('goback', null)">返回</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Model } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Provide, Model, Watch } from 'nuxt-property-decorator'
 import { Form as ElForm } from 'element-ui'
 import { Maps, Rule } from 'kenote-config-helper'
 import { Channel } from '@/types/channel'
 import { oc } from 'ts-optchain'
+import { isEqual } from 'lodash'
 
 @Component<DashboardForm>({
   name: 'dashboard-form',
@@ -37,11 +38,14 @@ export default class DashboardForm extends Vue {
   @Prop({ default: {} }) rules!: Maps<Rule[]>
   @Prop({ default: {} }) defaultValues!: Maps<any>
   @Prop({ default: [] }) columns!: Channel.queryer[]
+  @Prop({ default: false }) noBack!: boolean
+  @Prop({ default: '提 交' }) submitName!: string
 
   @Provide() values: Maps<any> = {}
   @Provide() data: Maps<any> = {}
 
   oc = oc
+  isEqual = isEqual
 
   handleSubmit (): void {
     let theForm = this.$refs['theForm'] as ElForm

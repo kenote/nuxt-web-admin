@@ -348,3 +348,11 @@ export async function userVerifyEmail (_id: string, options: HeaderOptions): Pro
   let restful = await httpClient.get(`/api/v1/ucenter/user/email_verify/${_id}`, null, options)
   return formatRestful(restful)
 }
+
+/**
+ * 修改基本信息
+ */
+export async function baseInfo (data: Ucenter.createUser, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/passport/baseinfo`, data, options)
+  return formatRestful(restful)
+}

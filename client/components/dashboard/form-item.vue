@@ -23,12 +23,12 @@
     </template>
   </el-radio-group>
   <!-- 多选框 -->
-  <el-checkbox-group v-else-if="/^(checkbox)/.test(column.type)" v-model="values">
+  <el-checkbox-group v-else-if="/^(checkbox)/.test(column.type)" v-model="values" :disabled="column.disabled">
     <template v-if="column.type === 'checkbox-button'">
       <el-checkbox-button v-for="opt in data" :key="opt.key" :label="opt.key">{{ opt.name }}</el-checkbox-button>
     </template>
     <template v-else>
-      <el-checkbox v-for="opt in data" :key="opt.key" :label="opt.key">{{ opt.name }}</el-checkbox>
+      <el-checkbox v-for="opt in data" :key="opt.key" :label="opt.key" :border="column.type === 'checkbox-border'">{{ opt.name }}</el-checkbox>
     </template>
   </el-checkbox-group>
   <!-- 下拉选择器 -->
@@ -37,7 +37,8 @@
     :multiple="column.multiple"
     filterable
     collapse-tags
-    :placeholder="column.placeholder" >
+    :placeholder="column.placeholder"
+    :disabled="column.disabled" >
     <template v-if="data">
       <el-option v-for="opt in data" :key="opt.key" :label="opt.name" :value="opt.key"></el-option>
     </template>

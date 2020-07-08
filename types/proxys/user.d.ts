@@ -39,6 +39,7 @@ export interface EditUserDocument {
   mobile          ?: string
   group           ?: string
   binds           ?: string[]
+  teams           ?: Array<ObjectId | string>
 }
 
 export interface SetPassDocument {
