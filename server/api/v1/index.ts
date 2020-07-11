@@ -6,5 +6,7 @@ export default MountController(
   require('./group'),
   require('./team'),
   require('./ticket'),
-  require('./user')
+  require('./user'),
+  require('./alicloud'),
+  require('./proto')
 )

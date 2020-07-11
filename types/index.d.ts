@@ -33,3 +33,22 @@ export declare namespace Command {
     path              : string
   }
 }
+
+export declare namespace Execl {
+
+  interface Options {
+    header            : string[]
+    data              : any[]
+    sheetName        ?: string
+    bookType         ?: BookType
+    filename         ?: string
+  }
+
+  interface FileType {
+    key               : BookType
+    name              : string
+    suffix            : '.xlsx' | '.xlsm' | '.xlsb' | '.xls' | '.csv' | '.txt' | '.html'
+  }
+
+  type BookType = 'xlsx' | 'xlsm' | 'xlsb' | 'biff8' | 'csv' | 'txt' | 'html'
+}

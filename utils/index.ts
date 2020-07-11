@@ -6,6 +6,7 @@ import { Command } from '@/types'
 import { assign, random, isRegExp } from 'lodash'
 import * as nunjucks from 'nunjucks'
 import * as rules from '@/utils/rules'
+import * as yaml from 'js-yaml'
 
 export function getMetaInfo (data: Maps<string | undefined>, metas?: any[]): MetaInfo {
   let metaInfo: MetaInfo = {
@@ -88,4 +89,12 @@ export function randomPassword (): string {
 function toUpper (value: string): string {
   let rand = random(0, 1)
   return rand === 1 && !/\d/.test(value) ? value.toLocaleUpperCase() : value
+}
+
+export function isYaml (str: string): boolean {
+  try {
+    return !!yaml.load(str)
+  } catch (error) {
+    return false
+  }
 }

@@ -40,6 +40,7 @@ export interface EditUserDocument {
   group           ?: string
   binds           ?: string[]
   teams           ?: Array<ObjectId | string>
+  update_at       ?: Date
 }
 
 export interface SetPassDocument {

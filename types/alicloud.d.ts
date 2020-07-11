@@ -1,5 +1,5 @@
 import * as RPCClient from '@alicloud/pop-core'
-import { KeyMap } from 'kenote-config-helper'
+import { KeyMap, Maps } from 'kenote-config-helper'
 
 declare namespace Alicloud {
 
@@ -36,6 +36,13 @@ declare namespace Alicloud {
     config            : RPCClient.Config
     action            : string
     params            : any
+  }
+
+  interface request {
+    endpoint          : string
+    action            : string
+    tag               : string
+    params           ?: Maps<any>
   }
 }
 

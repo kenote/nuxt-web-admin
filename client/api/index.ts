@@ -5,6 +5,7 @@ import * as Ucenter from '@/types/apis/ucenter'
 import { omit, result } from 'lodash';
 import { RemoveOptions } from '@/types/proxys'
 import { Channel } from '@/types/channel'
+import Alicloud from '@/types/alicloud'
 
 /**
  *  获取API数据
@@ -354,5 +355,22 @@ export async function userVerifyEmail (_id: string, options: HeaderOptions): Pro
  */
 export async function baseInfo (data: Ucenter.createUser, options: HeaderOptions): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(`/api/v1/passport/baseinfo`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 阿里云服务
+ */
+export async function alicloud (request: Alicloud.request, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let { endpoint, action, tag, params } = request
+  let restful = await httpClient.post(`/api/v1/alicloud/${endpoint}/${action}?t=${tag}`, params!, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 获取项目的配置表
+ */
+export async function projectSetting (tag: string, channel: string, params: any, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.get(`/api/v1/proto/${channel}/setting/${tag}`, params, options)
   return formatRestful(restful)
 }

@@ -25,6 +25,7 @@ export default class PageMixin extends Vue {
   @Store.Setting.State channels!: Channel.element[]
   @Store.Setting.State flags!: Maps<PageFlag.item>
   @Store.Setting.Getter selectedChannel!: Channel.element
+  @Store.Setting.Getter projectChannels!: Channel.element[]
 
   @Provide() initinal: boolean = true
   @Provide() pageSetting: Channel.navigation = { index: '0', name: '' }

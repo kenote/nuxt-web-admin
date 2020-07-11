@@ -37,7 +37,7 @@ export default class DashboardFooterBar extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .dashboard-footerbar {
   position: fixed;
   bottom: -70px;

@@ -258,6 +258,7 @@ class PassportController extends Controller {
     let { CustomError } = errorState
     let UserProxy = userProxy(errorState)
     try {
+      data.update_at = new Date()
       await UserProxy.Dao.updateOne(conditions, data)
       let user = await UserProxy.Dao.findOne(conditions)
       return res.api(pick(user, userBaseField))

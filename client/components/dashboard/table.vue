@@ -213,7 +213,7 @@ export default class DashboardTable extends Vue {
       _data = orderBy(_data, [prop], [order.replace(/(ending)$/, '') as any])
     }
     try {
-      _data = _data.filter( o => new RegExp(this.search).test(String(o.name)) )
+      _data = _data.filter( o => new RegExp(this.search).test(String(o[this.searchOptions.field])) )
     } catch (error) {
       
     }

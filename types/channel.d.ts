@@ -11,6 +11,7 @@ export declare namespace Channel {
   interface navigation extends KenoteConfig.Navigation {
     columns          ?: columns[]
     queryer          ?: queryer[]
+    export           ?: Export
   }
 
   interface columns extends KenoteConfig.Columns {
@@ -56,5 +57,9 @@ export declare namespace Channel {
     key               : string
     options           : Maps<string>
     value             : string
+  }
+
+  interface Export {
+    sheetName         : string
   }
 }

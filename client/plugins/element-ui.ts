@@ -3,6 +3,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
+  Card,
   Carousel,
   CarouselItem,
   Checkbox,
@@ -50,6 +51,7 @@ export default () => {
   Vue.use(Breadcrumb)
   Vue.use(BreadcrumbItem)
   Vue.use(Button)
+  Vue.use(Card)
   Vue.use(Carousel)
   Vue.use(CarouselItem)
   Vue.use(Checkbox)

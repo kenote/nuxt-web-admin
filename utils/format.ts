@@ -2,8 +2,9 @@ import { oc } from 'ts-optchain'
 import { result, isObject, isString, isRegExp } from 'lodash'
 import { Channel } from '@/types/channel'
 import dayjs from 'dayjs'
+import * as bytes from 'bytes'
 
-export const formatUtils = { dateFormat }
+export const formatUtils = { dateFormat, bytes }
 
 export function formatString (value: any, formats?: Channel.format | Channel.format[] | null, replace?: string | number) {
   if (!value && value != 0) return replace || value
@@ -19,7 +20,7 @@ export function formatString (value: any, formats?: Channel.format | Channel.for
         value = _value[fmt.function || 'toLocaleString'](...fmt.options!)
       } catch (error) {
         if (Object.keys(formatUtils).includes(fmt.function)) {
-          value = formatUtils[fmt.function](value, ...fmt.options!)
+          value = formatUtils[fmt.function](value, ...oc(fmt).options([]))
         }
       }
     }

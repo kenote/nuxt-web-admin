@@ -16,13 +16,20 @@ export default {
     ]
   },
   css: [
+    // lib css
+    'codemirror/lib/codemirror.css',
+    // merge css
+    'codemirror/addon/merge/merge.css',
+    // theme css
+    'codemirror/theme/paraiso-light.css',
     '~/assets/iconfont/iconfont.css',
     '~/assets/scss/common.scss'
   ],
   plugins: [
     '~/plugins/composition-api',
     '~/plugins/component',
-    { src: '~/plugins/element-ui', ssr: true }
+    { src: '~/plugins/element-ui', ssr: true },
+    { src: '~plugins/codemirror', ssr: false }
   ],
   loading: {
     color: '#00c58e', 

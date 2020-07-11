@@ -54,6 +54,7 @@ class UserController extends Controller {
     let { CustomError } = errorState
     let UserProxy = userProxy(errorState)
     try {
+      data.update_at = new Date()
       let result = await UserProxy.Dao.updateOne(conditions, data)
       return res.api(result)
     } catch (error) {
