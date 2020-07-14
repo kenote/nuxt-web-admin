@@ -15,7 +15,8 @@ export const types = {
   SINGLEPAGES      : 'SINGLEPAGES',
   FLAGS            : 'FLAGS',
   LOADING          : 'LOADING',
-  DASHBOARD        : 'DASHBOARD'
+  DASHBOARD        : 'DASHBOARD',
+  RTSPS            : 'RTSPS',
 }
 
 export interface State {
@@ -28,6 +29,7 @@ export interface State {
   flags            : Maps<PageFlag.item>
   loading          : Maps<boolean>
   dashboardOpts    : DashboardOptions
+  rtsps              : Maps<string[]>
 }
 
 export const namespaced: boolean = true
@@ -38,7 +40,8 @@ export const state = (): State => ({
   channels         : [],
   flags            : {},
   loading          : { channel: false },
-  dashboardOpts    : { disableMode: 'disable' }
+  dashboardOpts    : { disableMode: 'disable' },
+  rtsps            : {}
 })
 
 export const getters: GetterTree<State, RootState> = {
@@ -89,5 +92,8 @@ export const mutations: MutationTree<State> = {
   },
   [types.DASHBOARD] (state: State, options: DashboardOptions): void {
     state.dashboardOpts = options
-  }
+  },
+  [types.RTSPS] (state: State, rtsps: Maps<string[]>): void {
+    state.rtsps = rtsps
+  },
 }

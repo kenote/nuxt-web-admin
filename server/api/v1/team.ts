@@ -132,6 +132,28 @@ class TeamController extends Controller {
   }
 
   /**
+   * 编辑团队线路
+   */
+  @Router({ method: 'put', path: '/team/rtsps/:_id' })
+  @Filter( authenticate, permission('/ucenter/team', 'edit'), teamFilter.rtsps )
+  public async rtsps (edit: UpdateDocument<EditTeamDocument>, req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { conditions, data } = edit
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let TeamProxy = teamProxy(errorState)
+    try {
+      let result = await TeamProxy.Dao.updateOne(conditions, data)
+      return res.api(result)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
    * 获取团队成员
    */
   @Router({ method: 'post', path: '/team/people/:_id' })

@@ -38,6 +38,7 @@
     filterable
     collapse-tags
     :placeholder="column.placeholder"
+    @change="value => $emit('change', value)"
     :disabled="column.disabled" >
     <template v-if="data">
       <el-option v-for="opt in data" :key="opt.key" :label="opt.name" :value="opt.key"></el-option>

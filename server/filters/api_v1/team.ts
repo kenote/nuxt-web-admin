@@ -13,6 +13,7 @@ import { Filter, asyncFilterData } from 'kenote-validate-helper'
 import { CreateTeamDocument, EditTeamDocument, ResponseTeamDocument } from '@/types/proxys/team'
 import { UpdateDocument, RemoveOptions, QueryDocument } from '@/types/proxys'
 import teamProxy from '~/proxys/team'
+import { isString, pullAll, map, omit } from 'lodash'
 
 class TeamFilter {
 
@@ -150,6 +151,8 @@ class TeamFilter {
           if (team.access.filter( o => !access.includes(o) ).length > 0) {
             doc.data.access = access
           }
+          let keys = Object.keys(team.rtsps)
+          doc.data.rtsps = omit(team.rtsps, pullAll(keys, map(channels, 'label')))
         }
       }
       return next(doc)
@@ -159,6 +162,37 @@ class TeamFilter {
       }
       return next(error)
     }
+  }
+
+  public async rtsps (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { _id } = req.params
+    let { channel, rtsps } = req.body
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { ErrorInfo, CustomError } = errorState
+    if (!isMongoId(_id)) {
+      return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
+    }
+    let auth = req.user as ResponseUserDocument
+    let doc: UpdateDocument<EditTeamDocument> = {
+      conditions: { _id },
+      data: {
+        rtsps: {}
+      }
+    }
+    let TeamProxy = teamProxy(errorState)
+    try {
+      filterUserLevel(auth, 0, 9000, ErrorInfo)
+      let team = await TeamProxy.Dao.findOne(doc.conditions) as ResponseTeamDocument
+      doc.data.rtsps = { ...oc(team).rtsps({}), [channel]: parseValue(rtsps, String) }
+      return next(doc)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+
   }
 
   public async setPeoples (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
@@ -195,4 +229,14 @@ function getPeoples (peoples: string | string[]): string[] {
     }
   }
   return _peoples
+}
+
+function parseValue (value: any, format: (val: any) => any): any {
+  if (Array.isArray(value)) {
+    return value.map(format)
+  }
+  if (isString(value) && /(\,)/.test(value)) {
+    return value.split(',').map(format)
+  }
+  return format(value)
 }

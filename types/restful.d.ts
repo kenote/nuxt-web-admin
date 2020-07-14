@@ -46,6 +46,11 @@ export declare namespace NuxtTypes {
      * 仪表盘选项
      */
     __dashboard           : DashboardOptions
+    
+    /**
+     * Rtsps
+     */
+    __rtsps               : Maps<string[]>
   }
 }
 

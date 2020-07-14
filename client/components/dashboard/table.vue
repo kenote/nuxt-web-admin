@@ -43,6 +43,16 @@
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
+              <dashboard-form-item v-else-if="item.type === 'select'"
+                :key="item.key"
+                v-model="scope.row[column.key]"
+                :column="{
+                  key: item.key,
+                  type: item.type,
+                  data: item.options,
+                  multiple: item.multiple
+                }"
+                @change="value => $emit('select-change', scope.row._id, item.key, value)" />
               <el-button v-else 
                 :key="item.key" 
                 :size="item.type === 'text' ? '' : 'small'" 
@@ -89,7 +99,7 @@ import { Channel } from '@/types/channel'
 import { Search } from 'kenote-config-helper/types/navigation'
 import { DefaultSortOptions } from 'element-ui/types/table'
 import { oc } from 'ts-optchain'
-import { orderBy, chunk, isObject } from 'lodash'
+import { orderBy, chunk, isObject, result } from 'lodash'
 import { Table as ElTable } from 'element-ui'
 import { ruleJudgment } from '@/utils/query'
 import { PageFlag } from '@/types/restful'
@@ -148,6 +158,7 @@ export default class DashboardTable extends Vue {
   parseTemplate = parseTemplate
   ruleJudgment = ruleJudgment
   oc = oc
+  result = result
 
   @Watch('columns')
   onColumnsChange (val: Channel.columns[], oldVal: Channel.columns[]): void {

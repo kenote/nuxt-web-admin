@@ -27,6 +27,11 @@ declare namespace Ucenter {
     peoples        : string[]
   }
 
+  interface rtsps {
+    channel        : string
+    rtsps          : string | string[]
+  }
+
   interface createTicket {
     group         ?: string
     stint          : number

@@ -27,6 +27,7 @@ export declare namespace Channel {
     type             ?: string
     conditions       ?: any
     options          ?: any
+    multiple         ?: boolean
   }
 
   interface queryer extends KenoteConfig.Queryer {

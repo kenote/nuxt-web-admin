@@ -35,7 +35,7 @@
             :value="item.key">
           </el-option>
         </el-select>
-        <el-button type="primary" @click="handleOpenImport" v-if="goodsType">导入配置</el-button>
+        <el-button type="primary" @click="handleOpenImport" v-if="goodsType" :disabled="authLevel < oc(flag).edit(0)">导入配置</el-button>
         <el-dropdown @command="handleCommandExport" style="margin-left:10px" v-if="goodsType">
           <el-button type="success">
             导出配置<i class="el-icon-arrow-down el-icon--right"></i>

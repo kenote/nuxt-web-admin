@@ -368,9 +368,9 @@ export async function alicloud (request: Alicloud.request, options: HeaderOption
 }
 
 /**
- * 获取项目的配置表
+ * 编辑项目线路
  */
-export async function projectSetting (tag: string, channel: string, params: any, options: HeaderOptions): Promise<RestfulInfoByError> {
-  let restful = await httpClient.get(`/api/v1/proto/${channel}/setting/${tag}`, params, options)
+export async function rtspsTeam (_id: string, data: Ucenter.rtsps, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.put(`/api/v1/ucenter/team/rtsps/${_id}`, data, options)
   return formatRestful(restful)
 }

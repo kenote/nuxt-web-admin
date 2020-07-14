@@ -4,6 +4,7 @@ import { Channel } from '@/types/channel'
 import { site_url } from '~/config'
 import { loadData } from 'kenote-config-helper/dist/utils.server'
 import { Maps } from 'kenote-config-helper'
+import { getRtsps } from '~/utils'
 
 type Request = NuxtTypes.request
 
@@ -19,6 +20,7 @@ export async function nuxtHandler (req: Request, res: Response, next: NextFuncti
     req.__register = loadData('config/register') as Register.config
     req.__singlePages = loadData('config/singlepages', 'array') as SinglePage.item[]
     req.__dashboard = loadData('config/dashboard') as DashboardOptions
+    req.__rtsps = getRtsps()
   }
   return next()
 }
