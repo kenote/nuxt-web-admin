@@ -3,7 +3,7 @@
     <!-- 主屏 -->
     <dashboard-screen :projects="projectChannels" :tag="projectTag" :footer-open="mode === 'list'" @change="handleProjectChange">
 
-      <!-- 配置表 -->
+      <!-- 团队列表 -->
       <dashboard-table 
         :columns="[
           {
@@ -82,6 +82,9 @@ export default class SettingProjectRtspPage extends mixins(PageMixin) {
   @Watch('projectTag')
   onProjectTagChange (val: string, oldVal: string): void {
     this.mode = 'list'
+    if (oldVal) {
+      this.handleList()
+    }
   }
 
   handleProjectChange (value: string): void {

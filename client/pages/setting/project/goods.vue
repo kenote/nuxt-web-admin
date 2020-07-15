@@ -14,29 +14,27 @@
 
         </dashboard-xlsx-import>
         <!-- 配置表 -->
-        <dashboard-table v-else
-          :columns="oc(projectOptions).columns([])"
-          :search-options="oc(projectOptions).search()"
-          :data="list"
-          :auth-level="authLevel"
-          :flag="flag"
-          :pagination="true"
-          :pagesize="15"
-          @getdata="handleList"
-          :loading="loading" />
+        <template v-else>
+          <el-tabs v-model="goodsType" type="card" v-if="oc(project).options[goodsType]()">
+            <el-tab-pane v-for="(item, key) in goods" :key="key" :label="item.name" :name="item.key">
+              <dashboard-table v-if="item.key === goodsType && oc(project).options[item.key]()"
+                :columns="oc(project).options[item.key].columns([])"
+                :search-options="oc(project).options[item.key].search()"
+                :data="list"
+                :auth-level="authLevel"
+                :flag="flag"
+                :pagination="true"
+                :pagesize="15"
+                @getdata="handleList"
+                :loading="loading" />
+            </el-tab-pane>
+          </el-tabs>
+        </template>
       </template>
       <!-- 底部工具条 -->
       <template slot="footer" v-if="projectTag">
-        <el-select v-model="goodsType" placeholder="请选择物品类型" style="margin-right: 10px" >
-          <el-option
-            v-for="item in goods"
-            :key="item.key"
-            :label="`${item.name}`"
-            :value="item.key">
-          </el-option>
-        </el-select>
-        <el-button type="primary" @click="handleOpenImport" v-if="goodsType" :disabled="authLevel < oc(flag).edit(0)">导入配置</el-button>
-        <el-dropdown @command="handleCommandExport" style="margin-left:10px" v-if="goodsType">
+        <el-button type="primary" @click="handleOpenImport" v-if="oc(project).options[goodsType]()" :disabled="authLevel < oc(flag).edit(0)">导入配置</el-button>
+        <el-dropdown @command="handleCommandExport" style="margin-left:10px" v-if="oc(project).options[goodsType]()">
           <el-button type="success">
             导出配置<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
@@ -60,6 +58,7 @@ import * as nunjucks from 'nunjucks'
 import { clone, cloneDeep, map } from 'lodash'
 import { fileTypes, xlsxBlob } from '@/utils/xlsx'
 import { Execl } from '@/types'
+import { name } from '../../../store/modules/setting';
 
 type ModeType = 'list' | 'import'
 
@@ -86,7 +85,7 @@ export default class SettingProjectGoodsPage extends mixins(PageMixin) {
   @Watch('projectTag')
   onProjectTagChange (val: string, oldVal: string): void {
     this.mode = 'list'
-    this.goodsType = ''
+    this.goodsType = 'item'
     this.project = this.projectChannels.find( o => o.label === val )
     if (this.project) {
       this.goods = oc(this.project).options.goods([]) as Maps<any>[]
@@ -102,9 +101,6 @@ export default class SettingProjectGoodsPage extends mixins(PageMixin) {
       return
     }
     this.projectOptions = oc(this.project).options({})[val] as Maps<any>
-    if (oldVal) {
-      this.handleList()
-    }
   }
 
 
@@ -115,7 +111,6 @@ export default class SettingProjectGoodsPage extends mixins(PageMixin) {
   handleOpenImport (): void {
     this.mode = 'import'
     let goods = this.goods.find( o => o.key === this.goodsType )
-    console.log(goods?.name)
     this.title = `${oc(this.project).name('')} --> ${oc(this.pageSetting).name('')} --> ${goods?.name}`
   }
 

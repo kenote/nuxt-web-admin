@@ -26,3 +26,16 @@
   edit            : 9000
   # 删除
   remove          : 9000
+
+  # 项目渠道管理
+  '/setting/project/ditch':
+    # 访问权限
+    access          : 9000
+    # 列表
+    list            : 9000
+    # 创建
+    create          : 9000
+    # 编辑
+    edit            : 9000
+    # 删除
+    remove          : 9000

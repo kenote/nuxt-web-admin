@@ -99,7 +99,7 @@ import { Channel } from '@/types/channel'
 import { Search } from 'kenote-config-helper/types/navigation'
 import { DefaultSortOptions } from 'element-ui/types/table'
 import { oc } from 'ts-optchain'
-import { orderBy, chunk, isObject, result } from 'lodash'
+import { orderBy, chunk, isObject, result, compact } from 'lodash'
 import { Table as ElTable } from 'element-ui'
 import { ruleJudgment } from '@/utils/query'
 import { PageFlag } from '@/types/restful'
@@ -224,7 +224,7 @@ export default class DashboardTable extends Vue {
       _data = orderBy(_data, [prop], [order.replace(/(ending)$/, '') as any])
     }
     try {
-      _data = _data.filter( o => new RegExp(this.search).test(String(o[this.searchOptions.field])) )
+      _data = _data.filter( o => searchField(o, this.search, this.searchOptions.field) )
     } catch (error) {
       
     }
@@ -307,6 +307,16 @@ export default class DashboardTable extends Vue {
     return 'edit'
   }
   
+}
+
+function searchField (obj: Maps<any>, keywords: string, field: string): boolean {
+  let fields = compact(field.split(/\,/))
+  let results: boolean[] = []
+  for (let key of fields) {
+    let _result = new RegExp(keywords).test(String(obj[key]))
+    results.push(_result)
+  }
+  return results.includes(true)
 }
 
 </script>

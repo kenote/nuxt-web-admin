@@ -84,7 +84,7 @@
         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
         @change="handleFileChange"
         />
-      <el-button type="primary" style="margin-left:15px" @click="handleSubmit" :disabled="data.length === 0">提交</el-button>
+      <el-button type="primary" style="margin-left:15px" @click="handleSubmit" :loading="loading" :disabled="data.length === 0">提交</el-button>
       <el-button type="success" style="margin-left:15px" @click="$emit('goback', null)">返回</el-button>
     </dashboard-footer-bar>
   </div>

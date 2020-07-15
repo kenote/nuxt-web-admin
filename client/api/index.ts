@@ -374,3 +374,19 @@ export async function rtspsTeam (_id: string, data: Ucenter.rtsps, options: Head
   let restful = await httpClient.put(`/api/v1/ucenter/team/rtsps/${_id}`, data, options)
   return formatRestful(restful)
 }
+
+/**
+ * 获取渠道列表
+ */
+export async function ditchList (channel: string, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.get(`/api/v1/ditch/${channel}`, null, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 更新渠道
+ */
+export async function ditchUpdate (channel: string, content: string, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ditch/${channel}/update`, { content }, options)
+  return formatRestful(restful)
+}

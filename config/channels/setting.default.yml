@@ -26,3 +26,5 @@ navs:
           url           : /api/v1/proto/{{ channel }}/setting/{{ goods }}
       - index         : /setting/project/rtsp
         name          : 线路分配
+      - index         : /setting/project/ditch
+        name          : 渠道管理

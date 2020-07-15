@@ -3,6 +3,7 @@ import { RootState } from '~/store'
 import { Channel } from '@/types/channel'
 import { Register, SinglePage, PageFlag, DashboardOptions } from '@/types/restful'
 import { Maps } from 'kenote-config-helper'
+import { orderBy } from 'lodash'
 
 export const name: string = 'setting'
 
@@ -49,7 +50,7 @@ export const getters: GetterTree<State, RootState> = {
     let p: Channel.element = state.channels?.find( o => o.id === state.channelId )!
     return p || { id: 0, name: '仪表盘' }
   },
-  projectChannels: state => state.channels?.filter( o => o.id > 1000 && o.id < 2000 )!
+  projectChannels: state => orderBy(state.channels?.filter( o => o.id > 1000 && o.id < 2000 )!, ['id'], ['asc'])
 }
 
 export interface Actions<S, R> extends ActionTree<S, R> {

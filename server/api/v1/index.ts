@@ -8,5 +8,6 @@ export default MountController(
   require('./ticket'),
   require('./user'),
   require('./alicloud'),
-  require('./proto')
+  require('./proto'),
+  require('./ditch')
 )
