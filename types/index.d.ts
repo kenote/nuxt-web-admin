@@ -1,3 +1,5 @@
+import { ResponsePlanDocument, PlanType } from '@/types/proxys/plan'
+import { UpdateWriteResult, DeleteWriteResult } from 'kenote-mongoose-helper'
 
 export interface Option {
   key               : number | string
@@ -51,4 +53,16 @@ export declare namespace Execl {
   }
 
   type BookType = 'xlsx' | 'xlsm' | 'xlsb' | 'biff8' | 'csv' | 'txt' | 'html'
+}
+
+export interface PlanOptions {
+  pid               : number
+  get               : (type: PlanType, next: (doc: ResponsePlanDocument[]) => void) => void
+  create            : (type: PlanType, name: string, value: any, next: (doc: ResponsePlanDocument) => void) => void
+  update            : (_id: string, name: string, value: any, next: (doc: UpdateWriteResult) => void) => void
+  remove            : (_id: string, next: (doc: DeleteWriteResult) => void) => void
+}
+
+export interface DitchOptions {
+  plan              : PlanOptions
 }

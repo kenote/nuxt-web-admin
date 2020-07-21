@@ -3,7 +3,7 @@ import { Maps } from 'kenote-config-helper'
 import { MetaInfo } from 'vue-meta'
 import { oc } from 'ts-optchain'
 import { Command } from '@/types'
-import { assign, random, isRegExp } from 'lodash'
+import { assign, random, isRegExp, isString, zipObject, remove } from 'lodash'
 import * as nunjucks from 'nunjucks'
 import * as rules from '@/utils/rules'
 import * as yaml from 'js-yaml'
@@ -56,6 +56,7 @@ export function mergeCollection (fields: string, ...collections: Array<Maps<any>
  * @param props Maps<any>
  */
 export function parseProps (data: Maps<any>, props: Maps<any>): Maps<any> {
+  if (!props) return data
   let result = {}
   for (let key in props) {
     let _key: string = props[key]
@@ -91,10 +92,63 @@ function toUpper (value: string): string {
   return rand === 1 && !/\d/.test(value) ? value.toLocaleUpperCase() : value
 }
 
+/**
+ * 判断 Yaml 格式
+ */
 export function isYaml (str: string): boolean {
   try {
     return !!yaml.load(str)
   } catch (error) {
     return false
   }
+}
+
+/**
+ * 解析默认值
+ */
+export function parseDefaultValue (value: any): any {
+  if (Array.isArray(value)) {
+    return value.map(parseDefaultValue)
+  }
+  let today = new Date(new Date().setHours(0, 0, 0, 0))
+  if (isString(value) && /^([\-]{0,1})([0-9]{1,3})(days)$/.test(value)) {
+    let parseValue = value.match(/^([\-]{0,1})([0-9]{1,3})(days)$/)
+    let { val, operator } = zipObject(['', 'operator', 'val'], parseValue || [])
+    return new Date(today.setDate(operator === '-' ? today.getDate() - Number(val) : today.getDate() + Number(val)))
+  }
+  switch (value) {
+    case 'now':
+      return new Date()
+    case 'today':
+      return today
+    case 'yesterday':
+      return new Date(today.setDate(today.getDate() - 1))
+    default:
+      return value
+  }
+}
+
+/**
+ * 格式化成数组
+ * @param value string | string[]
+ * @param type 'number' | 'string'
+ * @param splitter RegExp
+ */
+export function formatArray (value?: string | string[], type: 'number' | 'string' = 'string', splitter: RegExp = /(\,|\|)/): Array<number | string> {
+  if (!value) return []
+  if (Array.isArray(value)) {
+    return formatArray(value.join(','), type, splitter)
+  }
+  let _value = value.split(splitter)
+  if (type === 'number') {
+    return arrayToNumber(_value)
+  }
+  remove(_value, o => !o || splitter.test(o))
+  return _value.sort()
+}
+
+function arrayToNumber (value: string[]): number[] {
+  let _value: number[] = value.map(Number)
+  remove(_value, o => !o)
+  return _value.sort((a, b) => a - b)
 }

@@ -9,5 +9,6 @@ export default MountController(
   require('./user'),
   require('./alicloud'),
   require('./proto'),
-  require('./ditch')
+  require('./ditch'),
+  require('./plan')
 )

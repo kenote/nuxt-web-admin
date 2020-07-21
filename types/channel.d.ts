@@ -33,6 +33,7 @@ export declare namespace Channel {
   interface queryer extends KenoteConfig.Queryer {
     api              ?: api
     label            ?: queryLabelOptions
+    border           ?: boolean
   }
 
   interface format extends KenoteConfig.Format {

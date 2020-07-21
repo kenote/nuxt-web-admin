@@ -6,6 +6,7 @@ import {
   Card,
   Carousel,
   CarouselItem,
+  Cascader,
   Checkbox,
   CheckboxButton,
   CheckboxGroup,
@@ -54,6 +55,7 @@ export default () => {
   Vue.use(Card)
   Vue.use(Carousel)
   Vue.use(CarouselItem)
+  Vue.use(Cascader)
   Vue.use(Checkbox)
   Vue.use(CheckboxButton)
   Vue.use(CheckboxGroup)

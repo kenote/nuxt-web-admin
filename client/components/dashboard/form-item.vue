@@ -44,6 +44,21 @@
       <el-option v-for="opt in data" :key="opt.key" :label="opt.name" :value="opt.key"></el-option>
     </template>
   </el-select>
+  <!-- 多组选择器 -->
+  <dashboard-group-picker v-else-if="column.type === 'group-picker'"
+    v-model="values"
+    :data="data"
+    :multiple="column.multiple"
+    :border="column.border"
+    />
+  <!-- 渠道选择器 -->
+  <dashboard-ditch-picker v-else-if="column.type === 'ditch-picker'"
+    v-model="values"
+    :data="data"
+    :options="options"
+    :multiple="column.multiple"
+    :border="column.border"
+    />
   <!-- 数字输入框 -->
   <el-input-number v-else-if="column.type === 'input-number'"
     size="medium" 
@@ -71,6 +86,7 @@ import { Component, Vue, Prop, Provide, Model, Watch } from 'nuxt-property-decor
 import { Maps, Rule } from 'kenote-config-helper'
 import { Channel } from '@/types/channel'
 import { oc } from 'ts-optchain'
+import { DitchOptions } from '@/types'
 
 @Component<DashboardFormItem>({
   name: 'dashboard-form-item',
@@ -90,6 +106,7 @@ import { oc } from 'ts-optchain'
 export default class DashboardFormItem extends Vue {
   
   @Prop({ default: undefined }) column!: Channel.queryer
+  @Prop({ default: undefined }) options!: DitchOptions
 
   @Provide() data: Maps<any>[] = []
   @Provide() values: any = ''

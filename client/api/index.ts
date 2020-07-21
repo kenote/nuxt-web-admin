@@ -2,10 +2,11 @@ import httpClient, { HeaderOptions, formatRestful } from '@/utils/http'
 import { RestfulInfoByError, Security } from '@/types/restful'
 import * as PassportAPI  from '@/types/apis/passport'
 import * as Ucenter from '@/types/apis/ucenter'
-import { omit, result } from 'lodash';
+import { omit } from 'lodash'
 import { RemoveOptions } from '@/types/proxys'
 import { Channel } from '@/types/channel'
 import Alicloud from '@/types/alicloud'
+import { CreatePlanDocument, EditPlanDocument } from '@/types/proxys/plan'
 
 /**
  *  获取API数据
@@ -388,5 +389,50 @@ export async function ditchList (channel: string, options: HeaderOptions): Promi
  */
 export async function ditchUpdate (channel: string, content: string, options: HeaderOptions): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(`/api/v1/ditch/${channel}/update`, { content }, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 获取用户收藏、草稿列表
+ */
+export async function planList (type: string | null, channel: string | null, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let params = ''
+  if (type) {
+    params = `/${type}`
+    if (channel) {
+      params += `/${channel}`
+    }
+  }
+  let restful = await httpClient.get(`/api/v1/plan/list${params}`, null, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 创建用户收藏、草稿
+ */
+export async function createPlan (data: CreatePlanDocument, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/plan/create`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 编辑用户收藏、草稿
+ */
+export async function editPlan (_id: string, data: EditPlanDocument, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/plan/edit/${_id}`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 删除用户收藏、草稿
+ */
+export async function removePlan (_id: string | string[], options: HeaderOptions): Promise<RestfulInfoByError> {
+  let url = `/api/v1/plan/${_id}`
+  let params = {}
+  if (Array.isArray(_id)) {
+    url = `/api/v1/plan`
+    params = { _ids: _id }
+  }
+  let restful = await httpClient.delete(url, params, options)
   return formatRestful(restful)
 }

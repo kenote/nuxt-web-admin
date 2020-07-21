@@ -109,7 +109,19 @@
       }
 
       .el-checkbox.is-bordered {
-        margin-right: 0;
+        margin-right: 10px;
+      }
+
+      .el-radio.is-bordered {
+        margin-right: 10px;
+      }
+
+      .el-checkbox.is-bordered+.el-checkbox.is-bordered {
+        margin-left: 0;
+      }
+
+      .el-radio.is-bordered+.el-radio.is-bordered {
+        margin-left: 0;
       }
 
       .el-transfer__buttons {
@@ -272,6 +284,22 @@
     background: #fbfbfb;
     border: 1px solid #d9d9d9;
     border-radius: 6px;
+
+    .el-checkbox.is-bordered {
+      margin-right: 10px;
+    }
+
+    .el-radio.is-bordered {
+      margin-right: 10px;
+    }
+
+    .el-checkbox.is-bordered+.el-checkbox.is-bordered {
+      margin-left: 0;
+    }
+
+    .el-radio.is-bordered+.el-radio.is-bordered {
+      margin-left: 0;
+    }
 
     .footer {
       border-top: 1px #e8e8e8 dashed;
