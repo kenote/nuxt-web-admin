@@ -1,0 +1,11 @@
+api
+assets
+components
+layouts
+middleware
+mixins
+pages
+plugins
+store
+*.json
+*.d.ts

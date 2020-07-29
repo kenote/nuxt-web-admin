@@ -16,4 +16,10 @@ $ yarn build
 
 # launch server
 $ yarn start
+
+# initialization data (with enquiry)
+$ yarn tools --init-data
+
+# initialization data (without enquiry)
+$ yarn tools --init-data --username=<username> --password=<password> --email=<email>
 ```

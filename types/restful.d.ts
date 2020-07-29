@@ -224,4 +224,9 @@ export interface Rule {
    * 验证函数
    */
   validator         ?: (value: any) => boolean
+
+  /**
+   * 长度限制
+   */
+  limit             ?: number[]
 }

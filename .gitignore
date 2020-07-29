@@ -46,6 +46,7 @@ build/
 config/**/*.yml
 !config/**/*.default.yml
 uploadfiles/
+projects/
 
 # TypeScript v1 declaration files
 typings/
@@ -111,3 +112,5 @@ dist
 
 # Deploy
 deploy.config.*
+.deploy/
+*.tar.gz

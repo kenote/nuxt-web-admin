@@ -4,7 +4,8 @@ const tsconfigPathsWebpackPlugin = require('tsconfig-paths-webpack-plugin')
 module.exports = {
   webpack: (config, options, webpack) => {
     config.entry = {
-      index: './server/index.ts'
+      index: './server/index.ts',
+      tools: './server/tools.ts'
     }
 
     config.resolve = {
