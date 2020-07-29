@@ -3,8 +3,12 @@ import * as path from 'path'
 import * as inquirer from 'inquirer'
 import { createDirectory, confirmRuning, dirChoices } from './util'
 import * as runscript from 'runscript'
+import * as fs from 'fs-extra'
 
 const developmentRoot: string = path.resolve(process.cwd(), '.deploy/development')
+if (!fs.existsSync(developmentRoot)) {
+  fs.mkdirpSync(developmentRoot)
+}
 
 export async function backup (): Promise<any> {
   try {
