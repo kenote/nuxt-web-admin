@@ -9,7 +9,7 @@ import { format } from 'util'
 
 export type ChoiceType = Record<'name' | 'value', string>
 
-export async function createDirectory (name: string): Promise<string> {
+export async function createDirectory (name: string, validator?: (value: string) => string | true): Promise<string> {
   let options: Record<'name', string> = await inquirer.prompt([
     {
       type: 'input',
@@ -18,6 +18,9 @@ export async function createDirectory (name: string): Promise<string> {
       validate (val: string): string | true {
         if (!trim(val)) {
           return `请填写${name}`
+        }
+        if (validator) {
+          return validator(val)
         }
         return true
       }
