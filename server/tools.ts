@@ -4,6 +4,7 @@ import { backup, restore } from './tools/backup'
 import initData, { initDataProxy } from './tools/init-data'
 import { Dictionary } from 'lodash'
 import { getArgvs, runScript } from './tools/util'
+import { release } from './tools/release'
 
 @Connect({
   title: '选择操作类型',
@@ -17,6 +18,11 @@ import { getArgvs, runScript } from './tools/util'
       name: '导入开发配置',
       value: 'import',
       script: restore
+    },
+    {
+      name: '创建Release',
+      value: 'relelse',
+      script: release
     },
     {
       name: '初始化数据',

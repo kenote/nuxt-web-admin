@@ -14,7 +14,15 @@
       </el-form-item>
       <div v-else class="footer" style="padding-left: 0; margin-left: 0">
         <el-form-item>
-          <el-button type="primary" native-type="submit" :loading="loading">开始查询</el-button>
+          <el-dropdown @command="handleCommandSubmit" v-if="oc(rtsps)([]).length > 1" >
+            <el-button type="primary">
+              开始查询<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-for="item in rtsps" :key="item" :command="item">线路 -> {{ item }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <el-button v-else type="primary" native-type="submit" :loading="loading">开始查询</el-button>
         </el-form-item>
       </div>
     </el-form>
@@ -31,12 +39,14 @@ import { parseDefaultValue } from '@/utils'
 import { DitchOptions } from '@/types'
 import { ResponsePlanDocument, PlanType } from '@/types/proxys/plan'
 import { UpdateWriteResult, DeleteWriteResult } from 'kenote-mongoose-helper'
+import { omit, zipObject } from 'lodash'
 
 @Component<DashboardQueryer>({
   name: 'dashboard-queryer',
   created () {
     this.values = { ...this.defaultValues }
     this._rules = { ...this.rules }
+    
   }
 })
 export default class DashboardQueryer extends Vue {
@@ -46,6 +56,7 @@ export default class DashboardQueryer extends Vue {
   @Prop({ default: {} }) rules!: Maps<Rule[]>
   @Prop({ default: [] }) columns!: Channel.queryer[]
   @Prop({ default: {} }) defaultValues!: Maps<any>
+  @Prop({ default: undefined }) rtsps!: string[]
 
   @Provide() values: Maps<any> = {}
   @Provide() labels: Maps<any> = {}
@@ -78,8 +89,15 @@ export default class DashboardQueryer extends Vue {
     this._rules = rules
   }
 
-  handleSubmit (): void {
+  handleCommandSubmit (command: string): void {
+    this.handleSubmit(null, command)
+  }
+
+  handleSubmit (env: Event | null, rstp?: string): void {
     let theForm = this.$refs['theForm'] as ElForm
+    if (!rstp && this.rtsps) {
+      rstp = this.rtsps[0]
+    }
     theForm.validate(valid => {
       if (valid) {
         let queryers: Channel.queryer[] = this.columns.filter( o => o.required )
@@ -93,7 +111,14 @@ export default class DashboardQueryer extends Vue {
             return
           }
         }
-        this.$emit('submit', this.values)
+        let values = omit(this.values, ['begin_end'])
+        if (this.values['begin_end']) {
+          values = {
+            ...values,
+            ...zipObject(['begin', 'end'], this.values['begin_end'])
+          }
+        }
+        this.$emit('submit', values, rstp)
       }
       else {
         return false

@@ -47,6 +47,7 @@ import {
   Tree
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
+import Scrollbar from 'element-ui/lib/scrollbar'
 
 export default () => {
   Vue.use(Breadcrumb)
@@ -79,6 +80,7 @@ export default () => {
   Vue.use(RadioButton)
   Vue.use(RadioGroup)
   Vue.use(Row)
+  Vue.use(Scrollbar)
   Vue.use(Select)
   Vue.use(Step)
   Vue.use(Steps)

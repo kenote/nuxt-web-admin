@@ -4,6 +4,7 @@ import { Channel } from '@/types/channel'
 import { Register, SinglePage, PageFlag, DashboardOptions } from '@/types/restful'
 import { Maps } from 'kenote-config-helper'
 import { orderBy } from 'lodash'
+import { oc } from 'ts-optchain'
 
 export const name: string = 'setting'
 
@@ -47,10 +48,14 @@ export const state = (): State => ({
 
 export const getters: GetterTree<State, RootState> = {
   selectedChannel: state => {
-    let p: Channel.element = state.channels?.find( o => o.id === state.channelId )!
+    let p = state.channels?.find( o => o.id === state.channelId )
     return p || { id: 0, name: '仪表盘' }
   },
-  projectChannels: state => orderBy(state.channels?.filter( o => o.id > 1000 && o.id < 2000 )!, ['id'], ['asc'])
+  projectChannels: state => orderBy(state.channels?.filter( o => o.id > 1000 && o.id < 2000 )!, ['id'], ['asc']),
+  rtsps: state => {
+    let p = state.channels?.find( o => o.id === state.channelId )
+    return p ? oc(state).rtsps[p.label]([]) : []
+  }
 }
 
 export interface Actions<S, R> extends ActionTree<S, R> {

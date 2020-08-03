@@ -21,6 +21,7 @@ export declare namespace Channel {
     default          ?: string | number
     format           ?: format | format[]
     options          ?: columnOptions
+    tags             ?: tags
   }
 
   interface columnEmit extends KenoteConfig.ColumnEmit {
@@ -62,6 +63,12 @@ export declare namespace Channel {
   }
 
   interface Export {
-    sheetName         : string
+    sheetName        ?: string
+    conditions       ?: any
+  }
+
+  interface tags {
+    group             : string
+    separator         : string
   }
 }

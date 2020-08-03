@@ -7,6 +7,7 @@ import { RemoveOptions } from '@/types/proxys'
 import { Channel } from '@/types/channel'
 import Alicloud from '@/types/alicloud'
 import { CreatePlanDocument, EditPlanDocument } from '@/types/proxys/plan'
+import { Maps } from 'kenote-config-helper'
 
 /**
  *  获取API数据
@@ -434,5 +435,13 @@ export async function removePlan (_id: string | string[], options: HeaderOptions
     params = { _ids: _id }
   }
   let restful = await httpClient.delete(url, params, options)
+  return formatRestful(restful)
+}
+
+/**
+ * Proto 公用接口
+ */
+export async function protoSend (url: string, payload: Maps<any>, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(url, payload, options)
   return formatRestful(restful)
 }

@@ -1,5 +1,5 @@
 import { oc } from 'ts-optchain'
-import { result, isObject, isString, isRegExp } from 'lodash'
+import { result, isObject, isNumber, isRegExp, map, last } from 'lodash'
 import { Channel } from '@/types/channel'
 import dayjs from 'dayjs'
 import * as bytes from 'bytes'
@@ -17,6 +17,9 @@ export function formatString (value: any, formats?: Channel.format | Channel.for
         _value = toDate(_value)
       }
       try {
+        if (fmt.function === 'toLocaleString' && isNumber(_value)) {
+          _value = /(\%)$/.test(value) ? _value / 100 : _value
+        }
         value = _value[fmt.function || 'toLocaleString'](...fmt.options!)
       } catch (error) {
         if (Object.keys(formatUtils).includes(fmt.function)) {
@@ -39,6 +42,14 @@ export function formatString (value: any, formats?: Channel.format | Channel.for
     }
   }
   return value
+}
+
+export function formatStringType (formats: Channel.format | Channel.format[] | undefined): 'string' | 'number' | 'date' | undefined {
+  if (!formats) return 'string'
+  if (Array.isArray(formats)) {
+    return last(map(formats, 'type'))
+  }
+  return (formats as Channel.format).type
 }
 
 function toDate (val: string | number): Date {

@@ -62,6 +62,11 @@
               </el-button>
             </template>
           </template>
+          <el-scrollbar v-else-if="column.tags">
+            <template v-for="(item, key) in scope.row[column.key].split(column.tags.group)">
+              <dashboard-tag :key="key" :data="item.split(column.tags.separator)" v-if="item" />
+            </template>
+          </el-scrollbar>
           <template v-else-if="oc(column).options.template()">
             <el-tooltip v-if="oc(column).options.tooltip()" :content="column.options.tooltip" placement="top">
               <span>{{ parseTemplate(oc(column).options.template(''), scope.row) }}</span>

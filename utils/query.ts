@@ -1,5 +1,5 @@
 import { Maps } from 'kenote-config-helper'
-import { toPairs, isString, result as __Result } from 'lodash'
+import { toPairs, isString, result as __Result, intersection } from 'lodash'
 import { oc } from 'ts-optchain'
 
 const operatorMaps = {
@@ -12,9 +12,9 @@ const operatorMaps = {
   // 小于等于
   ['$lte']: (a: number, b: number): boolean => a <= b,
   // 包含
-  ['$in']: (a: string | number, b: Array<string | number>): boolean => b.includes(a),
+  ['$in']: (a: string | number | Array<string | number>, b: Array<string | number>): boolean => Array.isArray(a) ? intersection(a, b).length > 0 : b.includes(a),
   // 不包含
-  ['$nin']: (a: string | number, b: Array<string | number>): boolean => !b.includes(a),
+  ['$nin']: (a: string | number | Array<string | number>, b: Array<string | number>): boolean => Array.isArray(a) ? intersection(a, b).length === 0 : !b.includes(a),
   // 反包含
   ['$_in']: (a: Array<string | number>, b: string): boolean => a.includes(b),
   // 反不包含

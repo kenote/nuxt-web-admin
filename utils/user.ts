@@ -22,6 +22,22 @@ export function getPlatform (user: ResponseUserDocument): number[] {
 }
 
 /**
+ * 获取用户项目线路
+ * @param user ResponseUserDocument
+ * @param channel string
+ * @param allRtsps string[]
+ */
+export function getRtsps (user: ResponseUserDocument, channel: string, allRtsps: string[], lockValue?: string): string[] {
+  let { group, teams } = user
+  if (lockValue) return [ lockValue ]
+  if (group.level >= 9000) {
+    return allRtsps
+  }
+  let rtsps = map(teams, `rtsps.${channel}`)
+  return parseArray(rtsps)
+}
+
+/**
  * 解析多元数组
  * @param value 
  */

@@ -24,6 +24,10 @@
     }
   }
 
+  .el-switch__label.is-active {
+    color: inherit;
+  }
+
   .el-breadcrumb {
     padding-left: 10px;
     line-height: 15px;

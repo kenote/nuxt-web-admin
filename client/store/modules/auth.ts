@@ -2,6 +2,7 @@ import { ActionTree, MutationTree, GetterTree } from 'vuex'
 import { RootState } from '~/store'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { oc } from 'ts-optchain'
+import { map } from 'lodash'
 
 export const name: string = 'auth'
 
@@ -23,7 +24,8 @@ export const state = (): State => ({
 
 export const getters: GetterTree<State, RootState> = {
   token: state => oc(state).auth.jw_token(),
-  authLevel: state => oc(state).auth.group.level()
+  authLevel: state => oc(state).auth.group.level(),
+  teams: state => map(oc(state).auth.teams([]), 'name')
 }
 
 export interface Actions<S, R> extends ActionTree<S, R> {
