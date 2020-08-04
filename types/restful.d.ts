@@ -230,3 +230,8 @@ export interface Rule {
    */
   limit             ?: number[]
 }
+
+export interface ModuleVersion {
+  name               : string
+  version            : string
+}

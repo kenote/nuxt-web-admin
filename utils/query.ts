@@ -1,5 +1,5 @@
 import { Maps } from 'kenote-config-helper'
-import { toPairs, isString, result as __Result, intersection } from 'lodash'
+import { toPairs, isString, result as __Result, intersection, isEmpty } from 'lodash'
 import { oc } from 'ts-optchain'
 
 const operatorMaps = {
@@ -42,6 +42,7 @@ const toValueMaps = {
  * @param query 
  */
 export function ruleJudgment (data: Maps<any>, query: Maps<any>, options?: Maps<any>): boolean {
+  if (isEmpty(query)) return true
   let result: boolean[] = []
   for (let key in query) {
     if (['$and', '$or'].includes(key)) {

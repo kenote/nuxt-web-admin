@@ -1,7 +1,7 @@
 import * as path from 'path'
 import { toSafeInteger } from 'lodash'
 import { oc } from 'ts-optchain'
-import { PageInfo } from '@/types/restful'
+import { PageInfo, ModuleVersion } from '@/types/restful'
 import * as fs from 'fs-extra'
 import { Maps } from 'kenote-config-helper'
 import { loadData } from 'kenote-config-helper/dist/utils.server'
@@ -31,4 +31,20 @@ export function getRtsps (): Maps<string[]> {
     }
   }
   return tmpRstps
+}
+
+export function isRelease (): boolean {
+  let release = path.resolve(process.cwd(), 'config/server/release.yml')
+  return fs.existsSync(release)
+}
+
+export function getVersion (name: string): string {
+  let pkg = path.resolve(process.cwd(), 'node_modules', name, 'package.json')
+  return oc(fs.readJSONSync(pkg)).version('')
+}
+
+export const versions = ['express', 'nuxt', 'vuex', 'element-ui', 'nodemailer', '@alicloud/pop-core'].map(parseVserion)
+
+function parseVserion (name: string): ModuleVersion {
+  return { name, version: getVersion(name) }
 }

@@ -3,6 +3,7 @@ import tsconfigPathsWebpackPlugin from 'tsconfig-paths-webpack-plugin'
 import config from './client/config'
 
 export default {
+  telemetry: false,
   env: {},
   srcDir: 'client',
   mode: 'universal',

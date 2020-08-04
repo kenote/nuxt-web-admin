@@ -5,6 +5,10 @@ import initData, { initDataProxy } from './tools/init-data'
 import { Dictionary } from 'lodash'
 import { getArgvs, runScript } from './tools/util'
 import { release } from './tools/release'
+import { isRelease } from '~/utils'
+import { ruleJudgment } from '@/utils/query'
+
+const conditions = isRelease() ? { value: { $in: ['init-data', 'exit'] } } : {}
 
 @Connect({
   title: '选择操作类型',
@@ -34,7 +38,7 @@ import { release } from './tools/release'
       value: 'exit',
       script: () => process.exit(0)
     }
-  ]
+  ].filter( o => ruleJudgment(o, conditions) )
 })
 class Task extends TaskHelper {}
 

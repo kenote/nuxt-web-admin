@@ -22,7 +22,7 @@ start(){
       rsync -av $development/uploadfiles/ ./uploadfiles/ --delete
     ;;
     dist)
-      rsync -av $development/projects/ .deploy/dist/projects/
+      rsync -av $development/projects/ .deploy/dist/projects/ --include='*.default.yml' --include='api/*.yml' --exclude-from="./exclude.project.list" --delete
       rsync -av $development/client/static/ .deploy/dist/client/static/
       rsync -av $development/config/ .deploy/dist/config/ 
     ;;
