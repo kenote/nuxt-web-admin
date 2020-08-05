@@ -9,7 +9,7 @@ if (!fs.existsSync(releaseRoot)) {
   fs.mkdirpSync(releaseRoot)
 }
 
-export async function release () {
+export async function release (): Promise<any> {
   try {
     let name = await createDirectory('Release名称', (value: string) => {
       let releaseDir = path.resolve(releaseRoot, value)

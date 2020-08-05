@@ -10,7 +10,7 @@ import { Dictionary } from 'lodash'
 import * as inquirer from 'inquirer'
 import * as rules from '@/utils/rules'
 
-export default async function start () {
+export default async function start (): Promise<any> {
   try {
     let groupNumber = await groupProxy().Dao.counts()
     if (groupNumber > 0) {

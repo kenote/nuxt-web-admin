@@ -12,7 +12,7 @@
     "connect-redis": "~4.0.4",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
-    "dayjs": "^1.8.31",
+    "dayjs": "^1.8.32",
     "element-ui": "^2.13.2",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
@@ -25,6 +25,7 @@
     "kenote-mongoose-helper": "^1.1.2",
     "kenote-socket-helper": "^1.1.1",
     "kenote-store-helper": "^1.1.4",
+    "kenote-task-helper": "^1.1.3",
     "kenote-validate-helper": "^1.1.1",
     "log4js": "^6.3.0",
     "method-override": "^3.0.0",
@@ -45,7 +46,7 @@
     "xlsx": "^0.16.5"
   },
   "devDependencies": {
-    "@nuxt/components": "^1.0.7",
+    "@nuxt/components": "^1.1.0",
     "@nuxt/types": "~2.13.3",
     "@nuxt/typescript-build": "^2.0.2",
     "@nuxtjs/svg": "^0.1.11",
@@ -72,7 +73,6 @@
     "awesome-typescript-loader": "^5.2.1",
     "babel-plugin-component": "^1.1.1",
     "backpack-core": "^0.8.4",
-    "kenote-task-helper": "^1.1.3",
     "node-sass": "^4.14.1",
     "sass-loader": "~8.0.2",
     "tsconfig-paths-webpack-plugin": "^3.3.0",
