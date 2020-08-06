@@ -4,15 +4,24 @@
     <dashboard-screen :projects="projectChannels" :tag="projectTag" :footer-open="mode === 'list'" @change="handleProjectChange">
 
       <!-- 导入配置 -->
-        <dashboard-xlsx-import v-if="mode === 'import'"
-          :title="title"
-          :options="oc(projectOptions)({})"
-          @submit="handleSubmit"
-          @goback="handleGoback"
-          :loading="loading">
+      <dashboard-xlsx-import v-if="mode === 'import'"
+        :title="title"
+        :options="oc(projectOptions)({})"
+        @submit="handleSubmit"
+        @goback="handleGoback"
+        :loading="loading">
 
-        </dashboard-xlsx-import>
-      <!-- 团队列表 -->
+      </dashboard-xlsx-import>
+      <!-- 数据转换 -->
+      <dashboard-ditch-conversion v-else-if="mode === 'conversion'"
+        :title="title"
+        :options="oc(projectOptions)({})"
+        @submit="handleSubmit"
+        @goback="handleGoback"
+        :loading="loading">
+
+      </dashboard-ditch-conversion>
+      <!-- 渠道列表 -->
       <dashboard-table v-else
         :columns="[
           {
@@ -60,6 +69,7 @@
       <!-- 底部工具条 -->
       <template slot="footer" v-if="projectTag">
         <el-button type="primary" @click="handleOpenImport" :disabled="authLevel < oc(flag).edit(0)">导入渠道</el-button>
+        <el-button type="warning" @click="handleOpenconversion" :disabled="authLevel < oc(flag).edit(0)">数据转换</el-button>
         <el-dropdown @command="handleCommandExport" style="margin-left:10px">
           <el-button type="success">
             导出渠道<i class="el-icon-arrow-down el-icon--right"></i>
@@ -85,7 +95,7 @@ import { Execl } from '@/types'
 import { map } from 'lodash'
 import { Maps } from 'kenote-config-helper'
 
-type ModeType = 'list' | 'import'
+type ModeType = 'list' | 'import' | 'conversion'
 
 @Component<SettingProjectDitchPage>({
   name: 'setting-project-ditch-page',
@@ -123,6 +133,11 @@ export default class SettingProjectDitchPage extends mixins(PageMixin) {
 
   handleOpenImport (): void {
     this.mode = 'import'
+    this.title = `${oc(this.project).name('')} --> 渠道`
+  }
+
+  handleOpenconversion (): void {
+    this.mode = 'conversion'
     this.title = `${oc(this.project).name('')} --> 渠道`
   }
 
