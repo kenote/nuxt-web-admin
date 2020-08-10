@@ -1,14 +1,23 @@
 import { QueryOptions, MongooseDao, autoNumber } from 'kenote-mongoose-helper'
 import __Models from '~/models'
 import { loadError, ErrorState } from '~/utils/error'
-import { userBaseField } from './user'
 
 const Model = __Models.protoModel
 const options: QueryOptions = {
   name: 'proto',
   populate: {
     path: 'user',
-    select: userBaseField
+    select: [ 'id', 'username', 'email', 'mobile', 'nickname', 'avatar', 'sex', 'binds', 'group', 'teams' ],
+    populate: [
+      {
+        path: 'group',
+        select: [ 'id', 'name', 'level', 'description' ]
+      },
+      {
+        path: 'teams',
+        select: [ 'id', 'name', 'description' ]
+      }
+    ]
   }
 }
 

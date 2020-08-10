@@ -28,3 +28,5 @@ navs:
         name          : 线路分配
       - index         : /setting/project/ditch
         name          : 渠道管理
+      - index         : /setting/project/proto
+        name          : API 日志

@@ -31,7 +31,7 @@ export interface State {
   flags            : Maps<PageFlag.item>
   loading          : Maps<boolean>
   dashboardOpts    : DashboardOptions
-  rtsps              : Maps<string[]>
+  rtsps            : Maps<string[]>
 }
 
 export const namespaced: boolean = true

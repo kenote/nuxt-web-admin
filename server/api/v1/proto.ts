@@ -15,6 +15,10 @@ import { ProtoSend } from '@/types/proto'
 import ProtoUtil, { protoUtils } from '~/utils/proto'
 import logger from '~/utils/logger'
 import { Maps } from 'kenote-config-helper'
+import protoProxy from '~/proxys/proto'
+import { QueryDocument } from '@/types/proxys'
+import { QueryOptions, ListData } from 'kenote-mongoose-helper'
+import { maxPageno } from '@/utils'
 
 @Path('/proto')
 class ProtoController extends Controller {
@@ -64,6 +68,59 @@ class ProtoController extends Controller {
   }
 
   /**
+   * 日志查询
+   */
+  @Router({ method: 'post', path: '/:channel/logs' })
+  @Filter( authenticate, protoFilter.logs )
+  public async logs (document: QueryDocument<QueryOptions>, req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { conditions, options } = document
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let ProtoProxy = protoProxy(errorState)
+    try {
+      let protoData = await ProtoProxy.Dao.list(conditions, options) as ListData
+      let { counts, limit, data } = protoData
+      if (counts as never > 0 && data.length === 0) {
+        let maxpageno = maxPageno(counts as never, limit)
+        options.skip = (maxpageno - 1) * limit
+        protoData = await ProtoProxy.Dao.list(conditions, options) as ListData
+      }
+      return res.api(protoData)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
+   * 删除日志
+   */
+  @Router(
+    { method: 'delete', path: '/:channel/logs/:_id' },
+    { method: 'delete', path: '/:channel/logs' }
+  )
+  @Filter( authenticate, protoFilter.removelogs )
+  public async removelogs (conditions: any, req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let ProtoProxy = protoProxy(errorState)
+    try {
+      let result = await ProtoProxy.Dao.remove(conditions)
+      return res.api(result)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  
+  }
+
+  /**
    * Proto 公用接口
    */
   @Router({ method: 'post', path: '/:channel/:tag' })
@@ -93,7 +150,6 @@ class ProtoController extends Controller {
       return next(error)
     }
   }
-
 }
 
 export = ProtoController

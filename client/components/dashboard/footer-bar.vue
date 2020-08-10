@@ -42,7 +42,7 @@ export default class DashboardFooterBar extends Vue {
   position: fixed;
   bottom: -70px;
   width: calc(100vw - 65px);
-  margin-left: -20px;
+  margin-left: -30px;
   height: 70px;
   background-color: hsla(0,0%,95.7%,.81);
   border-top: 1px dashed rgba(154,153,153,.4);

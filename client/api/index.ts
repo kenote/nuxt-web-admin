@@ -288,13 +288,8 @@ export async function createTicket (data: Ucenter.createTicket, options: HeaderO
  * 删除邀请码
  */
 export async function removeTicket (_id: string | string[], options: HeaderOptions): Promise<RestfulInfoByError> {
-  let url = `/api/v1/ucenter/ticket/${_id}`
-  let params = {}
-  if (Array.isArray(_id)) {
-    url = `/api/v1/ucenter/ticket`
-    params = { _ids: _id }
-  }
-  let restful = await httpClient.delete(url, params, options)
+  let { href, params } = getRemoveUrl(`/api/v1/ucenter/ticket`, _id)
+  let restful = await httpClient.delete(href, params, options)
   return formatRestful(restful)
 }
 
@@ -326,13 +321,8 @@ export async function createUser (data: Ucenter.createUser, options: HeaderOptio
  * 删除用户
  */
 export async function removeUser (_id: string | string[], options: HeaderOptions): Promise<RestfulInfoByError> {
-  let url = `/api/v1/ucenter/user/${_id}`
-  let params = {}
-  if (Array.isArray(_id)) {
-    url = `/api/v1/ucenter/user`
-    params = { _ids: _id }
-  }
-  let restful = await httpClient.delete(url, params, options)
+  let { href, params } = getRemoveUrl(`/api/v1/ucenter/user`, _id)
+  let restful = await httpClient.delete(href, params, options)
   return formatRestful(restful)
 }
 
@@ -428,13 +418,8 @@ export async function editPlan (_id: string, data: EditPlanDocument, options: He
  * 删除用户收藏、草稿
  */
 export async function removePlan (_id: string | string[], options: HeaderOptions): Promise<RestfulInfoByError> {
-  let url = `/api/v1/plan/${_id}`
-  let params = {}
-  if (Array.isArray(_id)) {
-    url = `/api/v1/plan`
-    params = { _ids: _id }
-  }
-  let restful = await httpClient.delete(url, params, options)
+  let { href, params } = getRemoveUrl(`/api/v1/plan`, _id)
+  let restful = await httpClient.delete(href, params, options)
   return formatRestful(restful)
 }
 
@@ -444,4 +429,37 @@ export async function removePlan (_id: string | string[], options: HeaderOptions
 export async function protoSend (url: string, payload: Maps<any>, options: HeaderOptions): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(url, payload, options)
   return formatRestful(restful)
+}
+
+/**
+ * 获取Proto接口日志
+ */
+export async function protoLogList (channel: string, data: any, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/proto/${channel}/logs`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 删除Proto接口日志
+ */
+export async function removeProtoLog (_id: string | string[], channel: string, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let { href, params } = getRemoveUrl(`/api/v1/proto/${channel}/logs`, _id)
+  let restful = await httpClient.delete(href, params, options)
+  return formatRestful(restful)
+}
+
+
+function getRemoveUrl (url: string, _id: string | string[]): RemoveUrl {
+  let href: string = `${url}/${_id}`
+  let params: any = {}
+  if (Array.isArray(_id)) {
+    href = url
+    params._ids = _id
+  }
+  return { href, params }
+}
+
+interface RemoveUrl {
+  href   : string
+  params : any
 }

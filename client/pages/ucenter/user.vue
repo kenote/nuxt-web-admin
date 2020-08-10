@@ -182,6 +182,7 @@
       :pagination="true"
       :pagesize="oc(conditions).size(15)"
       :counts="total"
+      :pageno="pageno"
       :loading="loading" >
       <dashboard-queryer slot="header" 
         :inline="true"
@@ -252,6 +253,7 @@ import { pick, map, isRegExp } from 'lodash'
 import * as PassportAPI from '@/types/apis/passport'
 import { isMobilePhone } from 'validator'
 import * as rules from '@/utils/rules'
+import { maxPageno } from '@/utils'
 
 type ModeType = 'list' | 'create' | 'edit' | 'setpwd' | 'verify-email'
 
@@ -271,6 +273,7 @@ export default class UserPage extends mixins(PageMixin) {
   @Provide() selection: ResponseUserDocument[] = []
   @Provide() conditions: Ucenter.findUser | null = null
   @Provide() total: number = 0
+  @Provide() pageno: number = 1
 
   pick = pick
 
@@ -284,6 +287,9 @@ export default class UserPage extends mixins(PageMixin) {
           let { data, counts, limit } = result.data as ListData
           this.list = data as ResponseUserDocument[]
           this.conditions = { ...this.conditions, size: limit }
+          let pageno: number = oc(this.conditions).page(1)
+          let maxpageno = maxPageno(counts as never, limit)
+          this.pageno = pageno > maxpageno ? maxpageno : pageno
           this.total = counts as never
         }
         else {
@@ -337,7 +343,7 @@ export default class UserPage extends mixins(PageMixin) {
       try {
         let result = await api.getData(fetch)
         if (result.error === 0) {
-          let data = result.data.map( o => parseProps(o, fetch.props))
+          let data = result.data.map( o => parseProps(o, fetch.props!))
           next(data)
         }
         else {

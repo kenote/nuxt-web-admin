@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Provide, Watch, Emit } from 'nuxt-property-decorator'
 import { Form as ElForm } from 'element-ui'
 import { Maps, Rule } from 'kenote-config-helper'
 import { Channel } from '@/types/channel'
@@ -87,6 +87,11 @@ export default class DashboardQueryer extends Vue {
     }
     this.values = values
     this._rules = rules
+  }
+
+  handleRest (): void {
+    let theForm = this.$refs['theForm'] as ElForm
+    theForm.resetFields()
   }
 
   handleCommandSubmit (command: string): void {

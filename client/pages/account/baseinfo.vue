@@ -97,7 +97,7 @@ export default class BaseinfoPage extends mixins(PageMixin) {
       try {
         let result = await api.getData(fetch)
         if (result.error === 0) {
-          let data = result.data.map( o => parseProps(o, fetch.props))
+          let data = result.data.map( o => parseProps(o, fetch.props!))
           next(data)
         }
         else {

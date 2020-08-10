@@ -2,7 +2,7 @@
   <fragment>
     <!-- 顶部工具栏 -->
     <slot name="header"></slot>
-    <el-table ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="handleSelectionChange" v-loading="loading" stripe>
+    <el-table ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="handleSelectionChange" v-loading="loading" >
       <el-table-column v-if="selection" 
         type="selection" 
         width="40" 
@@ -77,7 +77,7 @@
             <el-tag v-if="ruleJudgment(scope.row, oc(column).options.conditions({}))" :type="oc(column).options.status[2]('danger')">{{ oc(column).options.status[0]('') }}</el-tag>
             <el-tag v-else type="successs">{{ oc(column).options.status[1]('') }}</el-tag>
           </template>
-          <span v-else>{{ formatString(scope.row[column.key], column.format, column.default) }}</span>
+          <span v-else>{{ formatString(result(scope.row, column.key), column.format, column.default) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -186,6 +186,7 @@ export default class DashboardTable extends Vue {
     if (this.counts > -1) {
       this.total = this.counts
       this.pdata = val
+      this.current = this.pageno
     }
     else {
       this.total = val.length

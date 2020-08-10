@@ -6,7 +6,7 @@ import { language } from '~/config'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { oc } from 'ts-optchain'
 import { Filter, asyncFilterData } from 'kenote-validate-helper'
-import { isYaml } from '@/utils'
+import { isYaml, formatArray } from '@/utils'
 import { filterUserLevel, permissionFilter } from '~/middleware/auth'
 import { UpdateSettingDocument } from '@/types/proto'
 import { loadData } from 'kenote-config-helper/dist/utils.server'
@@ -14,9 +14,13 @@ import { ProtoOptions, ProtoAPI, ProtoSend } from '@/types/proto'
 import { isEmpty, isString, map } from 'lodash'
 import { Maps } from 'kenote-config-helper'
 import { isDateString } from '@/utils/query'
-import { formatArray } from '@/utils'
 import * as dayjs from 'dayjs'
 import ditchProxy from '~/proxys/ditch'
+import { toPageInfo } from '~/utils'
+import userProxy from '~/proxys/user'
+import { QueryDocument } from '@/types/proxys'
+import { QueryOptions } from 'kenote-mongoose-helper'
+import { isMongoId } from 'validator'
 
 class ProtoFilter {
 
@@ -108,6 +112,83 @@ class ProtoFilter {
         rtsp_key
       }
       return next(document)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  public async logs (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { channel } = req.params
+    let { create_at, user, sort } = req.body
+    let { limit, skip } = toPageInfo(req.body.page, req.body.size || 15)
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { ErrorInfo, CustomError } = errorState
+    let auth = req.user as ResponseUserDocument
+    let conditions: any = { channel }
+    if (Array.isArray(create_at)) {
+      let [ begin, end ] = create_at
+      if (begin && end) {
+        conditions = { ...conditions, create_at: { $gte: begin, $lt: end } }
+      }
+    }
+    let UserProxy = userProxy(errorState)
+    try {
+      filterUserLevel(auth, 0, 9000, ErrorInfo)
+      if (user) {
+        let users = await UserProxy.Dao.find({ 
+          $or: [
+            { username  : RegExp(`${user}`) },
+            { email     : RegExp(`${user}`) },
+            { mobile    : RegExp(`${user}`) }
+          ]
+        }) as ResponseUserDocument[]
+        conditions = { ...conditions, user: { $in: users.map( u => u._id ) } }
+      }
+      let findProto: QueryDocument<QueryOptions> = {
+        conditions,
+        options: {
+          limit,
+          skip,
+          sort: { _id: -1, create_at: -1 }
+        }
+      }
+      let [ prop, order ] = oc(Array.isArray(sort) ? sort : [ sort ])([])
+      if (order) {
+        findProto.options.sort = { [prop]: /^(desc)/.test(order) ? -1 : 0 }
+      }
+      return next(findProto)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  public async removelogs (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { _id } = req.params
+    let { _ids } = req.body
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { ErrorInfo, CustomError } = errorState
+    let auth = req.user as ResponseUserDocument
+    let conditions: any = {}
+    if (_id) {
+      if (!isMongoId(_id)) {
+        return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
+      }
+      conditions = { _id }
+    }
+    else {
+      conditions = { _id: { $in: Array.isArray(_ids) ? _ids : [] } }
+    }
+    try {
+      filterUserLevel(auth, 0, 9000, ErrorInfo)
+      return next(conditions)
     } catch (error) {
       if (CustomError(error)) {
         return res.api(null, error)

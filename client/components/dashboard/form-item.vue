@@ -116,8 +116,15 @@ export default class DashboardFormItem extends Vue {
   oc = oc
 
   @Watch('values')
-  onValueChange (val: any, oldVal: any): void {
+  onValuesChange (val: any, oldVal: any): void {
+    if (val === oldVal) return
     this.$emit('update', val)
+  }
+
+  @Watch('value')
+  onValueChange (val: any, oldVal: any): void {
+    if (val === oldVal) return
+    this.values = val
   }
 }
 </script>

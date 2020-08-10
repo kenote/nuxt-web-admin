@@ -152,3 +152,14 @@ function arrayToNumber (value: string[]): number[] {
   remove(_value, o => !o)
   return _value.sort((a, b) => a - b)
 }
+
+/**
+ * 计算最大页数
+ * @param counts 总数
+ * @param limit 每页条数
+ */
+export function maxPageno (counts: number, limit: number): number {
+  // tslint:disable-next-line: radix
+  let pageno = parseInt(String((counts + limit - 1) / limit))
+  return pageno
+}

@@ -46,7 +46,7 @@ export declare namespace Channel {
     url               : string
     params           ?: any
     options          ?: HeaderOptions
-    props             : Maps<any>
+    props            ?: Maps<any>
   }
 
   interface columnOptions {

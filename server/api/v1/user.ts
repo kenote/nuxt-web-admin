@@ -9,9 +9,9 @@ import __ErrorCode from '~/utils/error/code'
 import userProxy from '~/proxys/user'
 import userFilter from '~/filters/api_v1/user'
 import { QueryDocument, UpdateDocument } from '@/types/proxys'
-import { QueryOptions } from 'kenote-mongoose-helper'
+import { QueryOptions, ListData } from 'kenote-mongoose-helper'
 import { ResponseUserDocument, EditUserDocument, RegisterUserDocument, SetPassDocument } from '@/types/proxys/user'
-import { randomPassword } from '@/utils'
+import { randomPassword, maxPageno } from '@/utils'
 import { omit } from 'lodash'
 import { loadData } from 'kenote-config-helper/dist/utils.server'
 import { Register, Security } from '@/types/restful'
@@ -32,7 +32,13 @@ class UserController extends Controller {
     let { CustomError } = errorState
     let UserProxy = userProxy(errorState)
     try {
-      let userData = await UserProxy.Dao.list(conditions, options)
+      let userData = await UserProxy.Dao.list(conditions, options) as ListData
+      let { counts, limit, data } = userData
+      if (counts as never > 0 && data.length === 0) {
+        let maxpageno = maxPageno(counts as never, limit)
+        options.skip = (maxpageno - 1) * limit
+        userData = await userData.Dao.list(conditions, options) as ListData
+      }
       return res.api(userData)
     } catch (error) {
       if (CustomError(error)) {

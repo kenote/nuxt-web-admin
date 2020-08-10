@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {
+  Backtop,
   Breadcrumb,
   BreadcrumbItem,
   Button,
@@ -19,6 +20,7 @@ import {
   DropdownMenu,
   Form,
   FormItem,
+  Icon,
   Input,
   InputNumber,
   Loading,
@@ -50,6 +52,7 @@ import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 import Scrollbar from 'element-ui/lib/scrollbar'
 
 export default () => {
+  Vue.use(Backtop)
   Vue.use(Breadcrumb)
   Vue.use(BreadcrumbItem)
   Vue.use(Button)
@@ -69,6 +72,7 @@ export default () => {
   Vue.use(DropdownMenu)
   Vue.use(Form)
   Vue.use(FormItem)
+  Vue.use(Icon)
   Vue.use(Input)
   Vue.use(InputNumber)
   Vue.use(Loading.directive)

@@ -2,6 +2,7 @@
   <page>
     <dashboard-breadcrumb :route-path="$route.path" :channel="selectedChannel" />
     <slot></slot>
+    <el-backtop target=".dashboard-page" :visibility-height="60" :bottom="100" :right="20"></el-backtop>
   </page>
 </template>
 

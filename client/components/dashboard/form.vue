@@ -59,6 +59,11 @@ export default class DashboardForm extends Vue {
     })
   }
 
+  handleRest (): void {
+    let theForm = this.$refs['theForm'] as ElForm
+    theForm.resetFields()
+  }
+
   handleGetData (api: Channel.api, next: (data: Maps<any>[]) => void): void {
     this.$emit('get-data', api, next)
   }

@@ -11,7 +11,11 @@ import { oc } from 'ts-optchain'
 
 const Model = __Models.groupModel
 const options: QueryOptions = {
-  name: 'group'
+  name: 'group',
+  populate: {
+    path: 'store',
+    select: [ 'upload_type', 'download_type' ]
+  }
 }
 
 @autoNumber({})
