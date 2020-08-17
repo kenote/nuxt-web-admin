@@ -7,6 +7,7 @@ import { assign, random, isRegExp, isString, zipObject, remove } from 'lodash'
 import * as nunjucks from 'nunjucks'
 import * as rules from '@/utils/rules'
 import * as yaml from 'js-yaml'
+import * as dayjs from 'dayjs'
 
 export function getMetaInfo (data: Maps<string | undefined>, metas?: any[]): MetaInfo {
   let metaInfo: MetaInfo = {
@@ -162,4 +163,31 @@ export function maxPageno (counts: number, limit: number): number {
   // tslint:disable-next-line: radix
   let pageno = parseInt(String((counts + limit - 1) / limit))
   return pageno
+}
+
+/**
+ * 获取以月为分段两个时间的所有时间段
+ * @param begin 开始时间
+ * @param end 结束时间
+ */
+export function getRangeDateByMonth (begin: Date, end: Date): Date[][] {
+  // 获取开始日期月底时间
+  let begin_end = new Date(begin.getFullYear(), begin.getMonth() + 1, 0)
+  // 获取结束日期月初时间
+  let end_begin = new Date(end.getFullYear(), end.getMonth(), 1)
+  let ranges: Date[][] = []
+  if (begin_end.getTime() > end_begin.getTime()) {
+    ranges.push([ begin, end ])
+  }
+  else {
+    ranges.push([ begin, begin_end ])
+    let diffMonth = dayjs(end_begin).diff(begin_end, 'month')
+    for (let i = 1; i <= diffMonth; i++) {
+      let diff_start = new Date(begin.getFullYear(), begin.getMonth() + i, 1)
+      let diff_end = new Date(begin.getFullYear(), begin.getMonth() + i + 1, 0)
+      ranges.push([ diff_start, diff_end ])
+    }
+    ranges.push([ end_begin, end ])
+  }
+  return ranges
 }

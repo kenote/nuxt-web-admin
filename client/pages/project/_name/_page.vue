@@ -15,7 +15,7 @@
       @update-plan="handleUpdatePlan"
       @remove-plan="handleRemovePlan"
       @submit="handleSubmit"
-      :loading="loading" />
+      :loading="loading || polling" />
 
     <!-- 返回结果 -->
 
@@ -30,21 +30,41 @@
       :loading="loading" >
 
     </dashboard-cards>
+    <!-- 图表模式 -->
+    <!-- <dashboard-charts v-else-if="viewMode === 'charts'"
+      :data="data"
+      :columns="pageSetting.columns"
+      :loading="loading">
+      <el-select v-model="viewMode" placeholder="请选择" style="margin-left:20px" v-if="oc(data)([]).length > 0 && viewModes.length > 1" :disabled="loading || polling">
+        <el-option v-for="(item, key) in viewModes" :key="key" :label="item.name" :value="item.key"></el-option>
+      </el-select>
+      <dashboard-poller ref="pollTasks" 
+        :tasks="pollTasks"
+        :polling="polling"
+        @play="playTask"
+        @pause="pauseTask"
+        @clean-success="cleanSuccessTask"
+        @clean-all="cleanAllTask"
+        @clean-item="cleanItemTask"
+        />
+    </dashboard-charts> -->
 
     <!-- 单表格模式 -->
     <dashboard-table v-else
       :columns="pageSetting.columns"
       :data="data"
+      :view-mode="viewMode"
       :auth-level="authLevel"
       :flag="flag"
       :footer-bar="true"
       :pagination="pagination"
       :pagesize="15"
-      :loading="loading" >
-      <el-switch
+      :loading="loading && !pageSetting.rangeDate" >
+      <el-switch v-if="viewMode != 'charts'"
         v-model="pagination"
         style="margin-top: 10px"
         inactive-text="分页"
+        :disabled="loading || polling"
         />
       <el-dropdown @command="handleCommandExport" style="margin-left:20px" v-if="oc(data)([]).length > 0 && isExport()">
         <el-button type="success">
@@ -54,6 +74,18 @@
           <el-dropdown-item v-for="item in fileTypes" :key="item.key" :command="item.key">{{ item.name }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+      <el-select v-model="viewMode" placeholder="请选择" style="margin-left:20px" v-if="viewModes.length > 1" :disabled="loading || polling">
+        <el-option v-for="(item, key) in viewModes" :key="key" :label="item.name" :value="item.key"></el-option>
+      </el-select>
+      <dashboard-poller ref="pollTasks" v-if="pageSetting.rangeDate"
+        :tasks="pollTasks"
+        :polling="polling"
+        @play="playTask"
+        @pause="pauseTask"
+        @clean-success="cleanSuccessTask"
+        @clean-all="cleanAllTask"
+        @clean-item="cleanItemTask"
+        />
     </dashboard-table>
 
   </dashboard-page>
@@ -64,25 +96,37 @@ import { Component, Vue, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import * as api from '~/api'
 import { Channel } from '@/types/channel'
-import { Maps } from 'kenote-config-helper'
-import { parseProps } from '@/utils'
+import { Maps, KeyMap } from 'kenote-config-helper'
+import { parseProps, getRangeDateByMonth } from '@/utils'
 import { ResponsePlanDocument, CreatePlanDocument, PlanType, EditPlanDocument } from '@/types/proxys/plan'
 import * as yaml from 'js-yaml'
 import { UpdateWriteResult, DeleteWriteResult } from 'kenote-mongoose-helper'
 import { oc } from 'ts-optchain'
 import { fileTypes, xlsxBlob } from '@/utils/xlsx'
-import { Execl } from '@/types'
-import { map } from 'lodash'
+import { Execl, Poller } from '@/types'
+import { map, intersection, zipObject, isEqual, remove } from 'lodash'
 import { formatStringType } from '@/utils/format'
 import { Store } from '~/store'
 import { getRtsps } from '@/utils/user'
 import { HeaderOptions } from '@/utils/http'
 import { ruleJudgment } from '@/utils/query'
+import dayjs from 'dayjs'
+import { RestfulInfoByError } from '@/types/restful'
+import axios, { CancelTokenSource } from 'axios'
+import * as uuid from 'uuid'
+
+const viewModes: Maps<string> = {
+  columns    : '表格模式',
+  charts     : '图表模式'
+}
 
 @Component<ProjectPage>({
   name: 'project-page',
   layout: 'dashboard',
   middleware: ['authenticated'],
+  created() {
+    console.log(uuid.v4())
+  }
 })
 export default class ProjectPage extends mixins(PageMixin) {
 
@@ -93,6 +137,11 @@ export default class ProjectPage extends mixins(PageMixin) {
   @Provide() data: any[] = []
   @Provide() pagination: boolean = true
   @Provide() filterRtsps: string[] = []
+  @Provide() viewModes: KeyMap<string>[] = []
+  @Provide() viewMode: string = ''
+  @Provide() pollTasks: Poller.task[] = []
+  @Provide() cancelTokenSource!: CancelTokenSource
+  @Provide() polling: boolean = false
 
   fileTypes = fileTypes
 
@@ -101,6 +150,14 @@ export default class ProjectPage extends mixins(PageMixin) {
     let s = ['Master', 'Slave']
     let rstps = getRtsps(this.auth, this.selectedChannel.label, this.rtsps, oc(val).options.rtsp())
     this.filterRtsps = JSON.parse(JSON.stringify(rstps)).sort( (a, b) => s.indexOf(a) < s.indexOf(b) ? 1: -1 )
+    let modes = intersection(Object.keys(val), ['columns', 'charts'])
+    this.viewModes = modes.map( key => ({ key, name: viewModes[key] }))
+    this.viewMode = modes[0]
+  }
+
+  @Watch('viewMode')
+  onViewModeChange (val: string, oldVal: string): void {
+    console.log(val)
   }
 
   isExport (): boolean {
@@ -212,6 +269,24 @@ export default class ProjectPage extends mixins(PageMixin) {
     if (rtsp) {
       httpOptions.header = { rtsp_key: rtsp }
     }
+    let { rangeDate } = this.pageSetting
+    if (rangeDate) {
+      let { begin, end } = values as Record<'begin' | 'end', Date>
+      let ranges: Date[][] = []
+      if (rangeDate === 'month') {
+        ranges = getRangeDateByMonth(begin, end)
+        this.pollTasks = ranges.map( range => ({ 
+          key: uuid.v4(),
+          status: 'waiting', 
+          name: range.map( o => dayjs(o).format('YYYY-MM-DD') ).join(' ~ '), 
+          params: { ...values, ...zipObject(['begin', 'end'], range.map(toISOString)) },
+          options: httpOptions 
+        }))
+        this.handlePollTasks()
+      }
+      return
+    }
+    this.loading = true
     setTimeout(async () => {
       try {
         let result = await api.protoSend(this.pageSetting.api!, values, httpOptions)
@@ -224,6 +299,43 @@ export default class ProjectPage extends mixins(PageMixin) {
       } catch (error) {
         this.$message.warning(error.message)
       }
+      this.loading = false
+    }, 300)
+  }
+
+  handlePollTasks (isStart: boolean = true): void {
+    let poller = this.$refs['pollTasks'] as any
+    let pollTasks = this.pollTasks.filter( task => task.status != 'success' )
+    this.polling = true
+    setTimeout(async () => {
+      try {
+        if (isStart) {
+          this.data = []
+        }
+        for (let task of pollTasks) {
+          if (!this.polling) break
+          let start = Date.now()
+          task.status = 'performed'
+          await Promise.resolve(poller.update())
+          let { params, options } = task
+          this.cancelTokenSource = axios.CancelToken.source()
+          options!.cancelToken = this.cancelTokenSource.token
+          let result = await api.protoSend(this.pageSetting.api!, params!, options!)
+          task.size = JSON.stringify(result.data).length
+          task.time = Date.now() - start
+          if (result.error === 0) {
+            this.data = [ ...this.data, ...oc(result).data['data']([]) ]
+            task.status = 'success'
+          }
+          else {
+            task.status = 'failure'
+          }
+          await Promise.resolve(poller.update())
+        }
+      } catch (error) {
+        
+      }
+      this.polling = false
     }, 300)
   }
 
@@ -253,5 +365,32 @@ export default class ProjectPage extends mixins(PageMixin) {
     }
     xlsxBlob({ sheetName, header, data, filename: sheetName, bookType })
   }
+
+  cleanAllTask (): void {
+    this.pollTasks = []
+  }
+
+  cleanSuccessTask (): void {
+    this.pollTasks = this.pollTasks.filter( o => o.status != 'success' )
+  }
+
+  pauseTask (): void {
+    this.cancelTokenSource.cancel('用户中断了请求')
+    this.polling = false
+  }
+
+  playTask (): void {
+    this.handlePollTasks(false)
+  }
+
+  cleanItemTask (item: Poller.task): void {
+    let poller = this.$refs['pollTasks'] as any
+    remove(this.pollTasks, o => o.key === item.key)
+    poller.update()
+  }
+}
+
+function toISOString (value?: string | number | Date): string {
+  return dayjs(value).toISOString()
 }
 </script>

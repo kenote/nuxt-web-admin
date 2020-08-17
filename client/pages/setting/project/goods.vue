@@ -16,7 +16,7 @@
         <!-- 配置表 -->
         <template v-else>
           <el-tabs v-model="goodsType" type="card" v-if="oc(project).options[goodsType]()">
-            <el-tab-pane v-for="(item, key) in goods" :key="key" :label="item.name" :name="item.key">
+            <el-tab-pane v-for="item in goods" :key="item.key" :label="item.name" :name="item.key">
               <dashboard-table v-if="item.key === goodsType && oc(project).options[item.key]()"
                 :columns="oc(project).options[item.key].columns([])"
                 :search-options="oc(project).options[item.key].search()"
@@ -85,11 +85,17 @@ export default class SettingProjectGoodsPage extends mixins(PageMixin) {
   @Watch('projectTag')
   onProjectTagChange (val: string, oldVal: string): void {
     this.mode = 'list'
-    this.goodsType = 'item'
+    
     this.project = this.projectChannels.find( o => o.label === val )
     if (this.project) {
       this.goods = oc(this.project).options.goods([]) as Maps<any>[]
       this.projectName = this.project.name
+    }
+    if (this.goodsType === 'item' && oldVal) {
+      this.handleList()
+    }
+    else {
+      this.goodsType = 'item'
     }
   }
 

@@ -2,7 +2,11 @@
   <fragment>
     <!-- 顶部工具栏 -->
     <slot name="header"></slot>
-    <el-table ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="handleSelectionChange" v-loading="loading" >
+    <dashboard-charts v-if="viewMode === 'charts'"
+      :data="data"
+      :columns="columns"
+      :loading="loading" />
+    <el-table v-else ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="handleSelectionChange" v-loading="loading" >
       <el-table-column v-if="selection" 
         type="selection" 
         width="40" 
@@ -82,7 +86,7 @@
       </el-table-column>
     </el-table>
     <!-- 分页条 -->
-    <el-pagination v-if="pagination"
+    <el-pagination v-if="pagination && viewMode != 'charts'"
       background
       @current-change="handleCurrentChange"
       :current-page="current"
@@ -124,11 +128,24 @@ interface Conditions {
     this.$emit('getdata', this.counts > -1 ? { size: this.pagesize } : null)
   },
   mounted () {
+    if (this.data.length > 0) {
+      if (this.counts > -1) {
+        this.total = this.counts
+        this.pdata = this.data
+        this.current = this.pageno
+      }
+      else {
+        this.total = this.data.length
+        let pageno: number = parseInt(String((this.total + this.pagesize - 1) / this.pagesize))
+        pageno = pageno || 1
+        this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno)
+      }
+    }
     if (!this.footerOpen) return
     if (this.footerBar) {
       setTimeout(() => {
         this.showFooter = true
-      }, 800)
+      }, 500)
     }
   },
   beforeDestroy () {
@@ -150,6 +167,7 @@ export default class DashboardTable extends Vue {
   @Prop({ default: true }) footerOpen!: boolean
   @Prop({ default: false }) selection!: boolean
   @Prop({ default: -1 }) counts!: number
+  @Prop({ default: '' }) viewMode!: string
 
   @Provide() search: string = ''
   @Provide() showFooter: boolean = false
@@ -189,9 +207,10 @@ export default class DashboardTable extends Vue {
       this.current = this.pageno
     }
     else {
-      this.total = val.length
       let theTable = this.$refs['filterTable'] as ElTable
+      if (!theTable) return
       theTable.clearFilter()
+      this.total = val.length
       let pageno: number = parseInt(String((this.total + this.pagesize - 1) / this.pagesize))
       pageno = pageno || 1
       this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno)
@@ -201,6 +220,18 @@ export default class DashboardTable extends Vue {
     setTimeout(() => {
       this.showFooter = true
     }, 800)
+  }
+
+  @Watch('viewMode')
+  onViewModeChange (val: string, oldVal: string): void {
+    if (oldVal === 'charts') {
+      let theTable = this.$refs['filterTable'] as ElTable
+      if (theTable) theTable.clearFilter()
+      this.total = this.data.length
+      let pageno: number = parseInt(String((this.total + this.pagesize - 1) / this.pagesize))
+      pageno = pageno || 1
+      this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno)
+    }
   }
 
   @Watch('search')

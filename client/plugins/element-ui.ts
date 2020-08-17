@@ -30,6 +30,8 @@ import {
   MessageBox,
   Option,
   Pagination,
+  Popover,
+  Progress,
   Radio,
   RadioButton,
   RadioGroup,
@@ -80,6 +82,8 @@ export default () => {
   Vue.use(MenuItem)
   Vue.use(Option)
   Vue.use(Pagination)
+  Vue.use(Popover)
+  Vue.use(Progress)
   Vue.use(Radio)
   Vue.use(RadioButton)
   Vue.use(RadioGroup)

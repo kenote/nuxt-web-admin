@@ -1,5 +1,7 @@
 import { ResponsePlanDocument, PlanType } from '@/types/proxys/plan'
 import { UpdateWriteResult, DeleteWriteResult } from 'kenote-mongoose-helper'
+import { Maps, KeyMap } from 'kenote-config-helper'
+import { HeaderOptions } from '@/utils/http'
 
 export interface Option {
   key               : number | string
@@ -65,4 +67,18 @@ export interface PlanOptions {
 
 export interface DitchOptions {
   plan              : PlanOptions
+}
+
+export declare namespace Poller {
+
+  type status = 'success' | 'failure' | 'performed' | 'waiting'
+
+  interface task extends Maps<any>, KeyMap<string> {
+    key               : string
+    status            : status
+    size              ?: number
+    time              ?: number
+    options           ?: HeaderOptions
+    params            ?: Maps<any>
+  }
 }

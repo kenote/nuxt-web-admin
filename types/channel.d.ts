@@ -12,6 +12,7 @@ export declare namespace Channel {
     columns          ?: columns[]
     queryer          ?: queryer[]
     export           ?: Export
+    rangeDate        ?: 'month' | 'day'
   }
 
   interface columns extends KenoteConfig.Columns {
