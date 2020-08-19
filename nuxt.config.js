@@ -1,6 +1,5 @@
 // nuxt.config.js
 import tsconfigPathsWebpackPlugin from 'tsconfig-paths-webpack-plugin'
-import config from './client/config'
 
 export default {
   telemetry: false,
@@ -11,10 +10,7 @@ export default {
     ignorecase: false
   },
   head: {
-    title: config.name,
-    meta: [ 
-      ...config.meta 
-    ]
+    
   },
   css: [
     // lib css

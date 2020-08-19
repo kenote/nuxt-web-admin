@@ -8,7 +8,7 @@ Host              : 0.0.0.0
 Port              : 3000
 
 # 站点名称
-site_name         : Nuxt web admin
+site_name         : &site_name 管理平台
 
 # 站点链接
 site_url          : http://localhost:3000
@@ -48,3 +48,16 @@ options:
       "error": {{ code }},
       "message": "{{ message }}"
     }
+  # 页面标题
+  title             : *site_name
+  # Meta 信息
+  meta:
+    - 
+      charset           : utf-8
+    - 
+      name              : viewport
+      content           : width=device-width, initial-scale=1
+    - 
+      hid               : description
+      name              : description
+      content           : 基于 Nuxt.js 与 Express 构建而成。

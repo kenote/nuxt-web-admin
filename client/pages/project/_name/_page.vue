@@ -9,6 +9,8 @@
       }"
       :columns="oc(pageSetting).queryer([])"
       :rtsps="filterRtsps"
+      :submit-options="pageSetting.submit"
+      :draft="pageSetting.draft"
       @get-data="handleGetData"
       @get-plans="handleGetPlans"
       @create-plan="handleCreatePlan"
@@ -48,7 +50,7 @@
         @clean-item="cleanItemTask"
         />
     </dashboard-charts> -->
-
+    <div v-else-if="messageResult" />
     <!-- 单表格模式 -->
     <dashboard-table v-else
       :columns="pageSetting.columns"
@@ -97,7 +99,7 @@ import PageMixin from '~/mixins/page'
 import * as api from '~/api'
 import { Channel } from '@/types/channel'
 import { Maps, KeyMap } from 'kenote-config-helper'
-import { parseProps, getRangeDateByMonth } from '@/utils'
+import { parseProps, getRangeDateByMonth, getRangeDateByDay } from '@/utils'
 import { ResponsePlanDocument, CreatePlanDocument, PlanType, EditPlanDocument } from '@/types/proxys/plan'
 import * as yaml from 'js-yaml'
 import { UpdateWriteResult, DeleteWriteResult } from 'kenote-mongoose-helper'
@@ -114,6 +116,7 @@ import dayjs from 'dayjs'
 import { RestfulInfoByError } from '@/types/restful'
 import axios, { CancelTokenSource } from 'axios'
 import * as uuid from 'uuid'
+import { QuerySelectOption } from 'kenote-config-helper/types/queryselect'
 
 const viewModes: Maps<string> = {
   columns    : '表格模式',
@@ -125,7 +128,7 @@ const viewModes: Maps<string> = {
   layout: 'dashboard',
   middleware: ['authenticated'],
   created() {
-    console.log(uuid.v4())
+    
   }
 })
 export default class ProjectPage extends mixins(PageMixin) {
@@ -142,6 +145,7 @@ export default class ProjectPage extends mixins(PageMixin) {
   @Provide() pollTasks: Poller.task[] = []
   @Provide() cancelTokenSource!: CancelTokenSource
   @Provide() polling: boolean = false
+  @Provide() messageResult: boolean | undefined = false
 
   fileTypes = fileTypes
 
@@ -153,6 +157,14 @@ export default class ProjectPage extends mixins(PageMixin) {
     let modes = intersection(Object.keys(val), ['columns', 'charts'])
     this.viewModes = modes.map( key => ({ key, name: viewModes[key] }))
     this.viewMode = modes[0]
+    // 
+    if (val.querySelect) {
+      let { default: label } = val.querySelect
+      this.messageResult = this.isMessageResult(label)
+    }
+    else {
+      this.messageResult = this.isMessageResult()
+    }
   }
 
   @Watch('viewMode')
@@ -275,15 +287,18 @@ export default class ProjectPage extends mixins(PageMixin) {
       let ranges: Date[][] = []
       if (rangeDate === 'month') {
         ranges = getRangeDateByMonth(begin, end)
-        this.pollTasks = ranges.map( range => ({ 
-          key: uuid.v4(),
-          status: 'waiting', 
-          name: range.map( o => dayjs(o).format('YYYY-MM-DD') ).join(' ~ '), 
-          params: { ...values, ...zipObject(['begin', 'end'], range.map(toISOString)) },
-          options: httpOptions 
-        }))
-        this.handlePollTasks()
       }
+      if (rangeDate === 'day') {
+        ranges = getRangeDateByDay(begin, end)
+      }
+      this.pollTasks = ranges.map( range => ({ 
+        key: uuid.v4(),
+        status: 'waiting', 
+        name: range.map( o => dayjs(o).format('YYYY-MM-DD') ).join(' ~ '), 
+        params: { ...values, ...zipObject(['begin', 'end'], range.map(toISOString)) },
+        options: httpOptions 
+      }))
+      ranges.length > 0 && this.handlePollTasks()
       return
     }
     this.loading = true
@@ -387,6 +402,15 @@ export default class ProjectPage extends mixins(PageMixin) {
     let poller = this.$refs['pollTasks'] as any
     remove(this.pollTasks, o => o.key === item.key)
     poller.update()
+  }
+
+  isMessageResult (label?: string): boolean {
+    let { querySelect, submit } = this.pageSetting
+    if (querySelect) {
+      let item: QuerySelectOption | undefined = querySelect.options.find( o => o.key === label )
+      return oc(item).submit.result() === 'message'
+    }
+    return oc(submit).result() === 'message'
   }
 }
 

@@ -310,9 +310,10 @@
       padding: 20px 15px 0;
       margin: 0 15px;
 
-      .el-button--primary {
+      .el-button, .el-input__inner {
         border-radius: 0;
       }
+      
     }
   }
   .el-select .el-input {

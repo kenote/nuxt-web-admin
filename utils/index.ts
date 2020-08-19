@@ -191,3 +191,19 @@ export function getRangeDateByMonth (begin: Date, end: Date): Date[][] {
   }
   return ranges
 }
+
+/**
+ * 获取以天为分段两个时间的所有时间段
+ * @param begin 开始时间
+ * @param end 结束时间
+ */
+export function getRangeDateByDay (begin: Date, end: Date): Date[][] {
+  let ranges: Date[][] = []
+  let diffDay = dayjs(end).diff(begin, 'day')
+  for (let i = 0; i <= diffDay; i++) {
+    let diff_start = dayjs(begin).add(i, 'day').toDate()
+    let diff_end = dayjs(begin).add(i, 'day').toDate()
+    ranges.push([ diff_start, diff_end ])
+  }
+  return ranges
+}

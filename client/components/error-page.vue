@@ -23,13 +23,11 @@
 
 <script lang="ts">
 import { Component, Vue, Provide, Prop } from 'nuxt-property-decorator'
-import config from '~/config.json'
 
 @Component<ErrorPage>({
   name: 'error-page',
   head () {
     return {
-      title: config.name,
       meta: [
         {
           name: 'viewport',

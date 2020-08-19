@@ -87,5 +87,13 @@
     "start": "node ./build/index.js",
     "deploy": "kenote deploy",
     "tools": "node ./build/tools.js"
-  }
+  },
+  "keywords": [
+    "nuxtjs",
+    "express",
+    "typescript",
+    "mongodb",
+    "server-side-rendering",
+    "vue"
+  ]
 }
