@@ -21,6 +21,27 @@
         :loading="loading">
 
       </dashboard-ditch-conversion>
+      <!-- 渠道分配 -->
+      <dashboard-ditch-allot v-else-if="mode === 'allot'"
+        :title="title"
+        :data="list"
+        @get-teams="handleGetTeams"
+        @submit="handleSubmitAllot"
+        @goback="handleGoback"
+        :loading="loading">
+
+      </dashboard-ditch-allot>
+      <!-- 渠道分组 -->
+      <dashboard-ditch-grouping v-else-if="mode === 'grouping'"
+        :title="title"
+        :data="list"
+        @get-ditch-group="handleGetDitchGroups"
+        @set-ditch-group="handleAddDitchGroups"
+        @update-ditch-group="handleUpdateDitchGroups"
+        @goback="handleGoback"
+        :loading="loading">
+
+      </dashboard-ditch-grouping>
       <!-- 渠道列表 -->
       <dashboard-table v-else
         :columns="[
@@ -48,9 +69,9 @@
             key: 'cardinal_number',
             name: '基数',
             align: 'left',
-            default: '--'
+            default: '--',
+            minwidth: 300
           },
-          {},
           {
             key: 'actions',
             name: '',
@@ -70,6 +91,8 @@
       <template slot="footer" v-if="projectTag">
         <el-button type="primary" @click="handleOpenImport" :disabled="authLevel < oc(flag).edit(0)">导入渠道</el-button>
         <el-button type="warning" @click="handleOpenconversion" :disabled="authLevel < oc(flag).edit(0)">数据转换</el-button>
+        <el-button type="warning" @click="handleOpenAllot" :disabled="authLevel < oc(flag).edit(0)">渠道分配</el-button>
+        <el-button type="warning" @click="handleOpenGroup" :disabled="authLevel < oc(flag).edit(0)">渠道分组</el-button>
         <el-dropdown @command="handleCommandExport" style="margin-left:10px">
           <el-button type="success">
             导出渠道<i class="el-icon-arrow-down el-icon--right"></i>
@@ -86,16 +109,18 @@
 <script lang="ts">
 import { Component, Vue, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
-import { ResponseDitchDocument } from '@/types/proxys/ditch'
+import { ResponseDitchDocument, DitchGrouping } from '@/types/proxys/ditch'
 import * as api from '~/api'
 import { Channel } from '@/types/channel'
 import { oc } from 'ts-optchain'
 import { fileTypes, xlsxBlob } from '@/utils/xlsx'
 import { Execl } from '@/types'
-import { map } from 'lodash'
+import { map, isEmpty } from 'lodash'
 import { Maps } from 'kenote-config-helper'
+import { ResponseTeamDocument } from '@/types/proxys/team'
+import Ucenter from '@/types/apis/ucenter'
 
-type ModeType = 'list' | 'import' | 'conversion'
+type ModeType = 'list' | 'import' | 'conversion' | 'allot' | 'grouping'
 
 @Component<SettingProjectDitchPage>({
   name: 'setting-project-ditch-page',
@@ -141,6 +166,16 @@ export default class SettingProjectDitchPage extends mixins(PageMixin) {
     this.title = `${oc(this.project).name('')} --> 渠道`
   }
 
+  handleOpenAllot (): void {
+    this.mode = 'allot'
+    this.title = `${oc(this.project).name('')}`
+  }
+
+  handleOpenGroup (): void {
+    this.mode = 'grouping'
+    this.title = `${oc(this.project).name('')}`
+  }
+
   handleGoback (): void {
     this.mode = 'list'
     this.title = ''
@@ -164,6 +199,46 @@ export default class SettingProjectDitchPage extends mixins(PageMixin) {
     }, 300)
   }
 
+  handleGetTeams (next: (teams: ResponseTeamDocument[]) => void): void {
+    setTimeout(async () => {
+      try {
+        let result = await api.teamList(this.projectTag, this.httpOptions)
+        if (result.error === 0) {
+          next(result.data)
+          return
+        }
+        else {
+          this.$message.warning(result.message)
+        }
+      } catch (error) {
+        this.$message.warning(error.message)
+      }
+    }, 300)
+  }
+
+  handleGetDitchGroups (next: (groups: DitchGrouping[]) => void): void {
+    let fetch: Channel.api = {
+      method: 'get',
+      url: `/api/v1/proto/${this.projectTag}/setting/ditch-groups`,
+      options: this.httpOptions
+    }
+    setTimeout(async () => {
+      try {
+        let result = await api.getData(fetch)
+        if (result.error === 0) {
+          let data = isEmpty(result.data) ? [] : result.data
+          next(data)
+          return
+        }
+        else {
+          this.$message.warning(result.message)
+        }
+      } catch (error) {
+        this.$message.warning(error.message)
+      }
+    }, 300)
+  }
+
   handleSubmit (content: string): void {
     this.loading = true
     setTimeout(async () => {
@@ -171,6 +246,66 @@ export default class SettingProjectDitchPage extends mixins(PageMixin) {
         let result = await api.ditchUpdate(this.projectTag, content, this.httpOptions)
         if (result.error === 0) {
           this.handleGoback()
+        }
+        else {
+          this.$message.warning(result.message)
+        }
+      } catch (error) {
+        this.$message.warning(error.message)
+      }
+      this.loading = false
+    }, 300)
+  }
+
+  handleSubmitAllot (values: Ucenter.ditchAllot): void {
+    this.loading = true
+    setTimeout(async () => {
+      try {
+        let result = await api.ditchAllot(this.projectTag, values, this.httpOptions)
+        if (result.error === 0) {
+          this.handleList()
+        }
+        else {
+          this.$message.warning(result.message)
+        }
+      } catch (error) {
+        this.$message.warning(error.message)
+      }
+      this.loading = false
+    }, 300)
+  }
+
+  handleAddDitchGroups (values: DitchGrouping, next: (data: DitchGrouping[]) => void): void {
+    this.loading = true
+    setTimeout(async () => {
+      try {
+        let result = await api.addDitchGrouping(this.projectTag, values, this.httpOptions)
+        if (result.error === 0) {
+          next(result.data)
+        }
+        else {
+          this.$message.warning(result.message)
+        }
+      } catch (error) {
+        this.$message.warning(error.message)
+      }
+      this.loading = false
+    }, 300)
+  }
+
+  handleUpdateDitchGroups (content: string, isget: boolean, next: (data: boolean) => void): void {
+    let fetch: Channel.api = {
+      method: 'post',
+      url: `/api/v1/proto/${this.projectTag}/setting/ditch-groups`,
+      params: { content },
+      options: this.httpOptions
+    }
+    this.loading = true
+    setTimeout(async () => {
+      try {
+        let result = await api.getData(fetch)
+        if (result.error === 0) {
+          next(isget)
         }
         else {
           this.$message.warning(result.message)

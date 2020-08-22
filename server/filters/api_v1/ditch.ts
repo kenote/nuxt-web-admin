@@ -8,7 +8,8 @@ import { oc } from 'ts-optchain'
 import { Filter, asyncFilterData } from 'kenote-validate-helper'
 import { filterUserLevel } from '~/middleware/auth'
 import { isYaml } from '@/utils'
-import { UpdateDithsDocument } from '@/types/proxys/ditch'
+import { UpdateDithsDocument, DitchGrouping } from '@/types/proxys/ditch'
+import { isMongoId } from 'validator'
 
 class DitchFilter {
 
@@ -49,6 +50,46 @@ class DitchFilter {
       let document = await asyncFilterData(filters) as UpdateDithsDocument
       document.channel = channel
       return next(document)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  public async allot (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { channel } = req.params
+    let { team, ditchs } = req.body
+    if (!isMongoId(team)) {
+      return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
+    }
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { ErrorInfo, CustomError } = errorState
+    let auth = req.user as ResponseUserDocument
+    try {
+      filterUserLevel(auth, 0, 9000, ErrorInfo)
+      return next({ channel, team, ditchs })
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  public async addGrouping (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { channel } = req.params
+    let { key, name, ditchs } = req.body
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { ErrorInfo, CustomError } = errorState
+    let auth = req.user as ResponseUserDocument
+    try {
+      filterUserLevel(auth, 0, 9000, ErrorInfo)
+      let document: DitchGrouping = { key, name, ditchs }
+      return next({ channel, document })
     } catch (error) {
       if (CustomError(error)) {
         return res.api(null, error)

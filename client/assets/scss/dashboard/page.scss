@@ -136,11 +136,15 @@
 
       }
 
+      .el-transfer-panel {
+        width: 240px;
+      }
+
       .el-transfer-panel__body {
         height: 264px;
 
         .el-input {
-          width: auto;
+          padding-right: 30px;
         }
       }
 

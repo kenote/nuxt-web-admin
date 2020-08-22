@@ -62,6 +62,12 @@ declare namespace Ucenter {
   interface setPass {
     password       : string
   }
+
+  interface ditchAllot {
+    team           ?: string
+    ditchs          : string[]
+    raw_ditchs      : string[]
+  }
 }
 
 export = Ucenter

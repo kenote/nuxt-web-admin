@@ -7,6 +7,7 @@ import { RemoveOptions } from '@/types/proxys'
 import { Channel } from '@/types/channel'
 import Alicloud from '@/types/alicloud'
 import { CreatePlanDocument, EditPlanDocument } from '@/types/proxys/plan'
+import { DitchGrouping } from '@/types/proxys/ditch'
 import { Maps } from 'kenote-config-helper'
 
 /**
@@ -380,6 +381,29 @@ export async function ditchList (channel: string, options: HeaderOptions): Promi
  */
 export async function ditchUpdate (channel: string, content: string, options: HeaderOptions): Promise<RestfulInfoByError> {
   let restful = await httpClient.post(`/api/v1/ditch/${channel}/update`, { content }, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 分配渠道
+ */
+export async function ditchAllot (channel: string, data: Ucenter.ditchAllot, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.post(`/api/v1/ditch/${channel}/allot`, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 分组渠道
+ */
+export async function ditchGrouping (channel: string, data: any, options: HeaderOptions) {
+
+}
+
+/**
+ * 添加渠道分组
+ */
+export async function addDitchGrouping (channel: string, data: DitchGrouping, options: HeaderOptions) {
+  let restful = await httpClient.post(`/api/v1/ditch/${channel}/grouping/add`, data, options)
   return formatRestful(restful)
 }
 

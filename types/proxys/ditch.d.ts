@@ -1,6 +1,6 @@
 import { Document } from 'mongoose'
 import { ObjectId } from 'bson'
-import { Maps } from 'kenote-config-helper'
+import { Maps, KeyMap } from 'kenote-config-helper'
 import { ResponseTeamDocument } from './team'
 
 export interface CreateDitchDocument extends EditDitchDocument {
@@ -28,4 +28,19 @@ export interface EditDitchDocument {
 export interface UpdateDithsDocument {
   channel           ?: string
   content            : string
+}
+
+export interface AllotDitchDocument {
+  channel            : string
+  team               : string
+  ditchs             : string[]
+}
+
+export interface DitchGrouping extends KeyMap<string> {
+  ditchs             : string[]
+}
+
+export interface CreateDitchGrouping {
+  channel            : string
+  document           : DitchGrouping
 }

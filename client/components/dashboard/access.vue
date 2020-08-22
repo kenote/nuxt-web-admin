@@ -37,7 +37,7 @@ import { Channel as IChannel, Maps } from 'kenote-config-helper'
 @Component<DashboardAccess>({
   name: 'dashboard-access',
   created () {
-    this.checkedKeys = this.data.filter(this.filterAccess)
+    this.checkedKeys = this.data
   }
 })
 export default class DashboardAccess extends Vue {
@@ -76,14 +76,14 @@ export default class DashboardAccess extends Vue {
     this.checkedKeys = checkedKeys
   }
 
-  filterAccess (access: string): boolean {
-    for (let channel of this.channels) {
-      let store = new IChannel(channel)
-      if (store) {
-        return !!store.find(access)
-      }
-    }
-    return true
-  }
+  // filterAccess (access: string): boolean {
+  //   for (let channel of this.channels) {
+  //     let store = new IChannel(channel)
+  //     if (store) {
+  //       return !!store.find(access)
+  //     }
+  //   }
+  //   return true
+  // }
 }
 </script>

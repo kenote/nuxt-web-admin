@@ -7,10 +7,13 @@ import { loadError } from '~/utils/error'
 import ditchFilter from '~/filters/api_v1/ditch'
 import { authenticate, permission } from '~/middleware/auth'
 import ditchProxy from '~/proxys/ditch'
-import { UpdateDithsDocument } from '@/types/proxys/ditch'
+import { UpdateDithsDocument, AllotDitchDocument, ResponseDitchDocument, CreateDitchGrouping, DitchGrouping } from '@/types/proxys/ditch'
 import * as yaml from 'js-yaml'
 import { Maps } from 'kenote-config-helper'
-import { omit, clone, map } from 'lodash'
+import { omit, clone, map, isEmpty } from 'lodash'
+import { loadData } from 'kenote-config-helper/dist/utils.server'
+import * as fs from 'fs-extra'
+import * as path from 'path'
 
 class DitchController extends Controller {
 
@@ -68,6 +71,66 @@ class DitchController extends Controller {
       }
       return next(error)
     }
+  }
+
+  /**
+   * 分配渠道
+   */
+  @Router({ method: 'post', path: '/ditch/:channel/allot' })
+  @Filter( authenticate, permission('/setting/project/ditch', 'edit'), ditchFilter.allot )
+  public async allot (document: AllotDitchDocument, req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { channel, team, ditchs } = document
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let DitchProxy = ditchProxy(errorState)
+    try {
+      let data = await DitchProxy.Dao.find({ teams: team, channel }) as ResponseDitchDocument[]
+      let raw_ditchs = map(data, '_id') as string[]
+      let create_ditchs = ditchs.filter( o => !raw_ditchs.includes(o) )
+      let remove_ditchs = raw_ditchs.filter( o => !create_ditchs.includes(o) )
+      if (remove_ditchs.length > 0) {
+        await DitchProxy.Dao.update({ _id: { $in: remove_ditchs }, channel }, { $pull: { teams: team } }, { multi: true })
+      }
+      if (create_ditchs.length > 0) {
+        await DitchProxy.Dao.update({ _id: { $in: create_ditchs }, channel }, { $addToSet: { teams: team } }, { multi: true })
+      }
+      return res.api(null)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
+   * 添加分组
+   */
+  @Router({ method: 'post', path: '/ditch/:channel/grouping/add' })
+  @Filter( authenticate, permission('/setting/project/ditch', 'edit'), ditchFilter.addGrouping )
+  public async addGrouping (create: CreateDitchGrouping, req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { channel, document } = create
+    console.log(document)
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let filePath = `projects/${channel}/ditch-groups.yml`
+    try {
+      let grouping = loadData(filePath) as DitchGrouping[]
+      if (isEmpty(grouping)) {
+        grouping = []
+      }
+      grouping.push(document)
+      await fs.writeFile(path.resolve(process.cwd(), filePath), yaml.dump(grouping), { encoding: 'utf-8' })
+      return res.api(grouping)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  
   }
 }
 
