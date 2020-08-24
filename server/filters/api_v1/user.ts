@@ -10,7 +10,7 @@ import { QueryOptions } from 'kenote-mongoose-helper'
 import { loadError } from '~/utils/error'
 import __ErrorCode from '~/utils/error/code'
 import { language } from '~/config'
-import { isMongoId } from 'validator'
+import validator from 'validator'
 import { filterUserLevel } from '~/middleware/auth'
 import { ResponseUserDocument, EditUserDocument, SetPassDocument } from '@/types/proxys/user'
 import { Maps } from 'kenote-config-helper'
@@ -56,7 +56,7 @@ class UserFilter {
 
   public async edit (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
     let { _id } = req.params
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let lang = oc(req).query.lang('') as string || language
@@ -110,7 +110,7 @@ class UserFilter {
     let UserProxy = userProxy(errorState)
     let conditions = {}
     if (_id) {
-      if (!isMongoId(_id)) {
+      if (!validator.isMongoId(_id)) {
         return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
       }
       conditions = { _id }
@@ -143,7 +143,7 @@ class UserFilter {
   public async setpass (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
     let { _id } = req.params
     let { password } = req.body as Security.setPassword
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let lang = oc(req).query.lang('') as string || language

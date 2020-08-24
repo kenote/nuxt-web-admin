@@ -3,7 +3,7 @@ import { IResponse } from '~/middleware/restful'
 import { loadError } from '~/utils/error'
 import __ErrorCode from '~/utils/error/code'
 import { language } from '~/config'
-import { isMongoId } from 'validator'
+import validator from 'validator'
 import { filterUserLevel } from '~/middleware/auth'
 import { oc } from 'ts-optchain'
 import { ResponseUserDocument } from '@/types/proxys/user'
@@ -66,7 +66,7 @@ class TicketFilter {
     let auth = req.user as ResponseUserDocument
     let conditions: any = {}
     if (_id) {
-      if (!isMongoId(_id)) {
+      if (!validator.isMongoId(_id)) {
         return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
       }
       conditions = { _id }

@@ -8,7 +8,7 @@ import { oc } from 'ts-optchain'
 import { loadError } from '~/utils/error'
 import __ErrorCode from '~/utils/error/code'
 import { language } from '~/config'
-import { isEmail, isMobilePhone } from 'validator'
+import validator from 'validator'
 import { VerifyGenerateOptions } from '@/types/proxys/verify'
 
 class SecurityFilter {
@@ -24,11 +24,11 @@ class SecurityFilter {
     let warnings = {
       email: [
         { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_REQUIRED, null, true)  },
-        { validator: isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
+        { validator: validator.isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
       ],
       mobile: [
         { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_REQUIRED, null, true) },
-        { validator: (value: string) => isMobilePhone(value, 'zh-CN'), ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_FORMAT, null, true) }
+        { validator: (value: string) => validator.isMobilePhone(value, 'zh-CN'), ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_FORMAT, null, true) }
       ]
     } as Record<PassportAPI.verifyUserType, Rule[]>
     let filters = [
@@ -94,7 +94,7 @@ class SecurityFilter {
         key: 'email',
         rules: [
           { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_REQUIRED, null, true) },
-          { validator: isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
+          { validator: validator.isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
         ],
         value: email
       },
@@ -131,7 +131,7 @@ class SecurityFilter {
         key: 'mobile',
         rules: [
           { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_REQUIRED, null, true) },
-          { validator: value => isMobilePhone(value, 'zh-CN'), ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_FORMAT, null, true) }
+          { validator: value => validator.isMobilePhone(value, 'zh-CN'), ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_FORMAT, null, true) }
         ],
         value: mobile
       },

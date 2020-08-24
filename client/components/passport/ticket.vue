@@ -18,7 +18,7 @@ import { Component, Vue, Prop, Provide } from 'nuxt-property-decorator'
 import * as PassportAPI from '@/types/apis/passport'
 import { Maps, Rule } from 'kenote-config-helper'
 import { Form as ElForm } from 'element-ui'
-import { isUUID } from 'validator'
+import validator from 'validator'
 
 @Component<PassportTicket>({
   name: 'passport-ticket'
@@ -37,7 +37,7 @@ export default class PassportTicket extends Vue {
   }
 
   validateCDKey (rule: any, value: any, callback: (message?: string) =>any): (message?: string) => any {
-    let valid: boolean = isUUID(value, 4)
+    let valid: boolean = validator.isUUID(value, 4)
     if (!valid) {
       return callback(`请输入正确的${ this.name }`)
     }

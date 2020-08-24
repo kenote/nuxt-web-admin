@@ -1,5 +1,5 @@
 import { oc } from 'ts-optchain'
-import { result, isObject, isNumber, isRegExp, map, last } from 'lodash'
+import { result, isObject, isNumber, isRegExp, map, last, Dictionary, zipObject } from 'lodash'
 import { Channel } from '@/types/channel'
 import dayjs from 'dayjs'
 import * as bytes from 'bytes'
@@ -62,3 +62,38 @@ function toDate (val: string | number): Date {
 function dateFormat (date: any, format: string = 'YYYY-MM-DD'): string {
   return dayjs(date).format(format)
 }
+
+
+
+/**
+ * 时间转数字
+ * @param time string
+ * @param tag 'm' | 's' | 'ms'
+ */
+export const timeToInt = (time: string, tag: 'm' | 's' | 'ms' = 's'): number => {
+  let int: number = 0
+  let suffix: Dictionary<number> = {
+    ['m']: 1,
+    ['s']: 60,
+    ['ms']: 60000
+  }
+  let seconds: number = 0
+  if (/^([0-2]{1}\d{1})\:([0-5]{1}\d{1})$/.test(time)) {
+    let { hour, minute } = zipObject(['hour', 'minute'], time.split(':'))
+    int = Number(hour) * 60 + Number(minute)
+  }
+  else if (/^([0-2]{1}\d{1})\:([0-5]{1}\d{1})\:([0-5]{1}\d{1})$/.test(time)) {
+    let { hour, minute, second } = zipObject(['hour', 'minute', 'second'], time.split(':'))
+    int = Number(hour) * 60 + Number(minute)
+    seconds = Number(second)
+  }
+  int = int * suffix[tag]
+  if (tag === 's') {
+    int = int + seconds
+  }
+  else if (tag === 'ms') {
+    int = int + (seconds * 1000)
+  }
+  return  int
+}
+

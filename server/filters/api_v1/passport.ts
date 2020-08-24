@@ -8,7 +8,7 @@ import __ErrorCode from '~/utils/error/code'
 import { language } from '~/config'
 import { loadData } from 'kenote-config-helper/dist/utils.server'
 import { Register } from '@/types/restful'
-import { isEmail, isMobilePhone } from 'validator'
+import validator from 'validator'
 import ticketProxy from '~/proxys/ticket'
 import groupProxy from '~/proxys/group'
 import { ResponseTicketDocument } from '@/types/proxys/ticket'
@@ -80,7 +80,7 @@ class PassportFilter {
       key     : 'name',
       rules   : [
         { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_REQUIRED, null, true) },
-        { validator: isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
+        { validator: validator.isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
       ],
       value   : name
     } as Filter)
@@ -88,7 +88,7 @@ class PassportFilter {
       key     : 'name',
       rules   : [
         { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_REQUIRED, null, true) },
-        { validator: value => isMobilePhone(value, 'zh-CN'), ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_FORMAT, null, true) }
+        { validator: value => validator.isMobilePhone(value, 'zh-CN'), ...ErrorInfo(__ErrorCode.ERROR_VALID_MOBILE_FORMAT, null, true) }
       ],
       value   : name
     } as Filter)
@@ -121,7 +121,7 @@ class PassportFilter {
         key: 'email',
         rules: [
           { required: true, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_REQUIRED, null, true) },
-          { validator: isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
+          { validator: validator.isEmail, ...ErrorInfo(__ErrorCode.ERROR_VALID_EMAIL_FORMAT, null, true) }
         ],
         value: email
       },

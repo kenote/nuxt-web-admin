@@ -1,5 +1,5 @@
 import { Rule } from '@/types/restful'
-import { isEmail } from 'validator'
+import validator from 'validator'
 
 export const password: Rule = {
   pattern  : /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]/,
@@ -12,6 +12,6 @@ export const username: Rule = {
 }
 
 export const email: Rule = {
-  validator : isEmail
+  validator : validator.isEmail
 }
 

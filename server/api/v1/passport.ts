@@ -13,7 +13,7 @@ import ticketProxy from '~/proxys/ticket'
 import { ResponseUserDocument, EditUserDocument } from '@/types/proxys/user'
 import { ResponseVerifyDocument } from '@/types/proxys/verify'
 import __ErrorCode from '~/utils/error/code'
-import { isMongoId } from 'validator'
+import validator from 'validator'
 import { UpdateDocument } from '@/types/proxys'
 import { pick } from 'lodash'
 
@@ -160,7 +160,7 @@ class PassportController extends Controller {
     let conditions: any = {
       [type]: { $eq: name }
     }
-    if (isMongoId(_id || '')) {
+    if (validator.isMongoId(_id || '')) {
       conditions['_id'] = { $ne: _id }
     }
     try {

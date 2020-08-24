@@ -251,7 +251,7 @@ import { Channel } from '@/types/channel'
 import { parseProps, randomPassword } from '@/utils'
 import { pick, map, isRegExp } from 'lodash'
 import * as PassportAPI from '@/types/apis/passport'
-import { isMobilePhone } from 'validator'
+import validator from 'validator'
 import * as rules from '@/utils/rules'
 import { maxPageno } from '@/utils'
 
@@ -510,7 +510,7 @@ export default class UserPage extends mixins(PageMixin) {
 
   async validateMobile (rule: any, value: any, callback: (message?: string) => any): Promise<(message?: string) => any> {
     if (!value) return callback()
-    let valid: boolean | undefined = isMobilePhone(value, 'zh-CN')
+    let valid: boolean | undefined = validator.isMobilePhone(value, 'zh-CN')
     if (!valid) {
       return callback('请输入正确的手机号码，且不可使用虚拟手机号码')
     }

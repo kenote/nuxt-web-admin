@@ -33,7 +33,7 @@ import { Component, Vue, Prop, Provide } from 'nuxt-property-decorator'
 import * as PassportAPI from '@/types/apis/passport'
 import { Maps, Rule } from 'kenote-config-helper'
 import { Form as ElForm } from 'element-ui'
-import { isMobilePhone } from 'validator'
+import validator from 'validator'
 
 @Component<PassportVerifyUser>({
   name: 'passport-verifyuser'
@@ -82,7 +82,7 @@ export default class PassportVerifyUser extends Vue {
 }
 
 function validateMobile (rule: any, value: any, callback: (message?: string) => any): (message?: string) => any {
-  let valid: boolean = isMobilePhone(value, 'zh-CN')
+  let valid: boolean = validator.isMobilePhone(value, 'zh-CN')
   if (!valid) {
     return callback('请输入正确的手机号码，且不可使用虚拟手机号码')
   }

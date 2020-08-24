@@ -8,7 +8,7 @@ import { oc } from 'ts-optchain'
 import { Filter, asyncFilterData } from 'kenote-validate-helper'
 import { filterUserLevel } from '~/middleware/auth'
 import { CreatePlanDocument, EditPlanDocument, ResponsePlanDocument } from '@/types/proxys/plan'
-import { isMongoId } from 'validator'
+import validator from 'validator'
 import { UpdateDocument } from '@/types/proxys'
 import planProxy from '~/proxys/plan'
 import { formatArray } from '@/utils'
@@ -87,7 +87,7 @@ class PlanFilter {
     let errorState = loadError(lang)
     let { ErrorInfo, CustomError } = errorState
     let auth = req.user as ResponseUserDocument
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let filters = [
@@ -146,7 +146,7 @@ class PlanFilter {
     let PlanProxy = planProxy(errorState)
     try {
       if (_id) {
-        if (!isMongoId(_id)) {
+        if (!validator.isMongoId(_id)) {
           return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
         }
         let plan = await PlanProxy.Dao.findOne({ _id }) as ResponsePlanDocument

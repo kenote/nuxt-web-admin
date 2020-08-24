@@ -45,7 +45,7 @@ import { pick } from 'lodash'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { Register, Security } from '@/types/restful'
 import * as PassportAPI from '@/types/apis/passport'
-import { isMobilePhone } from 'validator'
+import validator from 'validator'
 
 @Component<SecurityMobile>({
   name: 'security-mobile',
@@ -83,7 +83,7 @@ export default class SecurityMobile extends Vue {
   }
 
   async validateMobile (rule: any, value: any, callback: (message?: string) => any): Promise<(message?: string) => any> {
-    let valid: boolean = isMobilePhone(value, 'zh-CN')
+    let valid: boolean = validator.isMobilePhone(value, 'zh-CN')
     if (!valid) {
       return callback('请输入正确的手机号码，且不可使用虚拟手机号码')
     }

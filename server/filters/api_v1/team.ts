@@ -3,7 +3,7 @@ import { IResponse } from '~/middleware/restful'
 import { loadError } from '~/utils/error'
 import __ErrorCode from '~/utils/error/code'
 import { language } from '~/config'
-import { isMongoId } from 'validator'
+import validator from 'validator'
 import { filterUserLevel } from '~/middleware/auth'
 import { oc } from 'ts-optchain'
 import { ResponseUserDocument } from '@/types/proxys/user'
@@ -105,7 +105,7 @@ class TeamFilter {
     let lang = oc(req).query.lang('') as string || language
     let { ErrorInfo, CustomError } = loadError(lang)
     let auth = req.user as ResponseUserDocument
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     try {
@@ -128,7 +128,7 @@ class TeamFilter {
     let lang = oc(req).query.lang('') as string || language
     let errorState = loadError(lang)
     let { ErrorInfo, CustomError } = errorState
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let auth = req.user as ResponseUserDocument
@@ -170,7 +170,7 @@ class TeamFilter {
     let lang = oc(req).query.lang('') as string || language
     let errorState = loadError(lang)
     let { ErrorInfo, CustomError } = errorState
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let auth = req.user as ResponseUserDocument
@@ -201,7 +201,7 @@ class TeamFilter {
     let lang = oc(req).query.lang('') as string || language
     let errorState = loadError(lang)
     let { ErrorInfo, CustomError } = errorState
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let auth = req.user as ResponseUserDocument
@@ -224,7 +224,7 @@ function getPeoples (peoples: string | string[]): string[] {
   if (!Array.isArray(peoples)) return [ peoples ]
   let _peoples: string[] = []
   for (let people of peoples) {
-    if (isMongoId(people)) {
+    if (validator.isMongoId(people)) {
       _peoples.push(people)
     }
   }

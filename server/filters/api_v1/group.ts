@@ -9,7 +9,7 @@ import __ErrorCode from '~/utils/error/code'
 import { language } from '~/config'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { CreateStoreDocument } from '@/types/proxys/store'
-import { isMongoId } from 'validator'
+import validator from 'validator'
 import { UpdateDocument, RemoveOptions, QueryDocument } from '@/types/proxys'
 import groupProxy from '~/proxys/group'
 
@@ -36,7 +36,7 @@ class GroupFilter {
     let lang = oc(req).query.lang('') as string || language
     let errorState = loadError(lang)
     let { ErrorInfo, CustomError } = errorState
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let auth = req.user as ResponseUserDocument
@@ -66,7 +66,7 @@ class GroupFilter {
     let lang = oc(req).query.lang('') as string || language
     let errorState = loadError(lang)
     let { ErrorInfo, CustomError } = errorState
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let auth = req.user as ResponseUserDocument
@@ -95,7 +95,7 @@ class GroupFilter {
     let lang = oc(req).query.lang('') as string || language
     let errorState = loadError(lang)
     let { ErrorInfo, CustomError } = errorState
-    if (!isMongoId(_id)) {
+    if (!validator.isMongoId(_id)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let auth = req.user as ResponseUserDocument

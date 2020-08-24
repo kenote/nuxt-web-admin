@@ -9,7 +9,7 @@ import { Filter, asyncFilterData } from 'kenote-validate-helper'
 import { filterUserLevel } from '~/middleware/auth'
 import { isYaml } from '@/utils'
 import { UpdateDithsDocument, DitchGrouping } from '@/types/proxys/ditch'
-import { isMongoId } from 'validator'
+import validator from 'validator'
 
 class DitchFilter {
 
@@ -61,7 +61,7 @@ class DitchFilter {
   public async allot (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
     let { channel } = req.params
     let { team, ditchs } = req.body
-    if (!isMongoId(team)) {
+    if (!validator.isMongoId(team)) {
       return res.api(null, __ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
     }
     let lang = oc(req).query.lang('') as string || language
