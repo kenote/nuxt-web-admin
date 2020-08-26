@@ -47,12 +47,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Provide, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Provide, Watch, mixins } from 'nuxt-property-decorator'
 import '~/assets/scss/passport/warpper.scss'
 import { Store } from '~/store'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { Register } from '@/types/restful'
 import { Route } from 'vue-router'
+import LayoutMixin from '~/mixins/layout'
 
 @Component<PassportLayout>({
   name: 'passport-layout',
@@ -63,9 +64,8 @@ import { Route } from 'vue-router'
     document.body.className = 'passport_body'
   }
 })
-export default class PassportLayout extends Vue {
+export default class PassportLayout extends mixins(LayoutMixin) {
 
-  @Store.Auth.State auth!: ResponseUserDocument
   @Store.Setting.State register!: Register.config
 
   @Provide() title: string = ''

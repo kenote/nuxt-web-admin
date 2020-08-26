@@ -4,6 +4,7 @@ import { IErrorInfo, Maps } from 'kenote-config-helper'
 import { Dropdown } from './'
 import * as PassportAPI from './apis/passport'
 import { VerifyGenerateOptions } from '@/types/proxys/verify'
+import { MetaPropertyCharset, MetaPropertyEquiv, MetaPropertyName, MetaPropertyMicrodata, MetaPropertyProperty } from 'vue-meta'
 
 /**
  * HTTPServer
@@ -51,6 +52,11 @@ export declare namespace NuxtTypes {
      * Rtsps
      */
     __rtsps               : Maps<string[]>
+
+    /**
+     * Meta 信息
+     */
+    __metas              ?: (MetaPropertyCharset | MetaPropertyEquiv | MetaPropertyName | MetaPropertyMicrodata | MetaPropertyProperty)[]
   }
 }
 

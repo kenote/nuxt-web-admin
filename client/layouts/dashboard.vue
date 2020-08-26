@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Provide, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Provide, Watch, mixins } from 'nuxt-property-decorator'
 import { Store } from '~/store'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { Channel } from '@/types/channel'
@@ -56,6 +56,7 @@ import { orderBy } from 'lodash'
 import * as api from '~/api'
 import * as auth from '~/store/modules/auth'
 import { parseCommand } from '@/utils'
+import LayoutMixin from '~/mixins/layout'
 
 @Component<DashboardLayout>({
   name: 'dashboard-layout',
@@ -69,11 +70,8 @@ import { parseCommand } from '@/utils'
     await this.updateChannel(this.$route.path)
   }
 })
-export default class DashboardLayout extends Vue {
+export default class DashboardLayout extends mixins(LayoutMixin) {
 
-  @Store.Auth.State auth!: ResponseUserDocument
-  @Store.Auth.Getter token!: string
-  @Store.Auth.Getter authLevel!: number
   @Store.Setting.State channels!: Channel.element[]
   @Store.Setting.State flags!: Maps<PageFlag.item>
   @Store.Setting.State dashboardOpts!: DashboardOptions

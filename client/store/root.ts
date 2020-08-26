@@ -26,6 +26,7 @@ export const actions: Actions<State, RootState> = {
     commit(`${setting.name}/${setting.types.FLAGS}`, req.__flags)
     commit(`${setting.name}/${setting.types.DASHBOARD}`, req.__dashboard)
     commit(`${setting.name}/${setting.types.RTSPS}`, req.__rtsps)
+    commit(`${setting.name}/${setting.types.METAS}`, req.__metas)
     
     let token = req.cookies['token'] as string
     if (!token) return

@@ -51,7 +51,7 @@ options:
   # 页面标题
   title             : *site_name
   # Meta 信息
-  meta:
+  metas:
     - 
       charset           : utf-8
     - 

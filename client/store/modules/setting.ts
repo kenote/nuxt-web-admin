@@ -5,6 +5,7 @@ import { Register, SinglePage, PageFlag, DashboardOptions } from '@/types/restfu
 import { Maps } from 'kenote-config-helper'
 import { orderBy } from 'lodash'
 import { oc } from 'ts-optchain'
+import { MetaPropertyCharset, MetaPropertyEquiv, MetaPropertyName, MetaPropertyMicrodata, MetaPropertyProperty } from 'vue-meta'
 
 export const name: string = 'setting'
 
@@ -19,6 +20,7 @@ export const types = {
   LOADING          : 'LOADING',
   DASHBOARD        : 'DASHBOARD',
   RTSPS            : 'RTSPS',
+  METAS            : 'METAS'
 }
 
 export interface State {
@@ -32,6 +34,7 @@ export interface State {
   loading          : Maps<boolean>
   dashboardOpts    : DashboardOptions
   rtsps            : Maps<string[]>
+  metas           ?: Array<MetaPropertyCharset | MetaPropertyEquiv | MetaPropertyName | MetaPropertyMicrodata | MetaPropertyProperty>
 }
 
 export const namespaced: boolean = true
@@ -102,4 +105,7 @@ export const mutations: MutationTree<State> = {
   [types.RTSPS] (state: State, rtsps: Maps<string[]>): void {
     state.rtsps = rtsps
   },
+  [types.METAS] (state: State, metas?: Array<MetaPropertyCharset | MetaPropertyEquiv | MetaPropertyName | MetaPropertyMicrodata | MetaPropertyProperty>): void {
+    state.metas = metas
+  }
 }
