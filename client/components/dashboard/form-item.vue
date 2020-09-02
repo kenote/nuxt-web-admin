@@ -21,6 +21,11 @@
     @change="handleChangeValue"
     :disabled="disabled || column.disabled"
     />
+  <!-- Avatar -->
+  <dashboard-avatar-picker v-else-if="column.type === 'avatar-picker'"
+    v-model="values"
+    :options="column.avatarOptions"
+    />
   <!-- 单选框 -->
   <el-radio-group v-else-if="/^(radio)/.test(column.type)" v-model="values" :disabled="disabled || column.disabled">
     <template v-if="column.type === 'radio-button'">

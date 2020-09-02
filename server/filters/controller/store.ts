@@ -29,6 +29,9 @@ class StoreFilter {
     if (level < 9000 && !store.upload_type.includes(options.key)) {
       return res.status(401).send('Unauthorized')
     }
+    if (options.user_dir) {
+      options.root_dir = `${options.root_dir}/${user._id}`
+    }
     return next(options)
   }
 

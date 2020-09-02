@@ -1,8 +1,10 @@
 import { oc } from 'ts-optchain'
 import { result, isObject, isNumber, isRegExp, map, last, Dictionary, zipObject } from 'lodash'
 import { Channel } from '@/types/channel'
-import dayjs from 'dayjs'
+import * as dayjs from 'dayjs'
 import * as bytes from 'bytes'
+import * as urlParse from 'url-parse'
+import * as qs from 'query-string'
 
 export const formatUtils = { dateFormat, bytes }
 
@@ -63,6 +65,12 @@ function dateFormat (date: any, format: string = 'YYYY-MM-DD'): string {
   return dayjs(date).format(format)
 }
 
+export function getUrl (url: string, params?: Record<string, string>): string {
+  let { origin, pathname, query } = urlParse(url)
+  let querystr = query as unknown as string || ''
+  let payload = { ...qs.parse(querystr), ...params, t: String(Date.now()) }
+  return `${origin}${pathname}?${qs.stringify(payload)}`
+}
 
 
 /**

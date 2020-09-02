@@ -4,7 +4,9 @@ import __ErrorCode from '~/utils/error/code'
 // tslint:disable-next-line: interface-name
 export interface IStroeOptions extends StroeOptions {
   key                : string
-  download_auth     ?: true
+  name               : string
+  download_auth     ?: boolean
+  user_dir          ?: boolean
 }
 
 @Connect({
@@ -22,5 +24,6 @@ export const previewFile = {
   ['.png']               : 'image/png',
   ['.jpg']               : 'image/jpeg',
   ['.json']              : 'application/json',
-  ['.htm']               : 'text/html'
+  ['.htm']               : 'text/html',
+  ['.webp']              : 'image/webp'
 }

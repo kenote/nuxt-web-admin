@@ -37,6 +37,7 @@ export declare namespace Channel {
     api              ?: api
     label            ?: queryLabelOptions
     border           ?: boolean
+    avatarOptions    ?: avatarOptions
   }
 
   interface format extends KenoteConfig.Format {
@@ -62,6 +63,15 @@ export declare namespace Channel {
     key               : string
     options           : Maps<string>
     value             : string
+  }
+
+  interface avatarOptions {
+    url               : string
+    type             ?: string
+    quality          ?: number
+    width            ?: number
+    height           ?: number
+    filename         ?: string
   }
 
   interface Export {

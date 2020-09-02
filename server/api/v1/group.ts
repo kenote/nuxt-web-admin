@@ -12,6 +12,9 @@ import { QueryOptions, UpdateWriteResult, DeleteWriteResult } from 'kenote-mongo
 import groupProxy from '~/proxys/group'
 import groupFilter from '~/filters/api_v1/group'
 import { UpdateDocument, QueryDocument, RemoveOptions } from '@/types/proxys'
+import { loadData } from 'kenote-config-helper/dist/utils.server'
+import { IStroeOptions } from '~/utils/store'
+import { KeyMap } from 'kenote-config-helper'
 
 @Path('/ucenter')
 class GroupController extends Controller {
@@ -131,6 +134,29 @@ class GroupController extends Controller {
     try {
       let result = await GroupProxy.update(conditions, data)
       return res.api(result)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
+   * 获取用户组的上传权限
+   */
+  @Router({ method: 'get', path: '/group/upload_type' })
+  public async uploadStore (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let lang = oc(req).query.lang('') as string || language
+    let { __ErrorCode, CustomError } = loadError(lang)
+    let stores = loadData('config/store') as Record<string, IStroeOptions>
+    let data: Array<KeyMap<string>> = []
+    for (let key in stores) {
+      let store = stores[key]
+      data.push({ key, name: store.name })
+    }
+    try {
+      return res.api(data)
     } catch (error) {
       if (CustomError(error)) {
         return res.api(null, error)

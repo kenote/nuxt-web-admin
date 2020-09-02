@@ -1,6 +1,5 @@
 <template>
   <dashboard-page v-loading="initinal">
-
     <!-- 查询器 -->
     <dashboard-queryer 
       :default-values="{}"
@@ -9,8 +8,8 @@
       }"
       :columns="oc(pageSetting).queryer([])"
       :rtsps="filterRtsps"
-      :submit-options="pageSetting.submit"
-      :draft="pageSetting.draft"
+      :submit-options="oc(pageSetting).submit()"
+      :draft="oc(pageSetting).draft()"
       @get-data="handleGetData"
       @get-plans="handleGetPlans"
       @create-plan="handleCreatePlan"
@@ -22,12 +21,12 @@
     <!-- 返回结果 -->
 
     <!-- 卡片模式 -->
-    <dashboard-cards v-if="pageSetting.cards"
-      :columns="pageSetting.columns"
+    <dashboard-cards v-if="oc(pageSetting).cards()"
+      :columns="oc(pageSetting).columns()"
       :data="data"
       :auth-level="authLevel"
       :teams="teams"
-      :options="pageSetting.cards"
+      :options="oc(pageSetting).cards()"
       @update-data="handleUpdateData"
       :loading="loading" >
 
@@ -53,7 +52,7 @@
     <div v-else-if="messageResult" />
     <!-- 单表格模式 -->
     <dashboard-table v-else
-      :columns="pageSetting.columns"
+      :columns="oc(pageSetting).columns()"
       :data="data"
       :view-mode="viewMode"
       :auth-level="authLevel"
@@ -61,7 +60,7 @@
       :footer-bar="true"
       :pagination="pagination"
       :pagesize="15"
-      :loading="loading && !pageSetting.rangeDate" >
+      :loading="loading && !oc(pageSetting).rangeDate()" >
       <el-switch v-if="viewMode != 'charts'"
         v-model="pagination"
         style="margin-top: 10px"
@@ -79,7 +78,7 @@
       <el-select v-model="viewMode" placeholder="请选择" style="margin-left:20px" v-if="viewModes.length > 1" :disabled="loading || polling">
         <el-option v-for="(item, key) in viewModes" :key="key" :label="item.name" :value="item.key"></el-option>
       </el-select>
-      <dashboard-poller ref="pollTasks" v-if="pageSetting.rangeDate"
+      <dashboard-poller ref="pollTasks" v-if="oc(pageSetting).rangeDate()"
         :tasks="pollTasks"
         :polling="polling"
         @play="playTask"
@@ -89,7 +88,6 @@
         @clean-item="cleanItemTask"
         />
     </dashboard-table>
-
   </dashboard-page>
 </template>
 
@@ -158,8 +156,8 @@ export default class ProjectPage extends mixins(PageMixin) {
     this.viewModes = modes.map( key => ({ key, name: viewModes[key] }))
     this.viewMode = modes[0]
     // 
-    if (val.querySelect) {
-      let { default: label } = val.querySelect
+    if (oc(val).querySelect()) {
+      let { default: label } = val.querySelect || {}
       this.messageResult = this.isMessageResult(label)
     }
     else {
@@ -405,7 +403,7 @@ export default class ProjectPage extends mixins(PageMixin) {
   }
 
   isMessageResult (label?: string): boolean {
-    let { querySelect, submit } = this.pageSetting
+    let { querySelect, submit } = this.pageSetting || {}
     if (querySelect) {
       let item: QuerySelectOption | undefined = querySelect.options.find( o => o.key === label )
       return oc(item).submit.result() === 'message'

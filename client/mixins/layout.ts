@@ -16,6 +16,8 @@ import { MetaPropertyCharset, MetaPropertyEquiv, MetaPropertyName, MetaPropertyM
 export default class LayoutMixin extends Vue {
 
   @Store.Auth.State auth!: ResponseUserDocument
+  @Store.Auth.State timestamp!: number
+  @Store.Auth.State defaultAvatar!: string
   @Store.Auth.Getter token!: string
   @Store.Auth.Getter authLevel!: number
 

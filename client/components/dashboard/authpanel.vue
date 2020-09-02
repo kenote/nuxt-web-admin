@@ -2,7 +2,8 @@
   <el-dropdown trigger="click" @visible-change="handleVisible" @command="handleCommand">
     <a class="header-link" v-bind:class="visible ? 'active' : ''">
       <span class="el-dropdown-link">
-        {{ auth.username || '' }}
+        <el-avatar icon="el-icon-user-solid" size="large" :src="avatar"></el-avatar>
+        {{ /* auth.username || '' */ }}
       </span>
     </a>
     <el-dropdown-menu slot="dropdown" class="header-link-dropdown">
@@ -26,19 +27,38 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Emit } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Provide, Emit, Watch, mixins } from 'nuxt-property-decorator'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { DashboardOptions } from '@/types/restful'
+import { getUrl } from '@/utils/format'
+import ComponentMixin from '~/mixins/component'
 
 @Component<DashboardAuthPanel>({
-  name: 'dashboard-authpanel'
+  name: 'dashboard-authpanel',
+  created () {
+    let { avatar } = this.auth
+    if (avatar) {
+      this.avatar = getUrl(avatar || this.defaultAvatar)
+    }
+  }
 })
-export default class DashboardAuthPanel extends Vue {
+export default class DashboardAuthPanel extends mixins(ComponentMixin) {
   
-  @Prop({ default: null }) auth!: ResponseUserDocument
+  // @Prop({ default: null }) auth!: ResponseUserDocument
   @Prop({ default: [] }) userEntrance!: DashboardOptions.userEntrance
+  // @Prop({ default: 0 }) timestamp!: number
+  // @Prop({ default: '' }) defaultAvatar!: string
 
   @Provide() visible: boolean = false
+  @Provide() avatar: string = ''
+
+  getUrl = getUrl
+
+  @Watch('timestamp')
+  onTimestampChange( val: number, oldVal: number): void {
+    let { avatar } = this.auth
+    this.avatar = getUrl(avatar || this.defaultAvatar)
+  }
 
   handleVisible (visible: boolean): void {
     this.visible = visible
@@ -50,3 +70,12 @@ export default class DashboardAuthPanel extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.header-link {
+  .el-avatar {
+    margin-top: 8px;
+    background: transparent;
+  }
+}
+</style>

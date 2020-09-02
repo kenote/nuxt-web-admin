@@ -7,6 +7,19 @@
       :rules="{}"
       :columns="[
         {
+          key: 'avatar',
+          name: '',
+          type: 'avatar-picker',
+          avatarOptions: {
+            url: '/upload/avatar',
+            type: 'image/webp',
+            filename: 'avatar.webp',
+            quality: 0.75,
+            width: 300,
+            height: 300
+          }
+        },
+        {
           key: 'username',
           name: '用户名',
           type: 'input',
@@ -150,8 +163,8 @@ export default class BaseinfoPage extends mixins(PageMixin) {
 
   getEditDefaultValues (): Maps<any> {
     if (!this.infoUser) return {}
-    let { username, group, nickname, sex, teams } = this.infoUser
-    return { username, group: group._id, nickname, sex, teams: map(teams, '_id') }
+    let { username, group, nickname, sex, teams, avatar } = this.infoUser
+    return { username, group: group._id, nickname, sex, teams: map(teams, '_id'), avatar }
   }
 }
 </script>

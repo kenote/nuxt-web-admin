@@ -23,12 +23,12 @@ import { Form as ElForm } from 'element-ui'
 import { Maps, Rule } from 'kenote-config-helper'
 import { Channel } from '@/types/channel'
 import { oc } from 'ts-optchain'
-import { isEqual } from 'lodash'
+import { isEqual, cloneDeep } from 'lodash'
 
 @Component<DashboardForm>({
   name: 'dashboard-form',
   created () {
-    this.values = this.defaultValues
+    this.values = cloneDeep(this.defaultValues)
   }
 })
 export default class DashboardForm extends Vue {

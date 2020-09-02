@@ -57,6 +57,7 @@ declare namespace Ucenter {
     sex           ?: number
     group         ?: string
     teams         ?: string[]
+    avatar        ?: string
   }
 
   interface setPass {

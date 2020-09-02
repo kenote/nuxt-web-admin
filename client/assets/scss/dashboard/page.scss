@@ -27,6 +27,14 @@
   .el-switch__label.is-active {
     color: inherit;
   }
+  
+  .el-upload {
+    display: block;
+  
+    .el-upload-dragger {
+      width: inherit;
+    }
+  }
 
   .el-breadcrumb {
     padding-left: 10px;

@@ -26,7 +26,8 @@ export default {
     '~/plugins/composition-api',
     '~/plugins/component',
     { src: '~/plugins/element-ui', ssr: true },
-    { src: '~plugins/codemirror', ssr: false }
+    { src: '~plugins/codemirror', ssr: false },
+    { src: '~plugins/vue-cropper', ssr: false }
   ],
   loading: {
     color: '#00c58e', 

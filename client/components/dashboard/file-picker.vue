@@ -1,6 +1,6 @@
 <template>
   <fragment>
-    <el-button @click="handleSelectFile">选择文件</el-button>
+    <el-button @click="handleSelectFile" :style="buttonStyle">选择文件</el-button>
     <input ref="uploadFile" 
       type="file" 
       :accept="accept" 
@@ -24,6 +24,7 @@ interface InputFile extends ElInput {
 export default class DashboardFilePicker extends Vue {
   
   @Prop({ default: undefined }) accept!: string
+  @Prop({ default: undefined }) buttonStyle!: Record<string, any> | string
 
   handleSelectFile (): void {
     let theInput: InputFile = this.$refs['uploadFile'] as InputFile

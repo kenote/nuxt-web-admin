@@ -62,9 +62,30 @@
           name: '描 述',
           type: 'textarea',
           placeholder: '请输入内容'
+        },
+        {
+          key: 'upload_type',
+          name: '上传权限',
+          type: 'checkbox-border',
+          api: {
+            method: 'get',
+            url: '/api/v1/ucenter/group/upload_type'
+          },
+          multiple      : true
+        },
+        {
+          key: 'download_type',
+          name: '下载权限',
+          type: 'checkbox-border',
+          api: {
+            method: 'get',
+            url: '/api/v1/ucenter/group/upload_type'
+          },
+          multiple      : true
         }
       ]"
       @submit="handleEdit"
+      @get-data="handleGetData"
       @goback="handleGoback"
       :loading="loading" />
     <!-- 设置用户组频道 -->
@@ -135,6 +156,7 @@ import * as Ucenter from '@/types/apis/ucenter'
 import { oc } from 'ts-optchain'
 import { Maps } from 'kenote-config-helper'
 import { Channel } from '@/types/channel'
+import { parseProps } from '@/utils'
 
 type ModeType = 'list' | 'create' | 'edit' | 'platform' | 'access'
 
@@ -169,6 +191,24 @@ export default class GroupPage extends mixins(PageMixin) {
         this.$message.warning(error.message)
       }
       this.loading = false
+    }, 300)
+  }
+
+  handleGetData (fetch: Channel.api, next: (data: Maps<any>[]) => void): void {
+    fetch.options = this.httpOptions
+    setTimeout(async () => {
+      try {
+        let result = await api.getData(fetch)
+        if (result.error === 0) {
+          let data = result.data.map( o => parseProps(o, fetch.props!))
+          next(data)
+        }
+        else {
+          this.$message.warning(result.message)
+        }
+      } catch (error) {
+        this.$message.warning(error.message)
+      }
     }, 300)
   }
 

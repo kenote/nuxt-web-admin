@@ -169,8 +169,8 @@
       :loading="loading" />
     <!-- 用户列表 -->
     <dashboard-table v-else
-      :columns="pageSetting.columns"
-      :search-options="pageSetting.search"
+      :columns="oc(pageSetting).columns()"
+      :search-options="oc(pageSetting).search('')"
       :data="list"
       :auth-level="authLevel"
       :flag="flag"

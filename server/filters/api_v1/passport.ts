@@ -188,7 +188,7 @@ class PassportFilter {
 export default new PassportFilter()
 
 function getUserDocument (body: Ucenter.createUser, auth: ResponseUserDocument): EditUserDocument {
-  let { nickname, sex, teams } = body
+  let { nickname, sex, teams, avatar } = body
   let teamsValues = intersection(map(auth.teams, '_id').map(String), teams || [])
-  return { nickname, sex, teams: teamsValues }
+  return { nickname, sex, teams: teamsValues, avatar }
 }

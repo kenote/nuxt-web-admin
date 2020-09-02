@@ -1,43 +1,45 @@
 <template>
-  <fragment v-if="auth">
-    <!-- <error-page v-if="selectedChannel.id === 0 && $route.path !== homepage" /> -->
-    <div class="dashboard_warpper" >
-      <dashboard-header :platforms="platforms" :current-channel="selectedChannel" @change-platform="handlePlatform">
-        <dashboard-authpanel :auth="auth" :user-entrance="dashboardOpts.userEntrance" @command="handleCommand" />
-      </dashboard-header>
-      <div class="bodyer">
-        <div class="sidebar-nav" v-bind:style="collapse ? 'flex: 0 0 64px' : 'flex: 0 0 260px'" v-if="selectedChannel.id > 0">
-          <template v-for="(channel, key) in channels">
-            <el-collapse-transition :key="key" v-if="channel.id === selectedChannel.id">
-              <dashboard-sidebar v-if="!loading.channel"
-                :navs="accessNavs(channel.navs, access)"
-                :default-active="$route.path"
-                :disable-mode="dashboardOpts.disableMode"
-                :background-color="'#444c54'"
-                :text-color="'#ffffff'"
-                :active-text-color="'#ffd04b'"
-                :router="true"
-                :collapse="collapse" >
+  <client-only placeholder="Page Loading...">
+    <fragment v-if="auth">
+      <!-- <error-page v-if="selectedChannel.id === 0 && $route.path !== homepage" /> -->
+      <div class="dashboard_warpper" >
+        <dashboard-header :platforms="platforms" :current-channel="selectedChannel" @change-platform="handlePlatform">
+          <dashboard-authpanel :user-entrance="dashboardOpts.userEntrance" @command="handleCommand" />
+        </dashboard-header>
+        <div class="bodyer">
+          <div class="sidebar-nav" v-bind:style="collapse ? 'flex: 0 0 64px' : 'flex: 0 0 260px'" v-if="selectedChannel.id > 0">
+            <template v-for="(channel, key) in channels">
+              <el-collapse-transition :key="key" v-if="channel.id === selectedChannel.id">
+                <dashboard-sidebar v-if="!loading.channel"
+                  :navs="accessNavs(channel.navs, access)"
+                  :default-active="$route.path"
+                  :disable-mode="dashboardOpts.disableMode"
+                  :background-color="'#444c54'"
+                  :text-color="'#ffffff'"
+                  :active-text-color="'#ffd04b'"
+                  :router="true"
+                  :collapse="collapse" >
 
-              </dashboard-sidebar>
-            </el-collapse-transition>
-          </template>
-          <div class="collapsed" @click="handleCollapse">
-            <i class="iconfont" v-bind:class="collapse ? 'icon-menu-fold' : 'icon-menu-unfold'"></i>
+                </dashboard-sidebar>
+              </el-collapse-transition>
+            </template>
+            <div class="collapsed" @click="handleCollapse">
+              <i class="iconfont" v-bind:class="collapse ? 'icon-menu-fold' : 'icon-menu-unfold'"></i>
+            </div>
+          </div>
+          <div class="dashboard-page" >
+            <nuxt v-if="permission"></nuxt>
+            <error-page v-else :statusCode="403" message="Forbidden" />
+            <dashboard-drawer :visible="drawerVisible" @close="handleCloseDrawer" ref="theDrawer">
+              <!-- 加载侧栏 -->
+            </dashboard-drawer>
           </div>
         </div>
-        <div class="dashboard-page" >
-          <nuxt v-if="permission"></nuxt>
-          <error-page v-else :statusCode="403" message="Forbidden" />
-          <dashboard-drawer :visible="drawerVisible" @close="handleCloseDrawer" ref="theDrawer">
-            <!-- 加载侧栏 -->
-          </dashboard-drawer>
-        </div>
+        
       </div>
-      
-    </div>
-  </fragment>
-  <div v-else v-loading="true" />
+    </fragment>
+    <div v-else v-loading="true" />
+  </client-only>
 </template>
 
 <script lang="ts">

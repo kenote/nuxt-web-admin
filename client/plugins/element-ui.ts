@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {
+  Avatar,
   Backtop,
   Breadcrumb,
   BreadcrumbItem,
@@ -48,12 +49,14 @@ import {
   Tag,
   Tooltip,
   Transfer,
-  Tree
+  Tree,
+  Upload
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 import Scrollbar from 'element-ui/lib/scrollbar'
 
 export default () => {
+  Vue.use(Avatar)
   Vue.use(Backtop)
   Vue.use(Breadcrumb)
   Vue.use(BreadcrumbItem)
@@ -102,6 +105,7 @@ export default () => {
   Vue.use(Tooltip)
   Vue.use(Transfer)
   Vue.use(Tree)
+  Vue.use(Upload)
 
   Vue.component(CollapseTransition.name, CollapseTransition)
 

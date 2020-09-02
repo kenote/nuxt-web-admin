@@ -20,6 +20,22 @@ export async function getData (api: Channel.api): Promise<RestfulInfoByError> {
 }
 
 /**
+ *  上传文件
+ */
+export async function uploadFile (url: string, data: FormData, options: HeaderOptions): Promise<RestfulInfoByError> {
+  let restful = await httpClient.upload(url, data, options)
+  return formatRestful(restful)
+}
+
+/**
+ * 下载文件
+ */
+export async function downloadFile (url: string, data: Maps<any> | null, options: HeaderOptions): Promise<Blob> {
+  let restful = await httpClient.download(url, data, options)
+  return restful
+}
+
+/**
  * 校验访问令牌
  */
 export async function accesstoken (options: HeaderOptions, prefix: string = ''): Promise<RestfulInfoByError> {
