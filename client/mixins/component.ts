@@ -6,6 +6,7 @@ import { HeaderOptions } from '@/utils/http'
 import { ResponseUserDocument } from '@/types/proxys/user'
 
 @Component<ComponentMixin>({
+  name: 'component-mixin',
   created () {
     this.httpOptions = {
       token: this.token

@@ -1,6 +1,7 @@
 import { ActionTree, MutationTree, GetterTree } from 'vuex'
 import { RootState } from '~/store'
 import { ResponseUserDocument } from '@/types/proxys/user'
+import { Bookmark } from '@/types/proxys/plan'
 import { oc } from 'ts-optchain'
 import { map } from 'lodash'
 
@@ -10,13 +11,15 @@ export const types = {
   AUTH             : 'AUTH',
   EMAIL            : 'EMAIL',
   MOBILE           : 'MOBILE',
-  TIMESTAMP        : 'TIMESTAMP'
+  TIMESTAMP        : 'TIMESTAMP',
+  BOOKMARKS        : 'BOOKMARKS'
 }
 
 export interface State {
   auth             : ResponseUserDocument | null
   timestamp        : number
   defaultAvatar    : string
+  bookmarks        : Bookmark[]
 }
 
 export const namespaced: boolean = true
@@ -24,7 +27,8 @@ export const namespaced: boolean = true
 export const state = (): State => ({
   auth             : null,
   timestamp        : 0,
-  defaultAvatar    : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+  defaultAvatar    : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
+  bookmarks        : []
 })
 
 export const getters: GetterTree<State, RootState> = {
@@ -50,7 +54,6 @@ export const mutations: MutationTree<State> = {
     if (!state.auth) return
     state.auth.email = email
     state.auth.binds = Array.from(new Set([ ...state.auth.binds, 'email' ]))
-    state.timestamp = Date.now()
   },
   [types.MOBILE] (state: State, mobile: string): void {
     if (!state.auth) return
@@ -60,5 +63,8 @@ export const mutations: MutationTree<State> = {
   },
   [types.TIMESTAMP] (state: State): void {
     state.timestamp = Date.now()
+  },
+  [types.BOOKMARKS] (state: State, bookmarks: Bookmark[]): void {
+    state.bookmarks = bookmarks
   }
 }

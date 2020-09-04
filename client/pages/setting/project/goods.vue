@@ -50,6 +50,7 @@
 <script lang="ts">
 import { Component, Vue, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
+import ScreenMixin from '~/mixins/screen'
 import { Channel } from '@/types/channel'
 import { Maps } from 'kenote-config-helper'
 import { oc } from 'ts-optchain'
@@ -58,7 +59,6 @@ import * as nunjucks from 'nunjucks'
 import { clone, cloneDeep, map } from 'lodash'
 import { fileTypes, xlsxBlob } from '@/utils/xlsx'
 import { Execl } from '@/types'
-import { name } from '../../../store/modules/setting';
 
 type ModeType = 'list' | 'import'
 
@@ -67,9 +67,8 @@ type ModeType = 'list' | 'import'
   layout: 'dashboard',
   middleware: ['authenticated'],
 })
-export default class SettingProjectGoodsPage extends mixins(PageMixin) {
+export default class SettingProjectGoodsPage extends mixins(PageMixin, ScreenMixin) {
   
-  @Provide() projectTag: string = ''
   @Provide() projectOptions: Maps<any> = {}
   @Provide() list: Maps<string>[] = []
   @Provide() mode: ModeType = 'list'
@@ -84,6 +83,7 @@ export default class SettingProjectGoodsPage extends mixins(PageMixin) {
 
   @Watch('projectTag')
   onProjectTagChange (val: string, oldVal: string): void {
+    if (val === oldVal) return
     this.mode = 'list'
     
     this.project = this.projectChannels.find( o => o.label === val )
@@ -97,6 +97,7 @@ export default class SettingProjectGoodsPage extends mixins(PageMixin) {
     else {
       this.goodsType = 'item'
     }
+    this.$router.push({ path: this.$route.path, query: { t: val } })
   }
 
   @Watch('goodsType')
@@ -107,11 +108,6 @@ export default class SettingProjectGoodsPage extends mixins(PageMixin) {
       return
     }
     this.projectOptions = oc(this.project).options({})[val] as Maps<any>
-  }
-
-
-  handleProjectChange (value: string): void {
-    this.projectTag = value
   }
 
   handleOpenImport (): void {

@@ -138,6 +138,7 @@
 <script lang="ts">
 import { Component, Vue, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
+import ScreenMixin from '~/mixins/screen'
 import { Channel } from '@/types/channel'
 import { Maps } from 'kenote-config-helper'
 import { oc } from 'ts-optchain'
@@ -175,11 +176,10 @@ interface PreviewData {
     
   }
 })
-export default class SettingProjectProtoPage extends mixins(PageMixin) {
+export default class SettingProjectProtoPage extends mixins(PageMixin, ScreenMixin) {
 
   @Store.Setting.State rtsps!: Maps<string[]>
   
-  @Provide() projectTag: string = ''
   @Provide() project: Channel.element | undefined
   @Provide() list: ResponseProtoDocument[] = []
   @Provide() total: number = 0
@@ -192,16 +192,14 @@ export default class SettingProjectProtoPage extends mixins(PageMixin) {
 
   @Watch('projectTag')
   onProjectTagChange (val: string, oldVal: string): void {
+    if (val === oldVal) return
     if (oldVal) {
       let theQueryer = this.$refs['theQueryer'] as any
       theQueryer.handleRest()
       this.conditions = null
       this.handleList()
     }
-  }
-
-  handleProjectChange (value: string): void {
-    this.projectTag = value
+    this.$router.push({ path: this.$route.path, query: { t: val } })
   }
 
   handleSearch (values: FindProtoLog): void {

@@ -7,8 +7,10 @@ import { loadError } from '~/utils/error'
 import { authenticate, permission } from '~/middleware/auth'
 import planFilter from '~/filters/api_v1/plan'
 import planProxy from '~/proxys/plan'
-import { CreatePlanDocument, EditPlanDocument } from '@/types/proxys/plan'
+import { CreatePlanDocument, EditPlanDocument, ResponsePlanDocument, Bookmark } from '@/types/proxys/plan'
 import { UpdateDocument } from '@/types/proxys'
+import { ResponseUserDocument } from '@/types/proxys/user'
+import * as yaml from 'js-yaml'
 
 @Path('/plan')
 class PlanController extends Controller {
@@ -97,6 +99,75 @@ class PlanController extends Controller {
     try {
       let result = await PlanProxy.Dao.remove(conditions)
       return res.api(result)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
+   * 获取个人书签
+   */
+  @Router({ method: 'get', path: '/bookmark' })
+  @Filter( authenticate )
+  public async bookmark (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let auth = req.user as ResponseUserDocument
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let PlanProxy = planProxy(errorState)
+    try {
+      let data: Bookmark[] = []
+      let result = await PlanProxy.Dao.findOne({ user: auth._id, type: 'bookmark', channel: 'home' }) as ResponsePlanDocument | null
+      if (result) {
+        let { content } = result
+        data = [ ...yaml.load(content) ]
+      }
+      return res.api(data)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
+   * 更新个人书签
+   */
+  @Router({ method: 'post', path: '/bookmark' })
+  @Filter( authenticate )
+  public async updateBookmark (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { content } = req.body
+    let auth = req.user as ResponseUserDocument
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let PlanProxy = planProxy(errorState)
+    try {
+      let bookmark = await PlanProxy.Dao.findOne({ user: auth._id, type: 'bookmark', channel: 'home' })
+      if (bookmark) {
+        await PlanProxy.Dao.updateOne({ _id: bookmark._id }, { content: String(content) })
+      }
+      else {
+        let document: CreatePlanDocument = {
+          name: '我的书签',
+          type: 'bookmark', 
+          channel: 'home',
+          content: String(content),
+          user: auth._id
+        }
+        await PlanProxy.Dao.insert(document)
+      }
+      let data: Bookmark[] = []
+      let result = await PlanProxy.Dao.findOne({ user: auth._id, type: 'bookmark', channel: 'home' }) as ResponsePlanDocument | null
+      if (result) {
+        let { content } = result
+        data = [ ...yaml.load(content) ]
+      }
+      return res.api(data)
     } catch (error) {
       if (CustomError(error)) {
         return res.api(null, error)

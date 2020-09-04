@@ -151,7 +151,7 @@ export default class DashboardAvatarPicker extends mixins(ComponentMixin) {
         }
       }
     } catch (error) {
-      
+      this.$message.warning(error.message)
     }
   }
 

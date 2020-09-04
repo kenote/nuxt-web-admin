@@ -29,9 +29,12 @@ export function getMetaInfo (data: Maps<string | undefined>, metas?: any[]): Met
  */
 export function parseCommand (value: string): Command.value | null {
   if (!value) return null
-  let command = value.match(/^(command|router)\:(\S+)$/)
+  let command = value.match(/^(command|router|https?)\:(\S+)$/)
   if (!command) return null
   let [ , type, path ] = command
+  if (/^(https?)/.test(type)) {
+    return { type: 'http', path: value }
+  }
   return { type: type as Command.type, path }
 }
 

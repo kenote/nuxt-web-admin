@@ -4,6 +4,23 @@
       <!-- <error-page v-if="selectedChannel.id === 0 && $route.path !== homepage" /> -->
       <div class="dashboard_warpper" >
         <dashboard-header :platforms="platforms" :current-channel="selectedChannel" @change-platform="handlePlatform">
+          <!-- <div class="header-link-box">
+            <a class="header-link ">
+              <i class="el-icon-star-off" style="font-size:16px"></i>&nbsp;书签
+            </a>
+          </div> -->
+          <el-dropdown v-if="bookmarks.length > 0" placement="top-start" @command="handleCommand">
+            <a class="header-link" >
+              <span class="el-dropdown-link">
+                <i class="el-icon-star-off el-icon--left"></i>书签
+              </span>
+            </a>
+            <el-dropdown-menu slot="dropdown" class="header-link-dropdown">
+              <template v-for="(bookmark, key) in bookmarks">
+                <el-dropdown-item :key="key" :command="bookmark.command">{{ bookmark.name }}</el-dropdown-item>
+              </template>
+            </el-dropdown-menu>
+          </el-dropdown>
           <dashboard-authpanel :user-entrance="dashboardOpts.userEntrance" @command="handleCommand" />
         </dashboard-header>
         <div class="bodyer">
@@ -171,6 +188,12 @@ export default class DashboardLayout extends mixins(LayoutMixin) {
     }
     else if (command.type === 'router') {
       this.$router.push(command.path)
+    }
+    else if (command.type === 'http') {
+      let link = document.createElement('a')
+      link.target = '_blank'
+      link.href = command.path
+      link.click()
     }
   }
 

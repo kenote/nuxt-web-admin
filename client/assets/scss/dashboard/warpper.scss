@@ -24,6 +24,7 @@
       border-bottom: 1px #00000042 solid;
 
       .header-start {
+        display: flex;
   
         &>div {
           border-left: 1px #2a2a2a solid;
@@ -39,13 +40,10 @@
   
           
         }
-  
-        .el-dropdown {
-          top: -7px;
-        }
       }
   
       .header-end {
+        display: flex;
   
         &>div {
           border-left: 1px #2a2a2a solid;

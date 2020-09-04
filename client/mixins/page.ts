@@ -6,15 +6,18 @@ import { oc } from 'ts-optchain'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { HeaderOptions } from '@/utils/http'
 import { PageFlag } from '@/types/restful'
-
+import * as api from '~/api'
+import * as auth from '~/store/modules/auth'
 
 @Component<PageMixin>({
+  name: 'page-mixin',
   created () {
     this.getPageSetting()
     this.httpOptions = {
       token: this.token
     }
     this.flag = oc(this.flags)[this.$route.path]({})
+    this.getAuthBookmark()
   },
 })
 export default class PageMixin extends Vue {
@@ -35,7 +38,7 @@ export default class PageMixin extends Vue {
 
   oc = oc
 
-  getPageSetting () {
+  getPageSetting (): void {
     setTimeout(() => {
       let selectedChannel = JSON.parse(JSON.stringify(this.selectedChannel))
       let channelStore = new IChannel(selectedChannel)
@@ -44,4 +47,23 @@ export default class PageMixin extends Vue {
       this.initinal = false
     }, 500)
   }
+  
+  getAuthBookmark (): void {
+    setTimeout(async () => {
+      try {
+        let result = await api.getData({ method: 'get', url: '/api/v1/plan/bookmark', options: this.httpOptions })
+        if (result.error === 0) {
+          this.$store.commit(`${auth.name}/${auth.types.BOOKMARKS}`, result.data)
+        }
+        else {
+          this.$message.warning(result.message)
+        }
+      } catch (error) {
+        this.$message.warning(error.message)
+      }
+    }, 300)
+  }
 }
+
+
+// favorites

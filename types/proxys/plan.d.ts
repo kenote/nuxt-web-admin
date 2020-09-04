@@ -1,8 +1,9 @@
 import { Document } from 'mongoose'
 import { ObjectId } from 'bson'
+import { KeyMap } from 'kenote-config-helper'
 import { ResponseUserDocument } from './user'
 
-export type PlanType = 'ditch' | 'draft' | 'favorites'
+export type PlanType = 'ditch' | 'draft' | 'bookmark'
 
 export interface CreatePlanDocument {
   name             : string
@@ -36,4 +37,9 @@ export interface SharePlanDocument {
   share           ?: boolean
   share_user      ?: Array<ObjectId | string>
   share_at        ?: Date
+}
+
+export interface Bookmark extends KeyMap<string> {
+  command         ?: string
+  children        ?: Bookmark[]
 }

@@ -109,6 +109,7 @@
 <script lang="ts">
 import { Component, Vue, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
+import ScreenMixin from '~/mixins/screen'
 import { ResponseDitchDocument, DitchGrouping } from '@/types/proxys/ditch'
 import * as api from '~/api'
 import { Channel } from '@/types/channel'
@@ -127,9 +128,8 @@ type ModeType = 'list' | 'import' | 'conversion' | 'allot' | 'grouping'
   layout: 'dashboard',
   middleware: ['authenticated'],
 })
-export default class SettingProjectDitchPage extends mixins(PageMixin) {
+export default class SettingProjectDitchPage extends mixins(PageMixin, ScreenMixin) {
   
-  @Provide() projectTag: string = ''
   @Provide() mode: ModeType = 'list'
   @Provide() list: ResponseDitchDocument[] = []
   @Provide() title: string = ''
@@ -141,6 +141,7 @@ export default class SettingProjectDitchPage extends mixins(PageMixin) {
 
   @Watch('projectTag')
   onProjectTagChange (val: string, oldVal: string): void {
+    if (val === oldVal) return
     this.mode = 'list'
     this.project = this.projectChannels.find( o => o.label === val )
     if (this.project) {
@@ -150,10 +151,7 @@ export default class SettingProjectDitchPage extends mixins(PageMixin) {
     if (oldVal) {
       this.handleList()
     }
-  }
-
-  handleProjectChange (value: string): void {
-    this.projectTag = value
+    this.$router.push({ path: this.$route.path, query: { t: val } })
   }
 
   handleOpenImport (): void {

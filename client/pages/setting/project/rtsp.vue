@@ -57,6 +57,7 @@
 <script lang="ts">
 import { Component, Vue, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
+import ScreenMixin from '~/mixins/screen'
 import * as api from '~/api'
 import { Maps, KeyMap } from 'kenote-config-helper'
 import { ResponseTeamDocument } from '@/types/proxys/team'
@@ -71,24 +72,21 @@ type ModeType = 'list' | 'import'
   layout: 'dashboard',
   middleware: ['authenticated'],
 })
-export default class SettingProjectRtspPage extends mixins(PageMixin) {
+export default class SettingProjectRtspPage extends mixins(PageMixin, ScreenMixin) {
 
   @Store.Setting.State rtsps!: Maps<string[]>
   
-  @Provide() projectTag: string = ''
   @Provide() mode: ModeType = 'list'
   @Provide() list: ResponseTeamDocument[] = []
 
   @Watch('projectTag')
   onProjectTagChange (val: string, oldVal: string): void {
+    if (val === oldVal) return
     this.mode = 'list'
     if (oldVal) {
       this.handleList()
     }
-  }
-
-  handleProjectChange (value: string): void {
-    this.projectTag = value
+    this.$router.push({ path: this.$route.path, query: { t: val } })
   }
 
   handleList (): void {

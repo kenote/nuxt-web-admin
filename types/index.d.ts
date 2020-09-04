@@ -30,7 +30,7 @@ export declare namespace Sidebar {
 
 export declare namespace Command {
 
-  type type = 'command' | 'router'
+  type type = 'command' | 'router' | 'http'
 
   interface value {
     type              : type
