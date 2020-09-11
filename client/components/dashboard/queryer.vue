@@ -224,7 +224,7 @@ export default class DashboardQueryer extends Vue {
   }
 
   handleChangeValue (value: any, column: Channel.queryer): void {
-    let { key, options } = column
+    let { key, options } = column || {}
     if (options) {
       let item = this.columns.find( o => o.key === options )
       if (item && isBoolean(value)) {

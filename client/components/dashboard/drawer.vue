@@ -1,11 +1,12 @@
 <template>
-  <div class="dashboard-drawer" v-bind:class="placement" :style="styles" v-show="visible" ref="theDrawer">
+  <div class="dashboard-drawer" v-bind:class="placement" :style="styles" ref="theDrawer">
     <slot></slot>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Provide, Watch } from 'nuxt-property-decorator'
+import { oc } from 'ts-optchain'
 
 @Component<DashboardDrawer>({
   name: 'dashboard-drawer',
@@ -16,10 +17,10 @@ import { Component, Vue, Prop, Provide, Watch } from 'nuxt-property-decorator'
 export default class DashboardDrawer extends Vue {
 
   @Prop({ default: 'right' }) placement!: 'top' | 'bottom' | 'left' | 'right'
-  @Prop({ default: 300 }) width!: number
+  @Prop({ default: 360 }) width!: number
   @Prop({ default: false }) visible!: boolean
   
-  @Provide() styles: {} = { width: '300px' }
+  @Provide() styles: {} = {}
 
   @Watch('width')
   onChangeWidth (val: number): void {
@@ -30,26 +31,28 @@ export default class DashboardDrawer extends Vue {
   onChangeVisible (visible: boolean): void {
     if (visible) {
       document.addEventListener('click', this.handleClick, true)
+      this.styles = { ...this.styles, [this.placement]: 0 }
     }
     else {
       document.removeEventListener('click', this.handleClick, false)
+      this.styles = { ...this.styles, [this.placement]: `-${this.width}px` }
     }
   }
 
   handleClick (evt: MouseEvent) {
     let drawer = this.$refs['theDrawer'] as HTMLElement
     let eventPath: string[] = evt['path'].map( o => o.className)
-    if (!eventPath.includes(drawer.className)) {
+    if (!eventPath.includes(oc(drawer).className(''))) {
       this.visible && this.$emit('close', null)
     }
   }
 
   getStyles (val: number): void {
-    if (/(left|right)/.test(this.placement)) {
-      this.styles = { width: `${val}.px` }
+    if (['left', 'right'].includes(this.placement)) {
+      this.styles = { ...this.styles, width: `${val}px`, [this.placement]: `-${val}px` }
     }
-    else {
-      this.styles = { height: `${val}.px` }
+    if (['top', 'bottom'].includes(this.placement)) {
+      this.styles = { ...this.styles, height: `${val}px`, [this.placement]: `-${val}px` }
     }
   }
   

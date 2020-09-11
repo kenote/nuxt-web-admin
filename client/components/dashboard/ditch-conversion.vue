@@ -27,13 +27,7 @@
         submit-name="转换"
         @submit="handleConversion"
         :no-back="true" />
-      <section class="container" >
-        <client-only placeholder="Codemirror Loading...">
-          <codemirror v-model="code" style="height: 500px"
-            :options="cmOption" >
-          </codemirror>
-        </client-only>
-      </section>
+      <dashboard-codemirror v-model="code" theme="duotone-light" type="application/json" wrapperStyle="height:500px" :read-only="true" />
     </div>
     <!-- 底部操作区 -->
     <dashboard-footer-bar v-if="showFooter" :visible="showFooter">
@@ -45,7 +39,6 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Provide } from 'nuxt-property-decorator'
-import 'codemirror/theme/duotone-light.css'
 import { isEmpty, trim, zipObject, set, isNumber } from 'lodash'
 import { Maps } from 'kenote-config-helper'
 import { oc } from 'ts-optchain'
@@ -73,17 +66,6 @@ export default class DashboardDitchConversion extends Vue {
   @Provide() showFooter: boolean = false
   @Provide() data: Maps<any>[] = []
   @Provide() code: string = ''
-  @Provide() cmOption: any = {
-    tabSize: 2,
-    foldGutter: true,
-    styleActiveLine: true,
-    lineNumbers: true,
-    line: true,
-    keyMap: "sublime",
-    mode: 'application/json',
-    theme: 'duotone-light',
-    readOnly: true,
-  }
 
   getColumns (): Channel.queryer[] {
     let fields = oc(this.options).fields([]).filter( o => !['key', 'name'].includes(o) ) as string[]

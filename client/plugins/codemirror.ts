@@ -3,6 +3,14 @@ import VueCodemirror from 'vue-codemirror'
 
 // language
 import 'codemirror/mode/vue/vue.js'
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/htmlmixed/htmlmixed.js'
+import 'codemirror/mode/css/css.js'
+import 'codemirror/mode/markdown/markdown.js'
+import 'codemirror/mode/yaml/yaml.js'
+import 'codemirror/mode/nginx/nginx.js'
+import 'codemirror/mode/protobuf/protobuf.js'
+import 'codemirror/mode/shell/shell.js'
 
 // active-line.js
 import 'codemirror/addon/selection/active-line.js'
@@ -36,6 +44,19 @@ import 'codemirror/addon/fold/foldgutter.js'
 import 'codemirror/addon/fold/indent-fold.js'
 import 'codemirror/addon/fold/markdown-fold.js'
 import 'codemirror/addon/fold/xml-fold.js'
+
+// Scrollbar
+import 'codemirror/addon/scroll/simplescrollbars.css'
+import 'codemirror/addon/scroll/simplescrollbars.js'
+
+
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/duotone-light.css'
+import 'codemirror/theme/paraiso-light.css'
+import 'codemirror/theme/duotone-dark.css'
+import 'codemirror/theme/paraiso-dark.css'
+import 'codemirror/theme/base16-light.css'
+import 'codemirror/theme/monokai.css'
 
 // more...
 export default () => {

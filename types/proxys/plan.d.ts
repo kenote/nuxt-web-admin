@@ -42,4 +42,5 @@ export interface SharePlanDocument {
 export interface Bookmark extends KeyMap<string> {
   command         ?: string
   children        ?: Bookmark[]
+  maps            ?: Bookmark[]
 }

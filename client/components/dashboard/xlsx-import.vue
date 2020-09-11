@@ -68,13 +68,7 @@
           </el-table>
         </el-form-item>
         <el-form-item>
-          <section class="container" >
-            <client-only placeholder="Codemirror Loading...">
-              <codemirror v-model="code" style="height: 500px"
-                :options="cmOption" >
-              </codemirror>
-            </client-only>
-          </section>
+          <dashboard-codemirror v-model="code" theme="duotone-light" type="application/json" wrapperStyle="height:500px" :read-only="true" />
         </el-form-item>
       </el-form>
     </div>
@@ -97,7 +91,6 @@ import { readXlsxFileReader, getXlsxFields, getXlsxSheet } from '@/utils/xlsx'
 import { Maps } from 'kenote-config-helper'
 import { omit, set, map, compact } from 'lodash'
 import { oc } from 'ts-optchain'
-import 'codemirror/theme/duotone-light.css'
 import * as yaml from 'js-yaml'
 import { isYaml } from '@/utils'
 
@@ -121,17 +114,6 @@ export default class DashboardXlsxImport extends Vue {
   @Provide() values: Maps<string | number> = { start: 1 }
   @Provide() code: string = ''
   @Provide() data: Maps<any>[] = []
-  @Provide() cmOption: any = {
-    tabSize: 2,
-    foldGutter: true,
-    styleActiveLine: true,
-    lineNumbers: true,
-    line: true,
-    keyMap: "sublime",
-    mode: 'application/json',
-    theme: 'duotone-light',
-    readOnly: true,
-  }
 
   async handleFileChange (files: File[]): Promise<void> {
     this.files = files

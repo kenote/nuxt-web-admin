@@ -2,6 +2,11 @@
   <header>
     <div class="header-start">
       <div class="header-link-box">
+        <a class="header-link header-link-icon" @click="$emit('collapse')">
+          <i class="iconfont" v-bind:class="collapse ? 'icon-menu-fold' : 'icon-menu-unfold'"></i>
+        </a>
+      </div>
+      <div class="header-link-box">
         <nuxt-link class="header-link logo" to="/dashboard">
           <img src="~/assets/images/logo.png" style="height:24px" />
         </nuxt-link>
@@ -37,6 +42,7 @@ export default class DashboardHeader extends Vue {
 
   @Prop({ default: [] }) platforms!: Channel.element[]
   @Prop({ default: { id: 0, name: '仪表盘' } }) currentChannel!: Channel.element
+  @Prop({ default: false }) collapse!: boolean
 
   @Provide() visible: boolean = false
 

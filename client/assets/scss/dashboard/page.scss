@@ -12,7 +12,7 @@
   min-width: 940px;
   // pointer-events: none;
 
-  &>main {
+  & main {
     padding: 20px 80px 100px 30px;
   }
 
@@ -77,6 +77,16 @@
 
   .el-pagination__jump .el-input__inner {
     border-radius: 0;
+  }
+
+  .el-dialog__wrapper {
+    .el-button {
+      border-radius: 0;
+    }
+
+    .el-input__inner {
+      border-radius: 0;
+    }
   }
 
   .form-container {

@@ -22,6 +22,5 @@ navs:
         name          : 基本资料
       - index         : /account/security
         name          : 安全设置
-      - index         : /account/plan
-        name          : 方案管理
-        disabled      : true
+      - index         : /account/collect
+        name          : 我的收藏

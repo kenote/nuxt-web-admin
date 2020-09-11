@@ -51,7 +51,7 @@
     filterable
     collapse-tags
     :placeholder="column.placeholder"
-    @change="value => $emit('change', value)"
+    @change="value => $emit('change', value, column)"
     :disabled="disabled || column.disabled" >
     <template v-if="data">
       <el-option v-for="opt in data" :key="opt.key" :label="opt.name" :value="opt.key"></el-option>
@@ -151,3 +151,16 @@ export default class DashboardFormItem extends Vue {
   }
 }
 </script>
+
+<style lang="scss" d>
+.form-container .container {
+  // margin-top: 30px;
+  line-height: initial;
+  font-size: 14px;
+
+  .CodeMirror {
+    height: 100%;
+    border: 1px #999999 solid;
+  }
+}
+</style>

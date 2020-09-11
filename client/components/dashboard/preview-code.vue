@@ -9,22 +9,10 @@
       @close="$emit('close')">
       <el-tabs v-if="Array.isArray(data)" v-model="activeTag" tab-position="bottom" type="border-card">
         <el-tab-pane v-for="item in data" :key="item.key" :label="item.name" :name="item.key" :lazy="true">
-          <section class="container" >
-            <client-only placeholder="Codemirror Loading...">
-              <codemirror v-model="item.content" style="height: inherit"
-                :options="cmOption" >
-              </codemirror>
-            </client-only>
-          </section>
+          <dashboard-codemirror v-model="item.content" theme="duotone-dark" type="text/x-yaml" :read-only="true" />
         </el-tab-pane>
       </el-tabs>
-      <section class="container" v-else >
-        <client-only placeholder="Codemirror Loading...">
-          <codemirror v-model="data" style="height: inherit"
-            :options="cmOption" >
-          </codemirror>
-        </client-only>
-      </section>
+      <dashboard-codemirror v-else v-model="data" theme="duotone-dark" type="text/x-yaml" :read-only="true" />
     </el-dialog>
   </fragment>
 </template>
@@ -35,7 +23,6 @@ import 'codemirror/theme/duotone-dark.css'
 import * as yaml from 'js-yaml'
 import { isYaml } from '@/utils'
 import { oc } from 'ts-optchain'
-import 'codemirror/addon/scroll/simplescrollbars.css'
 
 interface PreviewData {
   key            : string
@@ -48,11 +35,6 @@ interface PreviewData {
   created () {
     this.activeTag = this.tag
   },
-  mounted () {
-    if (process.client) {
-      require('codemirror/addon/scroll/simplescrollbars.js')
-    }
-  }
 })
 export default class DashboardPreviewCode extends Vue {
 
@@ -62,19 +44,6 @@ export default class DashboardPreviewCode extends Vue {
   @Prop({ default: undefined }) tag!: string
 
   @Provide() activeTag: string = ''
-  @Provide() cmOption: any = {
-    tabSize: 2,
-    foldGutter: true,
-    styleActiveLine: true,
-    lineNumbers: true,
-    lineWrapping: true,
-    line: true,
-    scrollbarStyle: 'simple',
-    keyMap: "sublime",
-    mode: 'application/json',
-    theme: 'duotone-dark',
-    readOnly: true,
-  }
 
   @Watch('tag')
   onTagChange(val: string, oldVal: string): void {

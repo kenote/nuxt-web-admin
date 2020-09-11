@@ -3,56 +3,44 @@
     <fragment v-if="auth">
       <!-- <error-page v-if="selectedChannel.id === 0 && $route.path !== homepage" /> -->
       <div class="dashboard_warpper" >
-        <dashboard-header :platforms="platforms" :current-channel="selectedChannel" @change-platform="handlePlatform">
-          <!-- <div class="header-link-box">
-            <a class="header-link ">
+        <dashboard-header :platforms="platforms" :current-channel="selectedChannel" :collapse="collapse" @collapse="handleCollapse" @change-platform="handlePlatform">
+          <div class="header-link-box" v-if="bookmarks.length > 0">
+            <a class="header-link " @click="handleCommand('command:bookmark')">
               <i class="el-icon-star-off" style="font-size:16px"></i>&nbsp;书签
             </a>
-          </div> -->
-          <el-dropdown v-if="bookmarks.length > 0" placement="top-start" @command="handleCommand">
-            <a class="header-link" >
-              <span class="el-dropdown-link">
-                <i class="el-icon-star-off el-icon--left"></i>书签
-              </span>
-            </a>
-            <el-dropdown-menu slot="dropdown" class="header-link-dropdown">
-              <template v-for="(bookmark, key) in bookmarks">
-                <el-dropdown-item :key="key" :command="bookmark.command">{{ bookmark.name }}</el-dropdown-item>
-              </template>
-            </el-dropdown-menu>
-          </el-dropdown>
+          </div>
           <dashboard-authpanel :user-entrance="dashboardOpts.userEntrance" @command="handleCommand" />
         </dashboard-header>
-        <div class="bodyer">
-          <div class="sidebar-nav" v-bind:style="collapse ? 'flex: 0 0 64px' : 'flex: 0 0 260px'" v-if="selectedChannel.id > 0">
-            <template v-for="(channel, key) in channels">
-              <el-collapse-transition :key="key" v-if="channel.id === selectedChannel.id">
-                <dashboard-sidebar v-if="!loading.channel"
-                  :navs="accessNavs(channel.navs, access)"
-                  :default-active="$route.path"
-                  :disable-mode="dashboardOpts.disableMode"
-                  :background-color="'#444c54'"
-                  :text-color="'#ffffff'"
-                  :active-text-color="'#ffd04b'"
-                  :router="true"
-                  :collapse="collapse" >
+        <div class="bodyer" v-bind:style="collapse ? 'left:-260px' : ''">
+          <div class="sidebar-nav" v-bind:style="'flex: 0 0 260px'" v-if="selectedChannel.id > 0">
+            <perfect-scrollbar>
+              <template v-for="(channel, key) in channels">
+                <el-collapse-transition :key="key" v-if="channel.id === selectedChannel.id">
+                  <dashboard-sidebar v-if="!loading.channel"
+                    :navs="accessNavs(channel.navs, access)"
+                    :default-active="$route.path"
+                    :disable-mode="dashboardOpts.disableMode"
+                    :background-color="'#444c54'"
+                    :text-color="'#ffffff'"
+                    :active-text-color="'#ffd04b'"
+                    :router="true"
+                    :collapse="false" >
 
-                </dashboard-sidebar>
-              </el-collapse-transition>
-            </template>
-            <div class="collapsed" @click="handleCollapse">
-              <i class="iconfont" v-bind:class="collapse ? 'icon-menu-fold' : 'icon-menu-unfold'"></i>
-            </div>
+                  </dashboard-sidebar>
+                </el-collapse-transition>
+              </template>
+            </perfect-scrollbar>
           </div>
           <div class="dashboard-page" >
-            <nuxt v-if="permission"></nuxt>
+            <perfect-scrollbar v-if="permission">
+              <nuxt></nuxt>
+            </perfect-scrollbar>
             <error-page v-else :statusCode="403" message="Forbidden" />
-            <dashboard-drawer :visible="drawerVisible" @close="handleCloseDrawer" ref="theDrawer">
-              <!-- 加载侧栏 -->
+            <dashboard-drawer class="bookmark" :visible="drawerType === 'bookmark'" @close="handleCloseDrawer" v-if="bookmarks.length > 0" >
+              <dashboard-bookmark :data="bookmarks" @command="handleCommand" />
             </dashboard-drawer>
           </div>
         </div>
-        
       </div>
     </fragment>
     <div v-else v-loading="true" />
@@ -74,7 +62,7 @@ import * as userUtil from '@/utils/user'
 import { orderBy } from 'lodash'
 import * as api from '~/api'
 import * as auth from '~/store/modules/auth'
-import { parseCommand } from '@/utils'
+import { parseCommand, parseProps } from '@/utils'
 import LayoutMixin from '~/mixins/layout'
 
 @Component<DashboardLayout>({
@@ -104,10 +92,12 @@ export default class DashboardLayout extends mixins(LayoutMixin) {
   @Provide() access: string[] | null = null
   @Provide() collapse: boolean = false
   @Provide() drawerVisible: boolean = false
+  @Provide() drawerType: string = ''
 
   @Watch('$route')
   async onRouteChange (val: Route, oldVal: Route): Promise<void> {
     await this.updateChannel(val.path)
+    this.drawerType = ''
   }
 
   @Watch('permission')
@@ -181,6 +171,11 @@ export default class DashboardLayout extends mixins(LayoutMixin) {
           break
         case 'collect':
           this.drawerVisible = true
+          this.drawerType = 'collect'
+          break
+        case 'bookmark':
+          this.drawerVisible = true
+          this.drawerType = 'bookmark'
           break
         default:
           break
@@ -197,8 +192,13 @@ export default class DashboardLayout extends mixins(LayoutMixin) {
     }
   }
 
+  handleSelect(key, keyPath, d) {
+    console.log(key, keyPath, d)
+  }
+
   handleCloseDrawer () {
     this.drawerVisible = false
+    this.drawerType = ''
   }
 
   logout (): void {

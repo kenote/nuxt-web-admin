@@ -18,6 +18,8 @@
     "noImplicitAny": false,
     "noEmit": true,
     "skipLibCheck": true,
+    "jsxFactory": "h",
+    "jsx": "react",
     "baseUrl": ".",
     "paths": {
       "~/*": [

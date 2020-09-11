@@ -5,7 +5,7 @@
 .dashboard_body {
   height: inherit;
   color: #747474;
-  overflow-x: hidden;
+  overflow: hidden;
 
   .dashboard_warpper {
     width: 100%;
@@ -59,6 +59,11 @@
         }
       }
 
+      .el-menu--horizontal>.el-submenu .el-submenu__title {
+        height: 54px;
+        line-height: 54px;
+      }
+
       .el-dropdown {
         height: 100%;
       }
@@ -84,6 +89,10 @@
         &:hover, &.active {
           background: #2a2f32;
         }
+      }
+  
+      .header-link-icon {
+        padding: 0 24px;
       }
   
       .header-mobile-start {

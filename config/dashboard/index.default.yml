@@ -12,7 +12,7 @@ userEntrance      :
   - name              : 我的主页
     command           : 
   - name              : 我的收藏
-    command           : command:collect
+    command           : router:/account/collect
   - name              : 访问控制
     command           : 
   - name              : Accesskeys
