@@ -74,9 +74,10 @@ class ProtoFilter {
       let { autoFields, request, alias, proto, parse, ditchOptions, parameter } = apis[tag]
       if (oc(setting).release()) {
         let rstp = oc(setting).release[tag]()
-        proto.rstp = rstp
+        if ('code' in proto) {
+          proto.rstp = rstp
+        }
       }
-      request['ss'] = 'array'
       let payload = formatPayload(req.body, request, alias)
       if (autoFields) {
         for (let field in autoFields) {

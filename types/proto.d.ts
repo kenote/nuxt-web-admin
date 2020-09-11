@@ -1,5 +1,6 @@
 import { PBSetting } from 'kenote-socket-helper'
 import { Maps, KeyMap } from 'kenote-config-helper'
+import { Channel } from './channel'
 
 export interface ProtoOptions {
   proto             : PBSetting
@@ -78,7 +79,7 @@ export declare namespace ProtoSend {
   interface document {
     setting           : ProtoOptions
     payload           : Maps<any>
-    proto             : proto
+    proto             : proto | Channel.api
     parse            ?: parse[]
     rtsp_key         ?: string
   }
@@ -100,7 +101,7 @@ export interface ProtoAPI {
   /**
    * 接口配置
    */
-  proto             : ProtoSend.proto
+  proto             : ProtoSend.proto | Channel.api
 
   /**
    * 请求字段格式

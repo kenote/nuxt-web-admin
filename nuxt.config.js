@@ -5,7 +5,10 @@ export default {
   telemetry: false,
   env: {},
   srcDir: 'client',
-  mode: 'universal',
+  /**
+   * WARN  mode option is deprecated. You can safely remove it from nuxt.config 
+   */ 
+  // mode: 'universal',
   ignoreOptions: {
     ignorecase: false
   },

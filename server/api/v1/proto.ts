@@ -10,7 +10,7 @@ import { UpdateSettingDocument } from '@/types/proto'
 import protoFilter from '~/filters/api_v1/proto'
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import { map, compact, orderBy, zipObject, get, set, Dictionary } from 'lodash'
+import { map, compact, orderBy, zipObject, get, set, Dictionary, isString, unset } from 'lodash'
 import { ProtoSend } from '@/types/proto'
 import ProtoUtil, { protoUtils } from '~/utils/proto'
 import logger from '~/utils/logger'
@@ -19,6 +19,8 @@ import protoProxy from '~/proxys/proto'
 import { QueryDocument } from '@/types/proxys'
 import { QueryOptions, ListData } from 'kenote-mongoose-helper'
 import { maxPageno } from '@/utils'
+import httpClient from '@/utils/http'
+import * as nunjucks from 'nunjucks'
 
 @Path('/proto')
 class ProtoController extends Controller {
@@ -132,11 +134,23 @@ class ProtoController extends Controller {
     let errorState = loadError(lang)
     let { CustomError } = errorState
     try {
-      let result = await new ProtoUtil(setting).send(proto, payload, rtsp_key, requestLog)
-      if (!oc(result).msgbody()) {
-        return res.api(null)
+      let data: Maps<any> = {}
+      if ('code' in proto) {
+        let result = await new ProtoUtil(setting).send(proto, payload, rtsp_key, requestLog)
+        if (!oc(result).msgbody()) {
+          return res.api(null)
+        }
+        data = result.msgbody!
       }
-      let parserData = parseResultData(result.msgbody!, parse, channel)
+      else if ('url' in proto) {
+        let { method, url, params, options } = proto
+        let _url = nunjucks.renderString(url, payload)
+        let _payload = { ...params, ...payload }
+        oc(url.match(/(\{){2}([a-zA-Z0-9\_\-]+)(\}){2}/g))([]).forEach( s => unset(_payload, s.replace(/(\{|\})/g, '')) )
+        let restful = await httpClient.sendData(method, _url, _payload, options)
+        data = isString(restful) ? { data: restful } : restful
+      }
+      let parserData = parseResultData(data, parse, channel)
       return res.api(parserData)
     } catch (error) {
       let err = error as Error
