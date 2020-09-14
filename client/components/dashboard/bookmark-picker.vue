@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="title" :close-on-click-modal="false" :modal-append-to-body="false" :visible.sync="dialogVisible" @close="$emit('close')">
+    <el-dialog :title="title" :close-on-click-modal="false" :modal-append-to-body="true" :modal="false" :visible.sync="dialogVisible" @close="$emit('close')">
       <el-form ref="theForm" :model="values" :rules="rules" @submit.native.prevent="handleSubmit" label-width="100px">
         <el-form-item label="名称" :rules="rules.name" prop="name">
           <el-input v-model="values.name" placeholder="请输入名称" style="width: 80%" />
@@ -82,10 +82,14 @@ export default class DashboardBookmarkPicker extends Vue {
       { required: true, message: '请输入链接' }
     ]
   }
+  @Provide() parentKey: string = ''
 
   @Watch('visible')
   onVisibleChange (val: boolean, oldVal: boolean): void {
     this.dialogVisible = val
+    if (val) {
+      this.initData(this.data)
+    }
   }
 
   @Watch('dialogVisible')
@@ -98,15 +102,32 @@ export default class DashboardBookmarkPicker extends Vue {
   @Watch('defaultValues')
   onDefaultValuesChange (val: IBookmark.values, oldVal: IBookmark.values): void {
     this.values = { ...this.defaultValues }
+    let { key } = this.defaultValues
+    if (key) {
+      let bookmarks = initMaps(cloneDeep(this.data)) 
+      let { maps } = new IBookmark(bookmarks).find({ key })!
+      if (maps!.length > 1) {
+        let folder = maps![maps!.length - 2]
+        let target = new IBookmark(this.folders).find({ key: folder.key })
+        this.parentKey = folder.key
+        this.handleSelectFolder(target!)
+      }
+    }
+    let theForm = this.$refs['theForm'] as ElForm
+    theForm && theForm.resetFields()
   }
 
   @Watch('data')
   onDataChange (val: Bookmark[], oldVal: Bookmark[]): void {
+    
+  }
+
+  initData (data: Bookmark[]): void {
     this.rootKey = uuid.v4()
     this.folders = new IBookmark(initMaps([{
       key: this.rootKey,
       name: '书签栏',
-      children: cloneDeep(val)
+      children: cloneDeep(data)
     }])).folders()
     this.target = { key: this.folders[0].key, name: this.folders[0].name, maps: [{ key: this.folders[0].key, name: this.folders[0].name }] }
   }
@@ -203,33 +224,41 @@ export default class DashboardBookmarkPicker extends Vue {
     let data = cloneDeep(this.data)
     let targetName = last(this.target.name.split(' / '))
     let item: Bookmark = {
-      key: uuid.v4(),
+      key: this.values.key || uuid.v4(),
       name: this.values.name!,
       command: this.values.command
     }
-    if (this.target.key === this.rootKey) {
-      data.push(item)
+    //
+    if (this.values.key && this.parentKey === this.target.key) {
+      new IBookmark(data).update(this.values.key!, item)
     }
     else {
-      let folder = new IBookmark(data).find({ key: this.target.key })
-      if (folder) {
-        new IBookmark(data).add(this.target.key, item)
+      this.values.key && new IBookmark(data).remove(this.values.key!)
+    // 
+      if (this.target.key === this.rootKey) {
+        data.push(item)
       }
       else {
-        let targetKeys = map(this.target.maps, 'key')
-        let targetKey = targetKeys[targetKeys.length - 2]
-        item = {
-          key: this.target.key,
-          name: targetName!,
-          children: [
-            { ...item }
-          ]
-        }
-        if (targetKey === this.rootKey) {
-          data.push(item)
+        let folder = new IBookmark(data).find({ key: this.target.key })
+        if (folder) {
+          new IBookmark(data).add(this.target.key, item)
         }
         else {
-          new IBookmark(data).add(targetKey, item)
+          let targetKeys = map(this.target.maps, 'key')
+          let targetKey = targetKeys[targetKeys.length - 2]
+          item = {
+            key: this.target.key,
+            name: targetName!,
+            children: [
+              { ...item }
+            ]
+          }
+          if (targetKey === this.rootKey) {
+            data.push(item)
+          }
+          else {
+            new IBookmark(data).add(targetKey, item)
+          }
         }
       }
     }

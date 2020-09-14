@@ -105,6 +105,7 @@ export default class DashboardPage extends mixins(ComponentMixin) {
   }
 
   handleUpdateBookmark (content: Bookmark[]): void {
+    this.loading = true
     setTimeout(async() => {
       try {
         let result = await api.getData({ method: 'post', url: '/api/v1/plan/bookmark', params: { content: yaml.dump(content) }, options: this.httpOptions })
@@ -118,6 +119,7 @@ export default class DashboardPage extends mixins(ComponentMixin) {
       } catch (error) {
         this.$message.warning(error.message)
       }
+      this.loading = false
     }, 300)
   }
 

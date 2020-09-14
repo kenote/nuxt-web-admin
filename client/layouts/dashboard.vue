@@ -32,12 +32,10 @@
             </perfect-scrollbar>
           </div>
           <div class="dashboard-page" >
-            <perfect-scrollbar v-if="permission">
-              <nuxt></nuxt>
-            </perfect-scrollbar>
+            <nuxt v-if="permission"></nuxt>
             <error-page v-else :statusCode="403" message="Forbidden" />
-            <dashboard-drawer class="bookmark" :visible="drawerType === 'bookmark'" @close="handleCloseDrawer" v-if="bookmarks.length > 0" >
-              <dashboard-bookmark :data="bookmarks" @command="handleCommand" />
+            <dashboard-drawer class="bookmark" :lock="editMode" :visible="drawerType === 'bookmark'" @close="handleCloseDrawer" v-if="bookmarks.length > 0" >
+              <dashboard-bookmark :data="bookmarks" @command="handleCommand" @edit-mode="handleEditMode" />
             </dashboard-drawer>
           </div>
         </div>
@@ -93,6 +91,7 @@ export default class DashboardLayout extends mixins(LayoutMixin) {
   @Provide() collapse: boolean = false
   @Provide() drawerVisible: boolean = false
   @Provide() drawerType: string = ''
+  @Provide() editMode: boolean = false
 
   @Watch('$route')
   async onRouteChange (val: Route, oldVal: Route): Promise<void> {
@@ -109,6 +108,10 @@ export default class DashboardLayout extends mixins(LayoutMixin) {
 
   handleCollapse (): void {
     this.collapse = !this.collapse
+  }
+
+  handleEditMode (value: boolean): void {
+    this.editMode = value
   }
 
   async updateChannel (routerPath: string): Promise<void> {

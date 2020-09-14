@@ -19,6 +19,7 @@ export default class DashboardDrawer extends Vue {
   @Prop({ default: 'right' }) placement!: 'top' | 'bottom' | 'left' | 'right'
   @Prop({ default: 360 }) width!: number
   @Prop({ default: false }) visible!: boolean
+  @Prop({ default: false }) lock!: boolean
   
   @Provide() styles: {} = {}
 
@@ -39,7 +40,8 @@ export default class DashboardDrawer extends Vue {
     }
   }
 
-  handleClick (evt: MouseEvent) {
+  handleClick (evt: MouseEvent): void {
+    if (this.lock) return
     let drawer = this.$refs['theDrawer'] as HTMLElement
     let eventPath: string[] = evt['path'].map( o => o.className)
     if (!eventPath.includes(oc(drawer).className(''))) {

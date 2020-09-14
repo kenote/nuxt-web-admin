@@ -24,6 +24,7 @@ import {
   Icon,
   Input,
   InputNumber,
+  Link,
   Loading,
   Menu,
   MenuItem,
@@ -80,6 +81,7 @@ export default () => {
   Vue.use(Icon)
   Vue.use(Input)
   Vue.use(InputNumber)
+  Vue.use(Link)
   Vue.use(Loading.directive)
   Vue.use(Menu)
   Vue.use(MenuItem)

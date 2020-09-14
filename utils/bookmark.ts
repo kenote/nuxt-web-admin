@@ -49,11 +49,29 @@ export class IBookmark {
     return __bookmarks
   }
 
-  public add (key: string, bookmark: Bookmark, bookmarks: Bookmark[] = this.__bookmarks) {
+  public add (key: string, bookmark: Bookmark, bookmarks: Bookmark[] = this.__bookmarks): void {
     let _bookmark = this.find({ key }, bookmarks)
     if (_bookmark) {
       _bookmark.children?.push(bookmark)
     }
+  }
+
+  public update (key: string, item: Bookmark, bookmarks: Bookmark[] = this.__bookmarks) {
+    let i: number = 0
+    for (let bookmark of bookmarks) {
+      if (bookmark.key === key) {
+        bookmarks[i] = { ...bookmark, ...item }
+        return bookmarks
+      }
+      else if (bookmark.children) {
+        let children = cloneDeep(bookmark.children)
+        let __children = this.update(key, item, bookmark.children)
+        if (!isEqual(__children, children)) return bookmarks
+      }
+      i++
+    }
+    return bookmarks
+    
   }
 }
 
@@ -82,6 +100,7 @@ export function removeMaps (bookmarks: Bookmark[]) {
 export declare namespace IBookmark {
 
   interface values {
+    key       ?: string
     name      ?: string
     command   ?: string
   }
