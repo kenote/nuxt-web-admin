@@ -6,7 +6,7 @@
       :data="data"
       :columns="columns"
       :loading="loading" />
-    <el-table v-else ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="handleSelectionChange" v-loading="loading" >
+    <el-table v-else ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="handleSelectionChange" v-loading="loading" :border="border">
       <el-table-column v-if="selection" 
         type="selection" 
         width="40" 
@@ -168,6 +168,7 @@ export default class DashboardTable extends Vue {
   @Prop({ default: false }) selection!: boolean
   @Prop({ default: -1 }) counts!: number
   @Prop({ default: '' }) viewMode!: string
+  @Prop({ default: false }) border!: boolean
 
   @Provide() search: string = ''
   @Provide() showFooter: boolean = false

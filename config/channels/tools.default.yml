@@ -1,0 +1,24 @@
+---
+# 频道 用户中心 配置
+
+# 频道 ID
+id            : 5
+# 频道名称
+name          : 便捷工具
+# 频道标识
+label         : tools
+# 频道描述
+description   : 管理所有用户的信息，以及登录、注册等等
+# 默认打开页面
+# default       : /tools/user
+# 频道导航
+navs:
+  # 导航分栏 -- 项目管理
+  - index         : 5-1
+    name          : 网络工具
+    icon          : iconfont iconfont icon-gaikuang
+    children:
+      - index         : /tools/ip
+        name          : IP地址查询
+      - index         : /tools/http
+        name          : HTTP请求

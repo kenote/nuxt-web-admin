@@ -45,6 +45,7 @@ yarn.lock
 build/
 config/**/*.yml
 !config/**/*.default.yml
+qqwry.dat
 uploadfiles/
 projects/
 

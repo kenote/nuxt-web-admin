@@ -49,7 +49,13 @@ export default class DashboardCodemirror extends Vue {
 
   @Watch('code')
   onCodeChange (val: string, oldVal: string): void {
+    if (val === oldVal) return
     this.$emit('update', val)
+  }
+
+  @Watch('value')
+  onValueChange (val: string, oldVal: string): void {
+    this.code = val
   }
 }
 </script>

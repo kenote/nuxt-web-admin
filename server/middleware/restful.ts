@@ -1,7 +1,7 @@
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as nunjucks from 'nunjucks'
-import { isNumber, isError } from 'util'
+import { isNumber, isError } from 'lodash'
 import { Response, Request } from 'express'
 import { IError, IErrorInfo } from 'kenote-config-helper'
 import { Middleware, MiddlewareSetting, RegisterMiddlewareMethod } from 'kenote-express-helper'
@@ -10,6 +10,7 @@ import { language, options } from '~/config'
 import { loadError } from '~/utils/error'
 import logger from '~/utils/logger'
 import { previewFile } from '~/utils/store'
+import { IncomingHttpHeaders } from 'http'
 
 type APIResponseHandler = (data: any, error?: number | IError | IErrorInfo, opts?: string[]) => Response
 
@@ -30,6 +31,11 @@ export interface IResponse extends Response {
    * 下载文件
    */
   downloadFile : (file: string, options?: DownloadOptions) => void
+
+  /**
+   * 客户端IP
+   */
+  clientIP     : string
 }
 
 interface DownloadOptions {
@@ -46,7 +52,7 @@ interface DownloadOptions {
 class Restful extends Middleware {
 
   @RegisterMiddlewareMethod()
-  public api (res: Response, req: Request) {
+  public api (res: Response, req: Request): any {
     let lang = oc(req).query.lang('') as string || language
     let { __ErrorCode, ErrorInfo } = loadError(lang)
     return (data: any, error?: number | IError | IErrorInfo, opts?: string[]): Response => {
@@ -88,6 +94,16 @@ class Restful extends Middleware {
     }
   }
 
+  @RegisterMiddlewareMethod()
+  public clientIP (res: Response, req: Request): any {
+    return getClientIP(req)
+  }
+
 }
 
 export default new Restful().hendler()
+
+function getClientIP (req: Request): string {
+  let headers: IncomingHttpHeaders = oc(req).headers({})
+  return headers['x-forwarded-for'] as string || headers['x-real-ip'] as string || req.connection.remoteAddress || req.socket.remoteAddress || req.ip
+}

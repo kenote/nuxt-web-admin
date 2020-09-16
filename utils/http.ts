@@ -1,4 +1,4 @@
-import axios, { CancelToken, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { CancelToken, AxiosRequestConfig, AxiosResponse, ResponseType } from 'axios'
 import { Maps } from 'kenote-config-helper'
 import { RestfulInfoByError } from '@/types/restful'
 import { oc } from 'ts-optchain'
@@ -11,6 +11,7 @@ export interface HeaderOptions {
   entry         ?: string
   cancelToken   ?: CancelToken
   total         ?: number
+  responseType  ?: ResponseType
 }
 
 /**
@@ -137,7 +138,7 @@ class HTTPClient {
     }
     if (options && options.download) {
       config.method = 'get'
-      config.responseType = 'blob'
+      config.responseType = options.responseType || 'blob'
       config.onDownloadProgress = function (progressEvent: any): void {
         let percentage: number = Math.round((progressEvent.loaded * 100) / options.total!) || 0
         if (percentage <= 100) {

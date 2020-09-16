@@ -138,10 +138,10 @@ export default class DashboardLayout extends mixins(LayoutMixin) {
     return channels.filter( o => platform.includes(o.id) )
   }
 
-  handlePlatform (channelId: number) {
+  handlePlatform (channelId: number): void {
     if (this.selectedChannel.id === channelId) return
     let channel = this.channels.find( o => o.id === channelId )!
-    this.$router.push(channel.default!)
+    this.$router.push(channel.default || `/${channel.label}`)
   }
 
   accessNavs (navs: Navigation[], access?: string[]): Navigation[] {
