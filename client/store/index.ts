@@ -1,8 +1,8 @@
 import { ModuleTree } from 'vuex'
 import { namespace } from 'nuxt-property-decorator'
-import * as root from '~/store/root'
-import * as auth from '~/store/modules/auth'
-import * as setting from '~/store/modules/setting'
+import * as root from './root'
+import * as auth from './modules/auth'
+import * as setting from './modules/setting'
 
 export const Store = {
   Auth             : namespace(auth.name),

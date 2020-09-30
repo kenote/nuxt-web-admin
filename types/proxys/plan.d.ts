@@ -3,7 +3,7 @@ import { ObjectId } from 'bson'
 import { KeyMap } from 'kenote-config-helper'
 import { ResponseUserDocument } from './user'
 
-export type PlanType = 'ditch' | 'draft' | 'bookmark'
+export type PlanType = 'ditch' | 'draft' | 'bookmark' | 'http-request'
 
 export interface CreatePlanDocument {
   name             : string

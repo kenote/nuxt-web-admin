@@ -29,7 +29,7 @@
           key: 'type',
           name: '类型',
           format: {
-            maps: { bookmark: '书签', draft: '草稿', ditch: '渠道' }
+            maps: { bookmark: '书签', draft: '草稿', ditch: '渠道', 'http-request': 'HTTP请求' }
           },
           width: 100,
         },

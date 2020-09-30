@@ -11,6 +11,7 @@ import { CreatePlanDocument, EditPlanDocument, ResponsePlanDocument, Bookmark } 
 import { UpdateDocument } from '@/types/proxys'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import * as yaml from 'js-yaml'
+import { HttpRequestConfig } from '@/utils/http'
 
 @Path('/plan')
 class PlanController extends Controller {
@@ -123,7 +124,7 @@ class PlanController extends Controller {
       let result = await PlanProxy.Dao.findOne({ user: auth._id, type: 'bookmark', channel: 'home' }) as ResponsePlanDocument | null
       if (result) {
         let { content } = result
-        data = [ ...yaml.load(content) ]
+        data = yaml.load(content) || []
       }
       return res.api(data)
     } catch (error) {
@@ -175,6 +176,77 @@ class PlanController extends Controller {
       return next(error)
     }
   }
+
+  /**
+   * 获取Http-Request
+   */
+  @Router({ method: 'get', path: '/http-request' })
+  @Filter( authenticate )
+  public async httpRequest (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let auth = req.user as ResponseUserDocument
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let PlanProxy = planProxy(errorState)
+    try {
+      let data: HttpRequestConfig = { httpRequest: [], httpProxy: false }
+      let result = await PlanProxy.Dao.findOne({ user: auth._id, type: 'http-request', channel: 'home' }) as ResponsePlanDocument | null
+      if (result) {
+        let { content } = result
+        data = yaml.load(content)
+      }
+      return res.api(data)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+  /**
+   * 更新Http-Request
+   */
+  @Router({ method: 'post', path: '/http-request' })
+  @Filter( authenticate )
+  public async updateHttpRequest (req: Request, res: IResponse, next: NextFunction): Promise<Response | void> {
+    let { content } = req.body
+    let auth = req.user as ResponseUserDocument
+    let lang = oc(req).query.lang('') as string || language
+    let errorState = loadError(lang)
+    let { CustomError } = errorState
+    let PlanProxy = planProxy(errorState)
+    try {
+      let bookmark = await PlanProxy.Dao.findOne({ user: auth._id, type: 'http-request', channel: 'home' })
+      if (bookmark) {
+        await PlanProxy.Dao.updateOne({ _id: bookmark._id }, { content: String(content) })
+      }
+      else {
+        let document: CreatePlanDocument = {
+          name: 'http-request',
+          type: 'http-request', 
+          channel: 'home',
+          content: String(content),
+          user: auth._id
+        }
+        await PlanProxy.Dao.insert(document)
+      }
+      let data: HttpRequestConfig = { httpRequest: [], httpProxy: false }
+      let result = await PlanProxy.Dao.findOne({ user: auth._id, type: 'http-request', channel: 'home' }) as ResponsePlanDocument | null
+      if (result) {
+        let { content } = result
+        data = yaml.load(content)
+      }
+      return res.api(data)
+    } catch (error) {
+      if (CustomError(error)) {
+        return res.api(null, error)
+      }
+      return next(error)
+    }
+  }
+
+
 }
 
 export = PlanController

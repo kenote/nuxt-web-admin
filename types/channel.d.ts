@@ -45,7 +45,7 @@ export declare namespace Channel {
   }
 
   interface api {
-    method            : 'get' | 'post' | 'put'
+    method            : methodTypes
     url               : string
     params           ?: any
     options          ?: HeaderOptions
@@ -83,4 +83,6 @@ export declare namespace Channel {
     group             : string
     separator         : string
   }
+
+  type methodTypes = 'get' | 'post' | 'put' | 'delete'
 }

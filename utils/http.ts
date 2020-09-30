@@ -1,7 +1,8 @@
-import axios, { CancelToken, AxiosRequestConfig, AxiosResponse, ResponseType } from 'axios'
+import axios, { CancelToken, AxiosRequestConfig, AxiosResponse, ResponseType, AxiosProxyConfig, CancelTokenSource } from 'axios'
 import { Maps } from 'kenote-config-helper'
 import { RestfulInfoByError } from '@/types/restful'
 import { oc } from 'ts-optchain'
+import { Channel } from '@/types/channel'
 
 export interface HeaderOptions {
   token         ?: string
@@ -12,18 +13,43 @@ export interface HeaderOptions {
   cancelToken   ?: CancelToken
   total         ?: number
   responseType  ?: ResponseType
+  done          ?: (response: AxiosResponse<any>) => void
+  proxy         ?: AxiosProxyConfig | false
+}
+
+export interface HttpResponse {
+  headers       ?: any
+  data          ?: any
+  progress      ?: (percentage: number) => void
+}
+
+export interface HttpRequest extends HttpRequestBase {
+  response           : HttpResponse | null
+  loading           ?: boolean
+  cancelTokenSource ?: CancelTokenSource
+}
+
+export interface HttpRequestBase {
+  key                : string
+  name               : string
+  request            : Channel.api
+}
+
+export interface HttpRequestConfig {
+  httpRequest        : HttpRequestBase[]
+  httpProxy         ?: AxiosProxyConfig | false
 }
 
 /**
  * 获取返回数据
  * @param options AxiosRequestConfig
  */
-async function getResponseData (options: AxiosRequestConfig): Promise<any> {
+async function getResponseData (options: AxiosRequestConfig, done?: (response: AxiosResponse<any>) => void): Promise<any> {
   let response = await axios(options) as AxiosResponse<any>
+  done && done(response)
   if (response.status >= 200 && response.status < 300) {
     return response.data || {}
   }
-  console.log(response.statusText)
   throw new Error(response.statusText)
 }
 
@@ -116,7 +142,8 @@ class HTTPClient {
       method,
       url,
       headers: setHeaders({ ...options }),
-      [method === 'get' ? 'params' : 'data']: data
+      [method === 'get' ? 'params' : 'data']: data,
+      proxy: options?.proxy
     }
     if (options && options.cancelToken) {
       config.cancelToken = options.cancelToken
@@ -146,7 +173,7 @@ class HTTPClient {
         }
       }
     }
-    return getResponseData(config)
+    return getResponseData(config, options?.done)
   }
 }
 

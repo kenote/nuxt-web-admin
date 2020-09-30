@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree, GetterTree } from 'vuex'
-import { RootState } from '~/store'
+import { RootState } from '../'
 import { ResponseUserDocument } from '@/types/proxys/user'
 import { Bookmark } from '@/types/proxys/plan'
 import { oc } from 'ts-optchain'

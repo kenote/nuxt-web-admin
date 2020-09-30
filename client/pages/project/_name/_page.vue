@@ -167,7 +167,7 @@ export default class ProjectPage extends mixins(PageMixin) {
 
   @Watch('viewMode')
   onViewModeChange (val: string, oldVal: string): void {
-    console.log(val)
+    
   }
 
   isExport (): boolean {

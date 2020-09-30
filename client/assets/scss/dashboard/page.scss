@@ -73,6 +73,10 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
+    &.http-keymap td>.cell {
+      text-overflow: unset;
+    }
   }
 
   .el-pagination__jump .el-input__inner {

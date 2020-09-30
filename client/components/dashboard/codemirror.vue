@@ -47,6 +47,14 @@ export default class DashboardCodemirror extends Vue {
 
   @Model('update') value!: any
 
+  @Watch('type')
+  onTypeChange (val: string, oldVal: string): void {
+    this.options = {
+      ...this.options,
+      mode: this.type
+    }
+  }
+
   @Watch('code')
   onCodeChange (val: string, oldVal: string): void {
     if (val === oldVal) return

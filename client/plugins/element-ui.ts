@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {
+  Autocomplete,
   Avatar,
   Backtop,
   Breadcrumb,
@@ -57,6 +58,7 @@ import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 import Scrollbar from 'element-ui/lib/scrollbar'
 
 export default () => {
+  Vue.use(Autocomplete)
   Vue.use(Avatar)
   Vue.use(Backtop)
   Vue.use(Breadcrumb)

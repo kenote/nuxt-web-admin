@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree, GetterTree, ActionContext } from 'vuex'
-import { RootState } from '~/store'
+import { RootState } from '../'
 import { Channel } from '@/types/channel'
 import { Register, SinglePage, PageFlag, DashboardOptions } from '@/types/restful'
 import { Maps } from 'kenote-config-helper'

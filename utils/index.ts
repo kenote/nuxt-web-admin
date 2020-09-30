@@ -1,13 +1,17 @@
 // Utils...
-import { Maps } from 'kenote-config-helper'
+import { Maps, KeyMap } from 'kenote-config-helper'
 import { MetaInfo } from 'vue-meta'
 import { oc } from 'ts-optchain'
 import { Command } from '@/types'
-import { assign, random, isRegExp, isString, zipObject, remove } from 'lodash'
+import { assign, random, isRegExp, isString, zipObject, remove, Dictionary, isArray, compact, trim } from 'lodash'
 import * as nunjucks from 'nunjucks'
 import * as rules from '@/utils/rules'
 import * as yaml from 'js-yaml'
 import * as dayjs from 'dayjs'
+import * as urlParse from 'url-parse'
+import * as qs from 'query-string'
+import { AxiosProxyConfig } from 'axios'
+import { Channel } from '@/types/channel'
 
 export function getMetaInfo (data: Maps<string | undefined>, metas?: any[]): MetaInfo {
   let metaInfo: MetaInfo = {
@@ -209,4 +213,144 @@ export function getRangeDateByDay (begin: Date, end: Date): Date[][] {
     ranges.push([ diff_start, diff_end ])
   }
   return ranges
+}
+
+/**
+ * 将 Url 参数转换为 Collection
+ * @param query 
+ */
+export function queryToCollection (url: string): Array<Dictionary<any>> {
+  let collection: Array<Dictionary<any>> = []
+  let { query } = urlParse(url)
+  if (!query) return collection
+  collection = String(query).replace(/^\?/, '').split('&').map(parseUrlQuery)
+  return collection
+}
+
+/**
+ * 将 Collection 转换为 Url 参数
+ * @param collection 
+ */
+export function collectionToQuery (collection: Array<Dictionary<any>>): string {
+  let query: string = ''
+  for (let item of collection) {
+    let { key, name } = item
+    if (key || name) {
+      query += `&${key}${name ? '=' + name : ''}`
+    }
+  }
+  return query.replace(/^\&/, '?')
+}
+
+/**
+ * 普通参数转换为 Collection
+ * @param params 
+ * @param array_column
+ */
+export function paramToCollection (params: Dictionary<any>, array_column: boolean = false): Array<Dictionary<any>> {
+  let collection: Array<Dictionary<any>> = []
+  for (let key in params) {
+    let name = params[key]
+    if (isArray(name) && array_column) {
+      for (let item of name) {
+        collection.push({ key, name: item })
+      }
+    }
+    else {
+      collection.push({ key, name })
+    }
+  }
+  return collection
+}
+
+/**
+ * 解析 Url 参数
+ * @param value 
+ */
+function parseUrlQuery (value: string): Dictionary<any> {
+  return zipObject(['key', 'name'], value.split('='))
+}
+
+/**
+ * 解析URL到代理配置
+ * @param url 
+ */
+export function urlToProxyConfig (url?: string): AxiosProxyConfig | false {
+  if (!url) return false
+  let { hostname: host, port, protocol, username, password } = urlParse(url)
+  if (!host) return false
+  let proxy: AxiosProxyConfig = {
+    host,
+    port: Number(port || '8080'),
+    protocol: oc(protocol)('http').replace(/(\:)$/, '')
+  }
+  if (username && password) {
+    proxy.auth = { username, password }
+  }
+  return proxy
+}
+
+/**
+ * 解析代理配置到URL
+ * @param proxy 
+ */
+export function proxyConfigToUrl (proxy?: AxiosProxyConfig | false): string | undefined {
+  if (!proxy) return undefined
+  let { host, port, protocol, auth } = proxy
+  if (!host) return undefined
+  let url = urlParse('http://')
+  url.set('host', host)
+  url.set('port', port)
+  protocol && url.set('protocol', protocol)
+  if (auth) {
+    url.set('username', auth.username)
+    url.set('password', auth.password)
+  }
+  return url.toString()
+}
+
+/**
+ * 获取URL地址全路径
+ * @param url 
+ * @param site_url 
+ */
+export function getUrlAddress (url: string, site_url: string = ''): string {
+  if (!site_url) {
+    site_url = oc(location).origin('')
+  }
+  if (/^(\/{2})/.test(url)) {
+    url = `http:${url}`
+  }
+  else if (/^(\/{1})/.test(url)) {
+    url = `${site_url}${url}`
+  }
+  return encodeURI(trim(url))
+}
+
+/**
+ * 将 API 转为 Shell
+ * @param fetch 
+ * @param site_url 
+ */
+export function fetchToShell (fetch: Channel.api, site_url: string = ''): string {
+  let { method, url, params } = fetch
+  let headers = paramToCollection(oc(fetch).options.header({}), true)
+  let proxy = oc(fetch).options.proxy(false)
+  let shell = `curl`
+  let methodType = method === 'get' ? '' : '-X ' + oc(method)('post').toUpperCase()
+  let urlAddress = `"${getUrlAddress(url, site_url)}"`
+  let header = headers.map( o => `-H "${o.key}:${o.name}"` )
+  let httpProxy = proxyConfigToUrl(proxy)
+  if (httpProxy) {
+    httpProxy = '-x ' + httpProxy
+  }
+  let data = qs.stringify(params || {})
+  let contentType = headers.find( o => o.key === 'Content-Type')
+  if (contentType?.name === 'application/json') {
+    data = JSON.stringify(params)
+  }
+  let postData = method === 'get' ? '' : `-d "${data}"`
+
+  let arr = compact([ shell, postData, methodType, urlAddress, ...header, httpProxy ])
+  return arr.join(' ')
 }

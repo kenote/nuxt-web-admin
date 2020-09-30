@@ -1,10 +1,10 @@
 import { GetterTree, ActionContext, ActionTree, MutationTree } from 'vuex'
-import { RootState } from '~/store'
+import { RootState } from './'
 import { HTTPServer } from '@/types/restful'
-import * as setting from '~/store/modules/setting'
+import * as setting from './modules/setting'
 import { HeaderOptions } from '@/utils/http'
-import * as auth from '~/store/modules/auth'
-import * as api from '~/api'
+import * as auth from './modules/auth'
+import * as api from '../api'
 
 export interface State extends Record<string, any> {}
 
