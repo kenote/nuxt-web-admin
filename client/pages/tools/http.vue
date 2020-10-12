@@ -122,7 +122,6 @@ export default class ToolsHttpPage extends mixins(PageMixin) {
       this.handleUpload(index, content)
       return
     }
-    // let index = findIndex(this.httpRequests, o => o.key === this.tabKey)
     this.httpRequests[index].loading = true
     this.httpRequests[index].cancelTokenSource = axios.CancelToken.source()
     let fetch: Channel.api = {
@@ -181,7 +180,6 @@ export default class ToolsHttpPage extends mixins(PageMixin) {
 
   handleUpload (index: number, fetch: Channel.api): void {
     let { url, params } = fetch
-    // let index = findIndex(this.httpRequests, o => o.key === this.tabKey)
     this.httpRequests[index].loading = true
     setTimeout(async () => {
       try {
@@ -220,7 +218,6 @@ export default class ToolsHttpPage extends mixins(PageMixin) {
       if (Object.prototype.toString.call(params) === '[object FormData]') {
         o.request.params = {}
       }
-      unset(request, ['options', 'header', 'Content-Type'])
       let item: HttpRequestBase = {
         key,
         name,
@@ -232,8 +229,6 @@ export default class ToolsHttpPage extends mixins(PageMixin) {
       httpRequest,
       httpProxy: this.httpProxy
     }
-    console.log(yaml.dump(config))
-
     this.loading = true
     setTimeout(async () => {
       try {

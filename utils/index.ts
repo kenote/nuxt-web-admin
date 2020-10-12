@@ -332,7 +332,7 @@ export function getUrlAddress (url: string, site_url: string = ''): string {
  * @param fetch 
  * @param site_url 
  */
-export function fetchToShell (fetch: Channel.api, site_url: string = ''): string {
+export function fetchToShell (fetch: Channel.api, site_url: string = '', head: boolean = false): string {
   let { method, url, params } = fetch
   let headers = paramToCollection(oc(fetch).options.header({}), true)
   let proxy = oc(fetch).options.proxy(false)
@@ -350,7 +350,9 @@ export function fetchToShell (fetch: Channel.api, site_url: string = ''): string
     data = JSON.stringify(params)
   }
   let postData = method === 'get' ? '' : `-d "${data}"`
-
+  if (head) {
+    postData = '-I'
+  }
   let arr = compact([ shell, postData, methodType, urlAddress, ...header, httpProxy ])
   return arr.join(' ')
 }

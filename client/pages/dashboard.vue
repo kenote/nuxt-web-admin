@@ -5,7 +5,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, mixins } from 'nuxt-property-decorator'
+import PageMixin from '~/mixins/page'
 import { Route } from 'vue-router'
 
 @Component<DashboardPage>({
@@ -13,7 +14,7 @@ import { Route } from 'vue-router'
   layout: 'dashboard',
   middleware: ['authenticated'],
 })
-export default class DashboardPage extends Vue {
+export default class DashboardPage extends mixins(PageMixin) {
   
 }
 </script>

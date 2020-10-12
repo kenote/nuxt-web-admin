@@ -52,7 +52,7 @@ export const state = (): State => ({
 export const getters: GetterTree<State, RootState> = {
   selectedChannel: state => {
     let p = state.channels?.find( o => o.id === state.channelId )
-    return p || { id: 0, name: '仪表盘' }
+    return p || { id: 0, name: '仪表盘', navs: [] }
   },
   projectChannels: state => orderBy(state.channels?.filter( o => o.id > 1000 && o.id < 2000 )!, ['id'], ['asc']),
   rtsps: state => {

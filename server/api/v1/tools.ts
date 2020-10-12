@@ -58,8 +58,8 @@ class ToolsController extends Controller {
     let _url = getUrlAddress(url, site_url)
     try {
       let result: HttpResponse = {}
-      let shell = fetchToShell(fetch, site_url)
-      let output = await runscript(shell + ' -I', { stdio: 'pipe' })
+      let shellByHead = fetchToShell(fetch, site_url, true)
+      let output = await runscript(shellByHead, { stdio: 'pipe' })
       let headers =  parseShellHeaders(output.stdout?.toString() || '')
       let contentType = headers['Content-Type'] || headers['content-type']
       if (/(text|json|javascript)/.test(contentType)) {

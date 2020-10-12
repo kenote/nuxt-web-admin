@@ -163,6 +163,7 @@ function findBookmark (bookmark: Bookmark, command: string) {
   right: 20px;
   display: flex;
   flex-direction: column;
+  z-index: 5;
   
   * {
     margin: 0;

@@ -86,7 +86,7 @@ interface PayloadMap extends KeyMap<any> {
     else {
       this.requestTag = 'body'
       this.params = queryToCollection(url) as KeyMap<any>[]
-      this.body = { 'x-www-form-urlencoded': paramToCollection(params || {}) as KeyMap<any>[], 'form-data': [] }
+      this.body = { 'x-www-form-urlencoded': paramToCollection(params || {}, true) as KeyMap<any>[], 'form-data': [] }
     }
   }
 })
