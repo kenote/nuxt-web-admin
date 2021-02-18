@@ -1,0 +1,14 @@
+{
+  "restartable": "rs",
+  "ignore": [".git", "node_modules/", "dist/", "coverage/"],
+  "watch": ["server/"],
+  "execMap": {
+    "ts": "node -r ts-node/register -r tsconfig-paths/register"
+  },
+  "env": {
+    "TS_NODE_PROJECT": "server/tsconfig.json",
+    "NODE_ENV": "development",
+    "HTTP_PORT": 4000
+  },
+  "ext": "json, ts"
+}
