@@ -2,6 +2,7 @@
   <div>
     Home Page 
     <p>site_url: {{ site_url }}</p>
+    <el-button>TEST</el-button>
   </div>
 </template>
 

@@ -3,6 +3,7 @@ import { ServiceEngine } from '@kenote/koa'
 import ApplicationModule from './application.module'
 import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
+import logger from '~/services/logger'
 
 async function bootstrap () {
   let { host, port, secretKey } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
@@ -18,7 +19,7 @@ async function bootstrap () {
   let Port = port ?? process.env.HTTP_PORT ?? 4000
   let Host = host ?? 'localhost'
   server.app.listen(Port, Host, () => {
-    console.log(`Http Server Running to http://localhost:%d`, Port)
+    logger.info(`Http Server Running to http://localhost:%d`, Port)
   })
 }
 

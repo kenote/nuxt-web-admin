@@ -46,7 +46,7 @@ module.exports = {
    * 加载插件
    */
   plugins: [
-    
+    { src: '~/plugins/element-ui', ssr: true },
   ],
   /**
    * 页面 Loading 条设置
@@ -68,6 +68,20 @@ module.exports = {
   components: [
     '~/components'
   ],
+  /**
+   * 编译配置
+   */
+  build: {
+    babel: {
+      plugins: [
+        ['component', {
+          libraryName: 'element-ui',
+          styleLibraryName: 'theme-chalk'
+        }]
+      ],
+      comments: true
+    },
+  },
   /**
    * 路由配置
    */
