@@ -1,0 +1,17 @@
+
+# 邮件模版目录
+mailDir: mails
+# 邮箱选项
+smtpOptions:
+  host: smtp.ethereal.email
+  port: 587
+  # 邮箱帐号/密码
+  auth:
+    user: penelope.leuschke41@ethereal.email
+    pass: aPxRSFBXbM7dseEwKK
+# 发送选项
+asyncRetryOptions:
+  # 如果发送失败，尝试发送次数
+  times: 5
+  # 如果发送失败，尝试发送间隔；单位：毫秒
+  interval: 200

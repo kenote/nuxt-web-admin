@@ -17,7 +17,7 @@ export declare interface ServerConfigure {
   /**
    * secret
    */
-  secret               : string
+  secretKey            : string
   /**
    * Redis 配置
    */

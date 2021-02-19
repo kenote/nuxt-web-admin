@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Context, NextHandler } from '@kenote/core'
+import { authenticate } from '~/plugins/passport'
 
 /**
  * 设置主路径

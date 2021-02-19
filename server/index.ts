@@ -5,13 +5,13 @@ import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 
 async function bootstrap () {
-  let { host, port, secret } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
+  let { host, port, secretKey } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
   /**
    * 加载引擎框架
    * Express -- 需要引入模块 @kenote/express
    * Koa2    -- 需要引入模块 @kenote/koa
    */
-  let engine = new ServiceEngine({ keys: [secret ?? 'kenote'] })
+  let engine = new ServiceEngine({ keys: [secretKey ?? 'kenote'] })
   // 创建服务并加载根模块
   let server = await ServerFactory(engine).create(ApplicationModule)
   // 监听服务到指定端口

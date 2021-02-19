@@ -1,5 +1,7 @@
 import { Middleware, Action, Context, Property } from '@kenote/core'
 import { HttpError } from 'http-errors'
+import * as service from '~/services'
+import { setJwToken } from './auth'
 
 @Middleware({
   // HTTP 头信息
@@ -32,6 +34,16 @@ export default class Restful {
       }
     }
   }
+
+  @Property()
+  service (ctx: Context) {
+    return service
+  }
+
+  @Action()
+  setJwToken (ctx: Context) {
+    return setJwToken
+  }
 }
 
 // 扩展到 @kenote/core 中 Context 类型
@@ -47,5 +59,13 @@ declare module '@kenote/core' {
      * @param error 
      */
     api (info: any, error?: Error): void
+    /**
+     * 调用 Services 接口
+     */
+    service: typeof service
+    /**
+     * 设置 JWT Token
+     */
+    setJwToken: typeof setJwToken
   }
 }

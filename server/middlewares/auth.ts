@@ -1,5 +1,9 @@
 import { Strategy, StrategyOptions, ExtractJwt, VerifyCallbackWithRequest } from 'passport-jwt'
 import jwt from 'jsonwebtoken'
+import { loadConfig } from '@kenote/config'
+import { ServerConfigure } from '@/types/config'
+
+const { secretKey } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 
 /**
  * JWT Payload 类型；用于存储用户标记
@@ -17,7 +21,7 @@ export declare interface Jwtpayload {
 const jwtOptions: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   passReqToCallback: true,
-  secretOrKey: 'kenote'
+  secretOrKey: secretKey ?? 'kenote'
 }
 
 /**
