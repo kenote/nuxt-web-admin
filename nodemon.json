@@ -1,7 +1,7 @@
 {
   "restartable": "rs",
   "ignore": [".git", "node_modules/", "dist/", "coverage/"],
-  "watch": ["server/"],
+  "watch": ["server/", "client/", "nuxt.config.js", "config/"],
   "execMap": {
     "ts": "node -r ts-node/register -r tsconfig-paths/register"
   },

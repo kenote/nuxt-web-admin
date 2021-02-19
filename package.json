@@ -6,15 +6,21 @@
   "typings": "./types",
   "license": "MIT",
   "dependencies": {
+    "@kenote/config": "latest",
     "@kenote/core": "latest",
     "@kenote/koa": "latest",
     "@kenote/koa-passport": "latest",
     "@kenote/koa-session": "latest",
+    "@kenote/mailer": "latest",
+    "@kenote/mongoose": "latest",
+    "@typegoose/typegoose": "^7.4.8",
     "koa-redis": "^4.0.1",
     "lodash": "^4.17.20",
+    "mongoose": "5.10.18",
     "nunjucks": "^3.2.2",
     "nuxt": "^2.14.12",
     "nuxt-property-decorator": "^2.9.1",
+    "parse-string": "^1.2.3",
     "passport-jwt": "^4.0.0"
   },
   "devDependencies": {
@@ -23,6 +29,7 @@
     "@nuxt/typescript-build": "^2.0.4",
     "@types/koa-redis": "^3.0.3",
     "@types/lodash": "^4.14.168",
+    "@types/mongoose": "^5.10.3",
     "@types/node": "^14.14.25",
     "@types/nunjucks": "^3.1.4",
     "@types/passport-jwt": "^3.0.4",
@@ -38,7 +45,8 @@
   },
   "scripts": {
     "dev": "nodemon --config nodemon.json ./server/index.ts",
-    "build": "nuxt build && rm -rf ./dist && tsc --project server/tsconfig.json && tscpaths -p server/tsconfig.json -s ./server -o ./dist", 
+    "build": "nuxt build && rm -rf ./dist && tsc --project server/tsconfig.json && tscpaths -p server/tsconfig.json -s ./server -o ./dist",
+    "build:nuxt": "nuxt build",
     "start": "cross-env NODE_ENV=production node ./dist/index.js",
     "start:pm2": "pm2 start scosystem.config.js",
     "delete:pm2": "pm2 delete scosystem.config.js"
