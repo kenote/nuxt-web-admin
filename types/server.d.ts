@@ -1,4 +1,4 @@
-
+/// <reference types="node" />
 
 declare namespace NodeJS {
   interface Process {
@@ -7,6 +7,6 @@ declare namespace NodeJS {
 
   interface ProcessEnv {
     readonly NODE_ENV      : 'development' | 'production' | 'test'
-    readonly HTTP_PORT    ?: number
+    readonly HTTP_PORT    ?: string
   }
 }

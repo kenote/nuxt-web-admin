@@ -16,6 +16,7 @@ export default {
   ERROR_DATA_DOESNT_BELONG_YOU     : '不能操作不属于您的数据',
   ERROR_CUSTOMIZE_DATA             : '\%s',
   ERROR_VALID_SIGNATURE_FAIL       : 'MD5验签失败',
+  ERROR_MISSING_CONFIG_PARAMETER   : '缺少配置参数 %s',
   
   ERROR_UPLOAD_FILE_MIMETYPE       : '上传文件类型不许可. [%s]',
   ERROR_UPLOAD_FILESIZE_LARGEMAX   : '上传文件超过最大值 %s.',

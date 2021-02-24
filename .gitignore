@@ -45,6 +45,7 @@ yarn.lock
 dist/
 config/**/*.yaml
 !config/**/*.default.yaml
+uploadfiles/
 
 # TypeScript v1 declaration files
 typings/

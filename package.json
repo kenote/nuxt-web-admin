@@ -13,6 +13,7 @@
     "@kenote/koa-session": "latest",
     "@kenote/mailer": "latest",
     "@kenote/mongoose": "latest",
+    "@kenote/upload": "latest",
     "@typegoose/typegoose": "^7.4.8",
     "element-ui": "^2.15.0",
     "koa-redis": "^4.0.1",
@@ -45,7 +46,7 @@
     "tsconfig-paths": "^3.9.0",
     "tscpaths": "^0.0.9",
     "tslint": "^6.1.3",
-    "typescript": "^4.1.3"
+    "typescript": "^3.9.7"
   },
   "scripts": {
     "dev": "nodemon --config nodemon.json ./server/index.ts",
