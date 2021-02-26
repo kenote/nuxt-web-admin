@@ -1,11 +1,15 @@
 import { Nuxt, Builder } from 'nuxt'
-import nuxtConfig from '../../nuxt.config'
+import nuxtConfig from '@/nuxt.config'
 import { IModule } from '@kenote/core'
 import { toRequestHandler } from '@kenote/koa'
 import { NuxtPayload } from '@/types/nuxtServer'
+import { loadConfig } from '@kenote/config'
+import { ServerConfigure } from '@/types/config'
+import { merge } from 'lodash'
 
+const { metaInfo: head } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 const dev = process.env.NODE_ENV !== 'production'
-const nuxt: Nuxt = new Nuxt({ ...nuxtConfig, dev })
+const nuxt: Nuxt = new Nuxt(merge(nuxtConfig, { head, dev }))
 
 async function nuxtReady () {
   await nuxt.ready()

@@ -1,5 +1,6 @@
 import redis from 'redis'
 import mongoose from 'mongoose'
+import { MetaInfo } from 'vue-meta'
 
 export declare interface ServerConfigure {
   /**
@@ -30,6 +31,10 @@ export declare interface ServerConfigure {
    * 生产环境下使用 ts-node 运行
    */
   tsnode              ?: true
+  /**
+   * MetaInfo
+   */
+  metaInfo            ?: MetaInfo
 }
 
 export declare namespace ServerConfigure {

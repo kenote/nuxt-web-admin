@@ -29,7 +29,7 @@ class TemplateModule {}
 
 @Module({
   // 功能模块
-  imports: [ StaticModule, TemplateModule, ControllerModule ],
+  imports: [ StaticModule, TemplateModule, ...ControllerModule ],
   // 插件
   plugins: [ sessionPlugin, passportPlugin ],
   // 中间件

@@ -20,6 +20,7 @@
     "lodash": "^4.17.20",
     "log4js": "^6.3.0",
     "mongoose": "5.10.18",
+    "mongoose-sequence": "^5.3.1",
     "nunjucks": "^3.2.2",
     "nuxt": "^2.14.12",
     "nuxt-property-decorator": "^2.9.1",
@@ -50,7 +51,7 @@
   },
   "scripts": {
     "dev": "nodemon --config nodemon.json ./server/index.ts",
-    "build": "nuxt build && rm -rf ./dist && tsc --project server/tsconfig.json && tscpaths -p server/tsconfig.json -s ./server -o ./dist",
+    "build": "nuxt build && rm -rf ./dist && tsc --project server/tsconfig.production.json && tscpaths -p server/tsconfig.production.json -s ./server -o ./dist",
     "build:nuxt": "nuxt build",
     "start": "cross-env NODE_ENV=production node ./dist/index.js",
     "start:pm2": "pm2 start scosystem.config.js",

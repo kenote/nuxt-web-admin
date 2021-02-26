@@ -92,6 +92,11 @@
     "interface-name": [true, "never-prefix"]
   },
   "rulesDirectory": [
-    "server"
-  ]
+    
+  ],
+  "linterOptions": {
+    "exclude": [
+      "*.js"
+    ]
+  }
 }

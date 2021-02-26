@@ -2,6 +2,7 @@ import { Strategy, StrategyOptions, ExtractJwt, VerifyCallbackWithRequest } from
 import jwt from 'jsonwebtoken'
 import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
+import * as service from '~/services'
 
 const { secretKey } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 
@@ -34,7 +35,11 @@ const strategyVerify: VerifyCallbackWithRequest = async (req, payload: Jwtpayloa
   let jwToken = req.headers.authorization?.replace(/^(Bearer)\s{1}/, '')
   try {
     // 认证 Token
-    return done(null, payload)
+    let user = await service.db.user.Dao.findOne({ _id: payload._id, jw_token: jwToken })
+    if (!user) {
+      return done(null, false)
+    }
+    return done(null, user)
   } catch (error) {
     return done(error, false)
   }

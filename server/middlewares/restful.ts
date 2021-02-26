@@ -40,6 +40,11 @@ export default class Restful {
     return service
   }
 
+  @Property()
+  db (ctx: Context) {
+    return service.db
+  }
+
   @Action()
   setJwToken (ctx: Context) {
     return setJwToken
@@ -63,6 +68,10 @@ declare module '@kenote/core' {
      * 调用 Services 接口
      */
     service: typeof service
+    /**
+     * 调用 DB 接口
+     */
+    db: typeof service.db
     /**
      * 设置 JWT Token
      */

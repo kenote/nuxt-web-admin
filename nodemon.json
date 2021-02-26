@@ -10,5 +10,5 @@
     "NODE_ENV": "development",
     "HTTP_PORT": 4000
   },
-  "ext": "json, ts"
+  "ext": "json, ts, yaml"
 }

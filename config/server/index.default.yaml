@@ -22,3 +22,17 @@ mongoOpts:
     useFindAndModify: false
 # 生产环境下使用 ts-node 运行
 tsnode: true
+# MetaInfo
+metaInfo:
+  title: Nuxtjs Admin
+  meta:
+    - charset: utf-8
+    - name: viewport
+      content: width=device-width, initial-scale=1
+    - hid: description
+      name: description
+      content: Management platform using NuxtJS.
+  link:
+    - rel: icon
+      type: image/x-icon
+      href: /favicon.ico

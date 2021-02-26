@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import { EncryptDocument } from '@/types/services/db'
 
 /**
  * Md5
@@ -17,7 +18,7 @@ export const sha1 = (text: string) => crypto.createHash('sha1').update(text).dig
  * @param value 
  * @param salt 
  */
-export function encode (value: string, salt?: string) {
+export function encode (value: string, salt?: string): EncryptDocument {
   let _salt = salt ?? Math.random().toString(36).substr(8)
   let password = { salt: _salt, encrypt: sha1(`${md5(value)}^${_salt}`) }
   return password
