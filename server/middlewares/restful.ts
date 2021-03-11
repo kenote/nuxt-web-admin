@@ -2,6 +2,7 @@ import { Middleware, Action, Context, Property } from '@kenote/core'
 import { HttpError } from 'http-errors'
 import * as service from '~/services'
 import { setJwToken } from './auth'
+import { UserDocument } from '@/types/services/db'
 
 @Middleware({
   // HTTP 头信息
@@ -35,6 +36,24 @@ export default class Restful {
     }
   }
 
+  /**
+   * 过滤用户等级
+   */
+  @Action('filterUserLevel')
+  filterUserLevel (ctx: Context) {
+    return (level: number, minLevel: number) => {
+      let { ErrorCode, httpError } = service
+      let authLevel = ctx.user?.group.level
+      if (authLevel === 9999) return
+      if (authLevel < minLevel) {
+        throw httpError(ErrorCode.ERROR_ONLY_ADVANCED_ADMIN)
+      }
+      if (level >= authLevel) {
+        throw httpError(ErrorCode.ERROR_BYLOND_LEVEL_OPERATE)
+      }
+    }
+  }
+
   @Property()
   service (ctx: Context) {
     return service
@@ -48,6 +67,16 @@ export default class Restful {
   @Action()
   setJwToken (ctx: Context) {
     return setJwToken
+  }
+
+  @Action()
+  jwtLogin (ctx: Context) {
+    return async (user: UserDocument) => {
+      let jwtoken = ctx.setJwToken({ _id: user._id })
+      ctx.cookie('jwtoken', jwtoken)
+      await service.db.user.Dao.updateOne({ _id: user._id }, { jw_token: jwtoken })
+      return { ...user, jw_token: jwtoken }
+    }
   }
 }
 
@@ -65,6 +94,10 @@ declare module '@kenote/core' {
      */
     api (info: any, error?: Error): void
     /**
+     * 过滤用户等级
+     */
+    filterUserLevel (level: number, minLevel: number): void
+    /**
      * 调用 Services 接口
      */
     service: typeof service
@@ -76,5 +109,9 @@ declare module '@kenote/core' {
      * 设置 JWT Token
      */
     setJwToken: typeof setJwToken
+    /**
+     * JET 登录
+     */
+    jwtLogin (user: UserDocument): Promise<UserDocument>
   }
 }

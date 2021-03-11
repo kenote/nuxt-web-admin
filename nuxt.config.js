@@ -1,4 +1,5 @@
 // Nuxt Configure
+const path = require('path')
 
 module.exports = {
   /**
@@ -83,6 +84,12 @@ module.exports = {
     },
   },
   /**
+   * 映射路径
+   */
+  alias: {
+    '@': path.resolve(__dirname)
+  },
+  /**
    * 路由配置
    */
   router: {
@@ -91,11 +98,11 @@ module.exports = {
         path: '/',
         component: resolve(__dirname, 'client/pages/home.vue')
       })
-      routes.push({
-        name: 'custom',
-        path: '*',
-        component: resolve(__dirname, 'client/components/error-page.vue')
-      })
+      // routes.push({
+      //   name: 'custom',
+      //   path: '*',
+      //   component: resolve(__dirname, 'client/components/error-page.vue')
+      // })
     }
   }
 }

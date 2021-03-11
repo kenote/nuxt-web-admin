@@ -58,3 +58,12 @@ export const strategyJwt = new Strategy(jwtOptions, strategyVerify)
  * @param options 
  */
 export const setJwToken = (payload: Jwtpayload, options?: jwt.SignOptions) => jwt.sign(payload, jwtOptions.secretOrKey as jwt.Secret, options)
+
+
+/**
+ * 验证 JWT Token
+ * @param token 
+ * @param options 
+ * @returns 
+ */
+export const verifyJwToken = (token: string, options?: jwt.VerifyOptions) => jwt.verify(token, jwtOptions.secretOrKey as jwt.Secret, options) as Jwtpayload

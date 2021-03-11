@@ -7,7 +7,7 @@ import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 import { merge } from 'lodash'
 
-const { metaInfo: head } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
+const { metaInfo: head, host, port } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 const dev = process.env.NODE_ENV !== 'production'
 const nuxt: Nuxt = new Nuxt(merge(nuxtConfig, { head, dev }))
 
@@ -26,7 +26,8 @@ const nuxtPulgin: IModule.ssrPlugin = {
       let isNuxtPage = !/^(\/\_nuxt|\/__webpack_hmr)|(\.ico|\.png)$/.test(ctx.path)
       if (isNuxtPage) {
         ctx.payload = {
-          site_url: 'http://localhost:4000'
+          site_url: 'http://localhost:4000',
+          baseHost: `http://${host ?? '0.0.0.0'}:${port}`
         } as NuxtPayload
       }
       return next()

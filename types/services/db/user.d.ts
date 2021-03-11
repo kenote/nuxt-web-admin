@@ -53,6 +53,14 @@ export declare interface UserDocument extends Document {
    */
   access               : string[]
   /**
+   * 关联账户
+   */
+  associate            : string[]
+  /**
+   * 关联账户的key
+   */
+  associate_key        : string
+  /**
    * 创建时间
    */
   create_at            : Date
@@ -118,6 +126,14 @@ export declare interface EditUserDocument {
    * 页面权限
    */
   access              ?: string[]
+  /**
+   * 关联账户
+   */
+  associate           ?: string[]
+  /**
+   * 关联账户的key
+   */
+  associate_key       ?: string
   /**
    * 更新时间
    */

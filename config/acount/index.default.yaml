@@ -1,0 +1,5 @@
+
+# 最多绑定账号数
+max_binds:
+  email: 5
+  mobile: 5

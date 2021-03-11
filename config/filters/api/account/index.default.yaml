@@ -1,0 +1,30 @@
+
+# 账号登录
+login:
+  - key: username
+    type: string
+    rules:
+      - required: true
+        message: 用户名不能为空
+        code: 1000
+  - key: password
+    type: string
+    rules:
+      - required: true
+        message: 密码不能为空
+        code: 1000
+
+# 多账号选择登录
+loginSelect:
+  - key: uuid
+    type: string
+    rules:
+      - required: true
+        message: 缺少登录识别码
+        code: 1000
+  - key: result
+    type: string
+    rules:
+      - required: true
+        message: 缺少登录识别码
+        code: 1000

@@ -1,11 +1,18 @@
 import mongoose from 'mongoose'
-import { prop, plugin, Ref } from '@typegoose/typegoose'
-import AutoIncrementFactory from 'mongoose-sequence'
+import { prop, pre, Ref } from '@typegoose/typegoose'
+import { updatecCounter } from './counter'
 import User from './user'
 
-const AutoIncrement = AutoIncrementFactory(mongoose)
-
-@plugin(AutoIncrement, { inc_field: 'id', id: 'teamid' })
+@pre<Team>('save', async function(next) {
+  try {
+    if (this.isNew) {
+      let counts = await updatecCounter('team')
+      this.id = counts
+    }
+  } catch (error) {
+    return next(error)
+  }
+})
 export default class Team {
 
   @prop({ unique: true })

@@ -4,7 +4,7 @@ import ApplicationModule from './application.module'
 import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 import logger from '~/services/logger'
-import { connect, models } from './models'
+import { connect } from './models'
 
 async function bootstrap () {
   let { host, port, secretKey, mongoOpts } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })

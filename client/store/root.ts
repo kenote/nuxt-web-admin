@@ -1,7 +1,10 @@
 import { GetterTree, ActionContext, ActionTree, MutationTree } from 'vuex'
 import { RootState, Types } from './'
 import { HTTPServer } from '@/types/nuxtServer'
- 
+import { compact, trim, fromPairs, get } from 'lodash'
+import { httpClient, HttpClientOptions, HttpResult } from '@/utils/http-client'
+import { UserDocument } from '@/types/services/db'
+  
 export interface State extends Record<string, any> {}
 
 export const state = (): State => ({})
@@ -16,7 +19,27 @@ export const mutations: MutationTree<State> = {}
 
 export const actions: Actions<State, RootState> = {
   async nuxtServerInit ({ commit }, { req }) {
-    let { site_url } = req.$__payload ?? {}
+    let { site_url, baseHost } = req.$__payload ?? {}
     commit(Types.setting.SITEURL, site_url)
+
+    let jwtoken = getCookie('jwtoken', req.headers.cookie)
+    try {
+      let result = await httpClient({ token: jwtoken }).get<HttpResult<UserDocument>>(`${baseHost}/api/account/accesstoken`)
+      if (result?.data) {
+
+        return
+      }
+      console.warn(result?.error)
+    } catch (error) {
+      console.log(error.message)
+    }
   }
+}
+
+
+function getCookie (name: string, cookie?: string) {
+  return get(fromPairs(compact((cookie ?? '').split(/\;/))
+      .map(String)
+      .map(trim)
+      .map( s => s.split(/\=/) )), name)
 }

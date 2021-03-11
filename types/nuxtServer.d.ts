@@ -8,4 +8,5 @@ export declare interface HTTPServer {
 
 export declare interface NuxtPayload {
   site_url     ?: string
+  baseHost     : string
 }

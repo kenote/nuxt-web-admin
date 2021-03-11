@@ -6,6 +6,8 @@ import logger from '~/services/logger'
 import Group from './group'
 import Team from './team'
 import User from './user'
+import Verify from './verify'
+import Counter from './counter'
 
 setGlobalOptions({
   options: {
@@ -29,7 +31,9 @@ export async function connect (mongoOpts: ServerConfigure.mongodb) {
 }
 
 export const models = {
-  'Group'  : getModelForClass(Group),
-  'Team'   : getModelForClass(Team),
-  'User'   : getModelForClass(User)
+  'Group'           : getModelForClass(Group),
+  'Team'            : getModelForClass(Team),
+  'User'            : getModelForClass(User),
+  'Verify'          : getModelForClass(Verify),
+  'Counter'         : getModelForClass(Counter)
 }

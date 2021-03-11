@@ -1,9 +1,9 @@
 <template>
   <div>
-    Home Page 
+    Panel Page 
     <p>site_url: {{ site_url }}</p>
     <el-button>TEST</el-button>
-    <nuxt-link to="/panel">Panel</nuxt-link>
+    <nuxt-link to="/">Home</nuxt-link>
   </div>
 </template>
 
