@@ -26,7 +26,7 @@ export const actions: Actions<State, RootState> = {
     try {
       let result = await httpClient({ token: jwtoken }).get<HttpResult<UserDocument>>(`${baseHost}/api/account/accesstoken`)
       if (result?.data) {
-
+        commit(Types.auth.AUTH, result.data)
         return
       }
       console.warn(result?.error)

@@ -47,6 +47,8 @@ module.exports = {
    * 加载插件
    */
   plugins: [
+    '~/plugins/component',
+    '~/plugins/http-client',
     { src: '~/plugins/element-ui', ssr: true },
   ],
   /**
