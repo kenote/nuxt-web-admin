@@ -16,7 +16,7 @@
       <p class="secondary-title">JSON Web Token (JWT) & 服务端渲染(Server Side Render)</p>
     </div>
     <div class="landing-body">
-      <el-form ref="theForm" :model="values" :rules="rules" @submit.native.prevent="handleSubmit" label-position="top" hide-required-asterisk>
+      <el-form ref="theForm" :model="values" :rules="rules" @submit.native.prevent="handleSubmit" label-position="top" hide-required-asterisk :disabled="loading || times>0">
         <el-form-item prop="username" :rules="rules.username" label="用户名：">
           <el-input placeholder="账号/邮箱/手机号" v-model="values.username" />
         </el-form-item>
@@ -24,7 +24,8 @@
           <el-input type="password" placeholder="密码" v-model="values.password" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" native-type="submit" :loading="loading">登 录</el-button>
+          <el-button v-if="times === 0" type="primary" native-type="submit" :loading="loading">登 录</el-button>
+          <el-button v-else type="info" :loading="loading" disabled>(等待 {{ times }} 秒后) 提交</el-button>
         </el-form-item>
         <p class="service-terms">
           <nuxt-link to="/lostpass">忘记密码</nuxt-link>
@@ -37,10 +38,10 @@
 
 <script lang="ts">
 import { Component, mixins, Vue, Provide } from 'nuxt-property-decorator'
-import BaseMixin from '~/mixins/base'
+import PageMixin from '~/mixins/page'
 import { FilterData } from 'parse-string'
 import { Form as ElForm } from 'element-ui'
-import { httpClient, HttpResult } from '@/utils/http-client'
+import { HttpResult } from '@/utils/http-client'
 import { UserDocument } from '@/types/services/db'
 import { Account } from '@/types/account'
 
@@ -52,10 +53,7 @@ import { Account } from '@/types/account'
     // console.log(this.$httpClient())
   }
 })
-export default class LoginPage extends mixins(BaseMixin) {
-
-  @Provide()
-  loading: boolean = false
+export default class LoginPage extends mixins(PageMixin) {
   
   @Provide() 
   values: Account.login = {}
@@ -75,28 +73,39 @@ export default class LoginPage extends mixins(BaseMixin) {
 
   handleSubmit () {
     let theForm = this.$refs['theForm'] as ElForm
-    theForm.validate(async valid => {
+    theForm.validate(valid => {
       if (valid) {
         console.log('submit', this.values)
-        try {
-          let result = await this.$httpClient().post<HttpResult<UserDocument | Account.uuidResult<UserDocument[]>>>(`/api/account/login`, this.values)
-          if (result?.error) {
-            console.log(result.error)
-            return
+        
+
+        this.loading = true
+        setTimeout(async () => {
+          try {
+            let result = await this.$httpClient().post<HttpResult<UserDocument | Account.uuidResult<UserDocument[]>>>(`/api/account/login`, this.values)
+            this.loading = false
+            if (result?.error) {
+              console.log(result.error)
+              this.sendWait(3)
+              this.$notify.warning({ title: '警告', message: result.error })
+            }
+            else {
+              if ('uuid' in result?.data!) {
+                // 
+                this.uuidResult = result?.data as Account.uuidResult<UserDocument[]>
+                
+              }
+              else if (result?.data) {
+                // 
+                this.$store.commit(this.types.auth.AUTH, result.data)
+              }
+              theForm.resetFields()
+            }
+          } catch (error) {
+            this.$notify.error({ title: '错误', message: error.message })
+            this.loading = false
           }
-          if ('uuid' in result?.data!) {
-            // 
-            this.uuidResult = result?.data as Account.uuidResult<UserDocument[]>
-            
-          }
-          else if (result?.data) {
-            // 
-            
-          }
-          theForm.resetFields()
-        } catch (error) {
-          
-        }
+        }, 300)
+        
       }
       else {
         return false

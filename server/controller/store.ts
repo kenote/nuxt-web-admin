@@ -10,8 +10,8 @@ import { isArray } from 'lodash'
 @Controller('/')
 export default class StoreController {
 
-  @Post('/upload', { filters: [ authenticate ] })
-  @Post('/upload/:type', { filters: [ authenticate ] })
+  @Post('/upload', { filters: [ ...authenticate ] })
+  @Post('/upload/:type', { filters: [ ...authenticate ] })
   async upload (ctx: Context, next: NextHandler) {
     // ...
     let { type } = ctx.params

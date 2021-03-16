@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Context, NextHandler } from '@kenote/core'
 import { authenticate } from '~/plugins/passport'
 import { CreateGroupDocument, UserDocument, VerifyDocument } from '@/types/services/db'
-import { isArray, compact, omit } from 'lodash'
+import { isArray, compact, omit, get } from 'lodash'
 import * as filter from '~/filters/api'
 import { Account } from '@/types/account'
 
@@ -53,7 +53,7 @@ export default class AccountController {
   /**
    * 切换身份
    */
-  @Get('/login/select', { filters: [ authenticate ] })
+  @Get('/login/select', { filters: [ ...authenticate ] })
   async selectLogin (ctx: Context, next: NextHandler) {
 
   }
@@ -61,7 +61,7 @@ export default class AccountController {
   /**
    * 校验访问令牌
    */
-  @Get('/accesstoken', { filters: [ authenticate ] })
+  @Get('/accesstoken', { filters: [ ...authenticate ] })
   async accessToken (ctx: Context) {
     return ctx.api(ctx.user)
   }

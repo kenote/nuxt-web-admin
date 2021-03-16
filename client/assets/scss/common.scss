@@ -54,3 +54,7 @@ a {
   //50% { transform: scale(1.5) }
   100% { transform: scale(0.8); opacity: 0; }
 }
+
+.el-notification {
+  border-radius: 0!important;
+}

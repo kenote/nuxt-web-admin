@@ -5,7 +5,9 @@ import {
   CarouselItem,
   Form,
   FormItem,
-  Input
+  Input,
+  Message,
+  Notification
 } from 'element-ui'
 
 export default () => {
@@ -15,4 +17,7 @@ export default () => {
   Vue.use(Form)
   Vue.use(FormItem)
   Vue.use(Input)
+
+  Vue.prototype.$message = Message
+  Vue.prototype.$notify = Notification
 }

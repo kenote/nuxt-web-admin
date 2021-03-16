@@ -11,9 +11,12 @@ passport.use(strategyJwt)
  * @param ctx 
  * @param next 
  */
-export const authenticate = async (ctx: Context, next) => {
-  passport.authenticate('jwt', { session: false })(ctx.context, next)
-  ctx.user = ctx.context.state?.user
-}
+export const authenticate = [
+  (ctx: Context, next) => passport.authenticate('jwt', { session: false })(ctx.context, next),
+  (ctx: Context, next) => {
+    Context.prototype.user = ctx.context.state?.user
+    return next()
+  }
+]
 
 export default koaPassport()

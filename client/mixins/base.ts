@@ -1,5 +1,5 @@
-import { Component, Vue } from 'nuxt-property-decorator'
-import { Store } from '~/store'
+import { Component, Vue, Provide } from 'nuxt-property-decorator'
+import { Store, Types } from '~/store'
 import { UserDocument } from '@/types/services/db'
 
 @Component<BaseMixin>({
@@ -21,5 +21,8 @@ export default class BaseMixin extends Vue {
 
   @Store.Setting.State 
   site_url!: string
+
+  @Provide()
+  types = Types
   
 }

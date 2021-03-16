@@ -1,7 +1,5 @@
 import { ModuleTree, Plugin } from 'vuex'
 import createLogger from 'vuex/dist/logger'
-import createPersistedState from 'vuex-persistedstate'
-import SecureLS from 'secure-ls'
 import { namespace } from 'nuxt-property-decorator'
 import { cloneDeep } from 'lodash'
 import * as root from './root'
@@ -36,17 +34,6 @@ export const actions = root.actions
 export let plugins: Array<Plugin<RootState>> = []
 if (isDevelopment) {
   plugins = compact([ createLogger(), ...plugins ])
-}
-if (process.browser) {
-  let ls = new SecureLS({ isCompression: false })
-  let createPersisted = createPersistedState({
-    storage: isDevelopment ? {
-      getItem: key => ls.get(key),
-      setItem: (key, value) => ls.set(key, value),
-      removeItem: key => ls.remove(key)
-    } : undefined
-  })
-  plugins = compact([ ...plugins, createPersisted ])
 }
 
 export const Types = {
