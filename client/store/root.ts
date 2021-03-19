@@ -19,9 +19,10 @@ export const mutations: MutationTree<State> = {}
 
 export const actions: Actions<State, RootState> = {
   async nuxtServerInit ({ commit }, { req }) {
-    let { site_url, baseHost } = req.$__payload ?? {}
+    let { site_url, baseHost, dashboard } = req.$__payload ?? {}
     commit(Types.setting.SITEURL, site_url)
-
+    commit(Types.setting.DASHBOARD, dashboard)
+    
     let jwtoken = getCookie('jwtoken', req.headers.cookie)
     try {
       let result = await httpClient({ token: jwtoken }).get<HttpResult<UserDocument>>(`${baseHost}/api/account/accesstoken`)

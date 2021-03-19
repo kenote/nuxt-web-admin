@@ -1,0 +1,138 @@
+// ------------------------------------
+// Sass Style
+// ------------------------------------
+
+
+.dashboard-body header {
+  height: 54px;
+  display: flex;
+  background: #373d41;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px #00000042 solid;
+
+  .header-start {
+    display: flex;
+
+    &>div {
+      border-left: 1px #2a2a2a solid;
+      margin-right: -4px;
+
+      &:first-child {
+        border-left-width: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      
+    }
+  }
+  
+  .header-end {
+    display: flex;
+
+    &>div {
+      // border-left: 1px #2a2a2a solid;
+      margin-right: -4px;
+
+      &:first-child {
+        border-left-width: 0;
+      }
+
+      &:last-child {
+        margin-right: 6px;
+      }
+    }
+  }
+
+  .el-menu--horizontal>.el-submenu .el-submenu__title {
+    height: 54px;
+    line-height: 54px;
+  }
+
+  .logo img {
+    height: 24px;
+  }
+  
+  .header-link-box {
+    display: inline-block;
+    height: 100%;
+
+    img {
+      height: 24px;
+    }
+
+    .el-input {
+      padding: 10px 12px 0;
+    }
+
+    .el-input__inner {
+      background-color: #444d54;
+      border-color: #9999990a;
+      color: #eee;
+
+      &:focus {
+        border-color: transparent;
+      }
+    }
+
+    .el-input__prefix {
+      left: 15px;
+      top: 6px;
+    }
+
+    .el-input__suffix {
+      right: 15px;
+      top: 6px;
+      opacity: .5;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .el-input__icon {
+      transition: all .5s;
+    }
+  }
+
+  .header-link {
+    display: flex;
+    height: inherit;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    color: #ffffff;
+    cursor: pointer;
+
+    [class^=el-icon-] {
+      font-size: 18px;
+    }
+
+    &:hover, &.active {
+      background: #2a2f32;
+    }
+
+    .el-avatar--large {
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+    }
+
+    .el-badge__content {
+      border: 0;
+    }
+  }
+
+  .header-link-icon {
+    padding: 0 24px;
+  }
+
+  .el-dropdown {
+    height: 100%;
+
+    
+  }
+}

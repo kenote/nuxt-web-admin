@@ -6,6 +6,7 @@ import { NuxtPayload } from '@/types/nuxtServer'
 import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 import { merge } from 'lodash'
+import { NavMenu } from '@/types/client'
 
 const { metaInfo: head, host, port } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 const dev = process.env.NODE_ENV !== 'production'
@@ -27,7 +28,8 @@ const nuxtPulgin: IModule.ssrPlugin = {
       if (isNuxtPage) {
         ctx.payload = {
           site_url: 'http://localhost:4000',
-          baseHost: `http://${host ?? '0.0.0.0'}:${port}`
+          baseHost: `http://${host ?? '0.0.0.0'}:${port}`,
+          dashboard: loadConfig<NavMenu.Configure>('config/dashboard', { mode: 'merge' })
         } as NuxtPayload
       }
       return next()

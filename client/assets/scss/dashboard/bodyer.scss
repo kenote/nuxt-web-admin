@@ -1,0 +1,31 @@
+// ------------------------------------
+// Sass Style
+// ------------------------------------
+
+
+.dashboard-body .bodyer {
+  transition: all .5s;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+
+  .sidebar-nav {
+    flex: 0 0 260px;
+    height: inherit;
+    background: #444c54;
+    border-right: solid 1px #e6e6e6;
+    transition: all .2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    min-width: 940px;
+  }
+}

@@ -1,0 +1,152 @@
+// ------------------------------------
+// Sass Style
+// ------------------------------------
+@import './header.scss';
+@import './bodyer.scss';
+
+.dashboard-body {
+  height: inherit;
+
+  .warpper {
+    width: 100%;
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 1200px;
+  }
+
+
+
+
+  .el-popper .popper__arrow {
+    display: none;
+  }
+  
+  .el-popper[x-placement^=bottom] {
+    margin-top: 1px;
+  }
+
+  .header-link-dropdown {
+    border-radius: 0;
+    background-color: #373d41;
+    border: 1px #2a2a2a solid;
+    border-top: 0;
+    padding: 10px 0 0 0;
+  
+    .el-dropdown-menu__item {
+      font-size: 12px;
+      color: #ededed;
+
+      .el-button--mini {
+        border-radius: 0;
+        margin-left: 10px;
+        padding: 5px 7px;
+        border: 1px solid #2a3032;
+        background-color: #444d54;
+        color: inherit;
+        font-weight: lighter;
+
+        &:hover {
+          font-weight: normal;
+        }
+      }
+
+      &.end {
+        text-align: center;
+        padding-bottom: 2px;
+      }
+  
+      &:hover {
+        color: #ededed;
+        background-color: #2a2f32;
+      }
+    }
+  
+    .header-link-dropdown-head {
+      width: 270px;
+      display: flex;
+      flex-direction: column;
+      padding: 0 10px 5px;
+      color: #ededed;
+  
+      h3 {
+        margin: 0;
+        padding: 5px 10px 15px;
+      }
+  
+      .el-row {
+        width: 250px;
+      }
+  
+      .el-col {
+        text-align: center;
+        border-left: 1px #545454 solid;
+        margin-bottom: 0;
+  
+        &:first-child {
+          border-left-width: 0;
+        }
+      }
+  
+      .el-dropdown-menu__item {
+        font-size: 12px;
+        padding: 0;
+        text-align: center;
+        line-height: 1.8;
+        width: 70px;
+        display: inline-block;
+  
+        &:hover {
+          color: #ededed;
+          background-color: #2a2f32;
+        }
+      }
+    }
+
+    .header-link-dropdown-notification {
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      color: #ededed;
+  
+      h3 {
+        margin: 0;
+        padding: 5px 10px;
+      }
+
+      .el-dropdown-menu__item {
+        border-top: 1px solid #545454;
+        padding: 10px 10px 0 10px;
+
+        span {
+          display: block;
+          font-size: 14px;
+          line-height: normal;
+          overflow: hidden; 
+          text-overflow: ellipsis; 
+          -o-text-overflow: ellipsis;
+          white-space:nowrap;
+        }
+
+        time {
+          color: #949494;
+        }
+      }
+    }
+  
+    .el-dropdown-menu__item--divided {
+      border-top: 1px solid #545454;
+  
+      &:hover {
+        // background: transparent;
+        background-color: #414346;
+      }
+  
+      &::before {
+        background-color: transparent;
+      }
+    }
+  }
+}
+

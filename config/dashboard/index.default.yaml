@@ -1,0 +1,59 @@
+
+# 导航菜单
+navmenu:
+  # 文字链接
+  - key: app
+    name: APP
+    type: link
+    link: command:app
+  # 下拉链接
+  - key: workorder
+    name: 工单
+    type: dropdown
+    data:
+      - key: create
+        name: 提交工单
+        link: command:create
+      - key: ticket
+        name: 我的工单
+        link: command:ticket
+  # 消息通知
+  - key: notification
+    name: 消息通知
+    type: notification
+    data:
+      - key: '001'
+        name: 采购季企业数据化运营必备，特惠3折起
+        description: '2021-03-17 12:02:00'
+        link: command:notification/id
+    props:
+      key: key
+      title: name
+      time: description
+      command: link
+    more:
+      name: 查看更多
+      link: command:notification/more
+
+# 账号面板
+authpanel:
+  top:
+    - name: 基本资料
+      link: router:/account/baseinfo
+    - name: 安全设置
+      link: router:/account/security
+    - name: 我的收藏
+      link: router:/account/collect
+  main:
+    - name: 基本资料
+      link: router:/account/baseinfo
+    - name: 安全设置
+      link: router:/account/security
+    - name: 我的收藏
+      link: router:/account/collect
+      buttons:
+        - name: 签到
+          link: command:test
+  exit:
+    name: 退出控制台
+    link: command:exit

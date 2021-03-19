@@ -1,11 +1,10 @@
 import { ModuleTree, Plugin } from 'vuex'
 import createLogger from 'vuex/dist/logger'
 import { namespace } from 'nuxt-property-decorator'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, compact } from 'lodash'
 import * as root from './root'
 import * as auth from './modules/auth'
 import * as setting from './modules/setting'
-import { compact } from 'lodash'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 

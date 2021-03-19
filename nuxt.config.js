@@ -41,6 +41,8 @@ module.exports = {
    * 加载 Style 样式
    */
   css: [
+
+    '~/assets/iconfont/iconfont.css',
     '~/assets/scss/common.scss'
   ],
   /**
