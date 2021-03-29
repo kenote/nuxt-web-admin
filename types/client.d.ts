@@ -1,5 +1,5 @@
 
-
+import { ChannelDataNode } from '@kenote/common'
 
 export declare namespace Command {
 
@@ -19,6 +19,7 @@ export declare namespace NavMenu {
     description   ?: string
     link          ?: string
     buttons       ?: DataItem[]
+    icon          ?: string
   }
 
   interface RootDataItem extends DataItem {
@@ -43,6 +44,11 @@ export declare namespace NavMenu {
     trigger       ?: 'hover' | 'click'
     top           ?: DataItem[]
     main          ?: DataItem[]
-    exit          ?: DataItem
+    exit          ?: MoreItem
   }
+}
+
+export declare namespace Channel {
+
+  type DataNode = ChannelDataNode<{}>
 }

@@ -1,6 +1,6 @@
 <template>
   <page>
-    <p>{{channelId}}{{(selectedChannel)}}</p>
+    
   </page>
 </template>
 
@@ -8,15 +8,15 @@
 import { Component, mixins, Vue } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 
-@Component<DashboardHomePage>({
-  name: 'dashboard-homepage',
+@Component<HomePage>({
+  name: 'homepage',
   middleware: [ 'authenticated' ],
   layout: 'dashboard',
   mounted () {
     
   }
 })
-export default class DashboardHomePage extends mixins(PageMixin) {
+export default class HomePage extends mixins(PageMixin) {
   
 }
 </script>

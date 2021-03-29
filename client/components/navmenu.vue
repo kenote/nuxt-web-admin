@@ -23,7 +23,8 @@
         :key="item.key" 
         v-bind:class="classname" 
         @click="handleCommand(item.link)">
-        {{ item.name }}
+        <i v-if="/^(iconfont|el-icon)/.test(item.name)" v-bind:class="item.name"></i>
+        <template v-else>{{ item.name }}</template>
       </div>
     </template>
     <slot name="suffix"></slot>

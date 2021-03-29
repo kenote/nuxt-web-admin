@@ -7,7 +7,7 @@
     </a>
     <el-dropdown-menu slot="dropdown" class="header-link-dropdown">
       <div class="header-link-dropdown-head">
-        <h3><span>{{ auth.username }}</span></h3>
+        <h3><span>{{ auth && auth.username || '' }}</span></h3>
         <el-row v-if="options.top">
           <template v-for="(item, key) in options.top">
             <el-col v-if="key < 3" :key="item.key || key" :span="8">

@@ -1,0 +1,25 @@
+
+
+# 频道 key
+key: !!str 2
+# 频道 名称
+name: 用户中心
+# 频道标识
+label: ucenter
+# 频道描述
+description: 管理所有用户的信息，以及登录、注册等等
+# 路由入口
+route: /ucenter
+# 图标
+icon: iconfont icon-team
+# 选项
+options: {}
+# 分栏页面
+children:
+  # 帐户管理
+  - key: 2-1
+    name: 用户管理
+    children:
+      - key: 2-1-1
+        name: 用户组
+        route: /ucenter/group

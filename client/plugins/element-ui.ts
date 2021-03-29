@@ -14,10 +14,15 @@ import {
   FormItem,
   Icon,
   Input,
+  Loading,
+  Menu,
+  MenuItem,
   Message,
   Notification,
-  Row
+  Row,
+  Submenu
 } from 'element-ui'
+import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 
 export default () => {
   Vue.use(Autocomplete)
@@ -34,7 +39,13 @@ export default () => {
   Vue.use(FormItem)
   Vue.use(Icon)
   Vue.use(Input)
+  Vue.use(Loading.directive)
+  Vue.use(Menu)
+  Vue.use(MenuItem)
   Vue.use(Row)
+  Vue.use(Submenu)
+
+  Vue.component(CollapseTransition.name, CollapseTransition)
 
   Vue.prototype.$message = Message
   Vue.prototype.$notify = Notification

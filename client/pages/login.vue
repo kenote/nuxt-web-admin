@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { Component, mixins, Vue, Provide } from 'nuxt-property-decorator'
+import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { FilterData } from 'parse-string'
 import { Form as ElForm } from 'element-ui'
@@ -47,10 +47,13 @@ import { Account } from '@/types/account'
 
 @Component<LoginPage>({
   name: 'login-page',
-  middleware: [ 'authenticated' ],
+  // middleware: [ 'authenticated' ],
   layout: 'account',
   mounted () {
-    // console.log(this.$httpClient())
+    if (this.auth) {
+      let { url_callback } = this.$route.query
+      this.$router.push(url_callback as string ?? '/dashboard')
+    }
   }
 })
 export default class LoginPage extends mixins(PageMixin) {
@@ -70,6 +73,14 @@ export default class LoginPage extends mixins(PageMixin) {
 
   @Provide()
   uuidResult: Account.uuidResult<UserDocument[]> | null = null
+
+  @Watch('auth')
+  onAuthChange (auth) {
+    if (auth) {
+      let { url_callback } = this.$route.query
+      this.$router.push(url_callback as string ?? '/dashboard')
+    }
+  }
 
   handleSubmit () {
     let theForm = this.$refs['theForm'] as ElForm

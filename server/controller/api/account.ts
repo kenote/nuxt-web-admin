@@ -65,4 +65,20 @@ export default class AccountController {
   async accessToken (ctx: Context) {
     return ctx.api(ctx.user)
   }
+
+  /**
+   * 账号登出
+   */
+  @Get('/logout', { filters: [ ...authenticate ] })
+  async logout (ctx: Context, next: NextHandler) {
+    let { nextError, db } = ctx.service
+    try {
+      await db.user.Dao.updateOne({ _id: ctx.user._id }, { jw_token: '' })
+      ctx.logout()
+      ctx.cookie('jwtoken', '')
+      return ctx.api({ result: true })
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
 }

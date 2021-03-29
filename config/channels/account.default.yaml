@@ -1,0 +1,52 @@
+
+
+# 频道 key
+key: !!str 1
+# 频道 名称
+name: 我的帐户
+# 频道标识
+label: account
+# 频道描述
+description: 查看和管理自己的信息、活动、安全选项和隐私偏好设置
+# 路由入口
+route: /account
+# 图标
+icon: iconfont icon-passport
+# 选项
+options: {}
+# 分栏页面
+children:
+  # 帐户管理
+  - key: 1-1
+    name: 帐户管理
+    children:
+      - key: /account/baseinfo
+        name: 基本资料
+        route: /account/baseinfo
+      - key: /account/security
+        name: 安全设置
+        route: /account/security
+  # 消息中心
+  - key: 1-2
+    name: 消息中心
+    children:
+      - key: /account/notification/all
+        name: 全部消息
+        route: /account/notification/all
+      - key: /account/notification/unread
+        name: 未读消息
+        route: /account/notification/unread
+      - key: /account/notification/read
+        name: 已读消息
+        route: /account/notification/read
+      # {
+      #           key: '1-2',
+      #           name: '消息中心',
+      #           children: [
+      #             {
+      #               key: '1-2-1',
+      #               name: '全部消息',
+      #               route: '/account/notification/all'
+      #             }
+      #           ]
+      #         }

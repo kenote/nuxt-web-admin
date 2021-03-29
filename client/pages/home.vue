@@ -13,7 +13,7 @@ import BaseMixin from '~/mixins/base'
 
 @Component<HomePage>({
   name: 'home-page',
-  middleware: [ 'authenticated' ],
+  // middleware: [ 'authenticated' ],
   layout: 'panel'
 })
 export default class HomePage extends mixins(BaseMixin) {

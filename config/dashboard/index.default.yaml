@@ -56,4 +56,4 @@ authpanel:
           link: command:test
   exit:
     name: 退出控制台
-    link: command:exit
+    link: command:logout

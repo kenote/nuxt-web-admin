@@ -71,7 +71,7 @@ module.exports = {
    * 配置组件
    */
   components: [
-    '~/components'
+    '~/components',
   ],
   /**
    * 编译配置

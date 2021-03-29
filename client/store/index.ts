@@ -30,10 +30,10 @@ export const mutations = root.mutations
 
 export const actions = root.actions
 
-export let plugins: Array<Plugin<RootState>> = []
-if (isDevelopment) {
-  plugins = compact([ createLogger(), ...plugins ])
-}
+// export let plugins: Array<Plugin<RootState>> = []
+// if (isDevelopment) {
+//   plugins = compact([ createLogger(), ...plugins ])
+// }
 
 export const Types = {
   auth     : getStoreTypes<typeof auth.types>(auth),

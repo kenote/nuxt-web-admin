@@ -2,7 +2,8 @@
   <el-dropdown :trigger="trigger" @visible-change="handleVisible" @command="handleCommand">
     <a v-bind:class="classname + ' ' + (visible ? 'active' : '')">
       <span class="el-dropdown-link">
-        {{ name }}
+        <i v-if="/^(iconfont|el-icon)/.test(name)" v-bind:class="name"></i>
+        <template v-else>{{ name }}</template>
       </span>
     </a>
     <el-dropdown-menu slot="dropdown" v-bind:class="`${classname}-dropdown`">
