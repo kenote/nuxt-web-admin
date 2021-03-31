@@ -13,9 +13,7 @@
         :router="true"
         :unique-opened="false"
         :collapse="false"
-        :default-openeds="defaultOpeneds"
-        >
-
+        :default-openeds="defaultOpeneds" >
         <sidebar-item v-for="(item, key) in data"
           :key="key"
           :name="item.name"
@@ -29,10 +27,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Watch, Emit } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Provide, Watch } from 'nuxt-property-decorator'
 import { map } from 'lodash'
 import { Channel } from '@/types/client'
-
 
 @Component<Sidebar>({
   name: 'sidebar',
@@ -78,7 +75,6 @@ export default class Sidebar extends Vue {
 .header {
   color: #e0e0e0;
   padding: 0 20px;
-  // cursor: pointer;
   transition: border-color .3s,background-color .3s,color .3s;
   box-sizing: border-box;
   height: 56px;
@@ -92,7 +88,7 @@ export default class Sidebar extends Vue {
   }
 
   span {
-    // font-size: 15px;
+    font-size: 15px;
     font-weight: 600;
   }
 }

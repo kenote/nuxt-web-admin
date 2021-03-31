@@ -148,5 +148,33 @@
       }
     }
   }
+
+  .el-autocomplete-suggestion {
+    border-radius: 0;
+    background-color: #373d41;
+    border: 1px #2a2a2a solid;
+    padding: 10px 0 0 0;
+    margin-top: 11px!important;
+    min-width: 320px;
+
+    li {
+      color: #ededed;
+
+      .description {
+        font-size: 12px;
+        color: #949494;
+      }
+
+      .keywords {
+        color: #ffd04b;
+        font-weight: 600;
+      }
+  
+      &:hover {
+        color: #ededed;
+        background-color: #2a2f32;
+      }
+    }
+  }
 }
 

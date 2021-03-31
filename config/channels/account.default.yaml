@@ -20,33 +20,32 @@ children:
   - key: 1-1
     name: 帐户管理
     children:
-      - key: /account/baseinfo
+      - key: 1-1-1
         name: 基本资料
+        description: 用户基础数据修改
+        keywords: [ 我的帐户, 帐户管理, 我的, 帐户, 账号, 账户, 帐号, ziliao, zl, zhanghu, zhanghao, wode, wd, xx, zh, tz ]
         route: /account/baseinfo
-      - key: /account/security
+      - key: 1-1-2
         name: 安全设置
+        description: 用户安全中心，修改密码、邮箱、手机号等等
+        keywords: [ 我的帐户, 帐户管理, 我的, 帐户, 账号, 账户, 帐号, anquan, an, zhanghu, zhanghao, wode, wd, xx, zh, tz ]
         route: /account/security
   # 消息中心
   - key: 1-2
     name: 消息中心
     children:
-      - key: /account/notification/all
+      - key: 1-2-1
         name: 全部消息
+        description: 查看全部系统消息
+        keywords: [ 我的帐户, 消息中心, 我的, 帐户, 账号, 账户, 帐号, 中心, xiaoxi, tongzhi, zhanghu, zhanghao, wode, wd, xx, zh, tz ]
         route: /account/notification/all
-      - key: /account/notification/unread
+      - key: 1-2-2
         name: 未读消息
+        description: 查看全部未读消息
+        keywords: [ 我的帐户, 消息中心, 我的, 帐户, 账号, 账户, 帐号, 中心, xiaoxi, tongzhi, zhanghu, zhanghao, wode, wd, xx, zh, tz ]
         route: /account/notification/unread
-      - key: /account/notification/read
+      - key: 1-2-3
         name: 已读消息
+        description: 查看全部已读消息
+        keywords: [ 我的帐户, 消息中心, 我的, 帐户, 账号, 账户, 帐号, 中心, xiaoxi, tongzhi, zhanghu, zhanghao, wode, wd, xx, zh, tz ]
         route: /account/notification/read
-      # {
-      #           key: '1-2',
-      #           name: '消息中心',
-      #           children: [
-      #             {
-      #               key: '1-2-1',
-      #               name: '全部消息',
-      #               route: '/account/notification/all'
-      #             }
-      #           ]
-      #         }

@@ -25,9 +25,14 @@
             classname="header-link"
             :data="dashboard.navmenu"
             @command="handleCommand" >
-            <div class="header-link-box" slot="prefix">
-              <search-bar v-model="search" placeholder="搜索控制台" />
-            </div>
+            <search-bar 
+              v-model="search" 
+              placeholder="搜索控制台" 
+              :data="channels" 
+              :props="{ value: 'name', key: 'key', route: 'route', description: 'description', maps: 'maps' }"
+              @command="handleRouteTo" 
+              class="header-link-box" 
+              slot="prefix" />
             <authpanel slot="suffix" :options="dashboard.authpanel" @command="handleCommand" />
           </navmenu>
         </div>
@@ -35,13 +40,22 @@
 
       <div class="bodyer" v-bind:style="collapse ? 'left:-260px' : ''">
         <!-- 侧栏导航 -->
-        <div class="sidebar-nav" v-if="selectedChannel.name" v-loading="loading.channel">
-          <web-sidebar v-if="selectedChannel.name" 
-            :title="selectedChannel.name"
-            :icon="selectedChannel.icon"
-            :data="selectedChannel.children"
-            :default-active="$route.path"
-            />
+        <div class="sidebar-nav" v-if="$route.path !== '/dashboard'" v-loading="loading.channel">
+          <div v-if="selectedChannel.name">
+            <web-sidebar v-if="selectedChannel.name" 
+              :title="selectedChannel.name"
+              :icon="selectedChannel.icon"
+              :data="[
+                {
+                  key: selectedChannel.key + '-index',
+                  name: '概述',
+                  route: selectedChannel.route
+                },
+                ...selectedChannel.children
+              ]"
+              :default-active="$route.path"
+              />
+          </div>
         </div>
         <!-- 内容页面 -->
         <div class="page-main">
@@ -68,13 +82,12 @@
 import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import BaseMixin from '~/mixins/base'
 import '~/assets/scss/dashboard/warpper.scss'
-import { parseCommand, parseProps } from '@/utils'
+import { parseCommand } from '@/utils'
 import { Store, Types } from '~/store'
-import { NavMenu } from '@/types/client'
+import { NavMenu, Channel } from '@/types/client'
 import { HttpResult } from '@/utils/http-client'
 import { Route } from 'vue-router'
 import { getChannelKey } from '@kenote/common'
-import { map } from 'lodash'
 
 @Component<DashboardLayout>({
   name: 'dashboard-layout',
@@ -144,6 +157,15 @@ export default class DashboardLayout extends mixins(BaseMixin) {
     if (channelId === this.selectedChannel?.key) return
     await this.selectChannel(channelId ?? '0')
     this.collapse = false
+  }
+
+  /**
+   * 路由跳转
+   */
+  handleRouteTo (item: Channel.DataNode) {
+    if (item.route) {
+      this.$router.push(item.index ?? item.route)
+    }
   }
 
   /**

@@ -16,7 +16,7 @@
     "@kenote/upload": "latest",
     "@typegoose/typegoose": "^7.6",
     "axios": "^0.21.1",
-    "element-ui": "^2.15.0",
+    "element-ui": "^2.15.1",
     "koa-redis": "^4.0.1",
     "lodash": "^4.17.20",
     "log4js": "^6.3.0",

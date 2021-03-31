@@ -1,31 +1,60 @@
 <template>
-  <el-input 
-    ref="searchBar"
-    size="small" 
-    prefix-icon="el-icon-search" 
-    v-model="search" 
-    :placeholder="placeholder" >
-    <i v-show="search" class="el-icon-error el-input__icon" slot="suffix" @click="handleClear"></i>
-    
-  </el-input>
+  <div class="searchbar">
+    <el-autocomplete 
+      ref="searchBar"
+      size="small" 
+      prefix-icon="el-icon-search" 
+      v-model="search" 
+      :fetch-suggestions="querySearch"
+      @select="handleCommand"
+      :placeholder="placeholder" >
+      <i v-show="search" class="el-icon-error el-input__icon" slot="suffix" @click="handleClear"></i>
+      <template slot-scope="{ item }">
+        <div v-if="item.maps" class="name">
+          <template v-for="(ret, key) in item.maps">
+            <fragment :key="key">
+              <span v-if="key > 0"> &gt; </span>
+              <span v-html="ret.name.replace(trim(search), `<span class='keywords'>${trim(search)}</span>`)">{{ ret.name }}</span>
+            </fragment>
+          </template>
+        </div>
+        <div v-else class="name">{{ item.value }}</div>
+        <span v-if="item.description" class="description">{{ item.description }}</span>
+      </template>
+    </el-autocomplete>
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, mixins, Prop, Provide, Emit, Watch, Model } from 'nuxt-property-decorator'
-import BaseMixin from '~/mixins/base'
+import { Component, Prop, Provide, Emit, Watch, Model, Vue } from 'nuxt-property-decorator'
 import { Autocomplete } from 'element-ui'
+import { filterDataNode, parseProps } from '@/utils'
+import { CommonDataNode, initMaps } from '@kenote/common'
+import { trim } from 'lodash'
 
 @Component<SearchBar>({
   name: 'search-bar',
-  
+  mounted () {
+    this.search = this.value
+    this.restaurants = initMaps(this.data)
+  }
 })
-export default class SearchBar extends mixins(BaseMixin) {
+export default class SearchBar extends Vue {
 
   @Prop({ default: '搜索内容' })
   placeholder!: string
 
+  @Prop({ default: undefined })
+  data!: CommonDataNode[]
+
+  @Prop({ default: undefined })
+  props!: Record<string, string>
+
   @Provide()
   search: string = ''
+
+  @Provide()
+  restaurants: CommonDataNode[] = []
 
   @Model('update')
   value!: string
@@ -42,17 +71,29 @@ export default class SearchBar extends mixins(BaseMixin) {
     this.search = val
   }
 
-  querySearch (queryString, cb) {
+  @Watch('data')
+  onDataChange (val: CommonDataNode[], oldVal: CommonDataNode[]) {
+    if (val === oldVal) return
+    this.restaurants = initMaps(val)
+  }
 
-    cb([
-      { value: 'www', address: 'ddd' }
-    ])
+  @Emit('command')
+  handleCommand (value: string) {}
+
+  trim = trim
+
+  querySearch (queryString: string, cb: (info: Record<string, any>[]) => void) {
+    let list: CommonDataNode[] = []
+    filterDataNode(this.restaurants, trim(queryString), list)
+    cb(list.map(parseProps(this.props ?? { value: 'name', key: 'key', description: 'description', maps: 'maps' })))
   }
 
   handleClear () {
-    let searchBar = this.$refs['searchBar'] as Autocomplete
     this.search = ''
-    searchBar.focus()
+    let searchBar = this.$refs['searchBar'] as Autocomplete
+    setTimeout(() => {
+      searchBar.focus()
+    }, 300)
   }
 
 }

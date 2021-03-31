@@ -50,5 +50,10 @@ export declare namespace NavMenu {
 
 export declare namespace Channel {
 
-  type DataNode = ChannelDataNode<{}>
+  type DataNode = ChannelDataNode<PlusNode>
+
+  interface PlusNode {
+    type          ?: string
+    keywords      ?: string[]
+  }
 }

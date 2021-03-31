@@ -65,6 +65,9 @@ export const mutations: MutationTree<State> = {
   },
   [types.LOADING] (state: State, key: string): void {
     state.loading[key] = true
+    if (key === 'channel') {
+      state.channelId = '0'
+    }
   },
   [types.SELECTCHANNEL] (state: State, channelId?: string | null): void {
     state.channelId = channelId
