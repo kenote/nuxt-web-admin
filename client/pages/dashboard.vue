@@ -1,7 +1,7 @@
 <template>
-  <page>
-    <p>{{channelId}}{{(selectedChannel)}}</p>
-  </page>
+  <dashboard>
+    
+  </dashboard>
 </template>
 
 <script lang="ts">

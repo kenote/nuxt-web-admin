@@ -3,6 +3,8 @@ import {
   Autocomplete,
   Avatar,
   Badge,
+  Breadcrumb,
+  BreadcrumbItem,
   Button,
   Carousel,
   CarouselItem,
@@ -28,6 +30,8 @@ export default () => {
   Vue.use(Autocomplete)
   Vue.use(Avatar)
   Vue.use(Badge)
+  Vue.use(Breadcrumb)
+  Vue.use(BreadcrumbItem)
   Vue.use(Button)
   Vue.use(Carousel)
   Vue.use(CarouselItem)

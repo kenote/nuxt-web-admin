@@ -6,6 +6,7 @@
 
 .dashboard-body {
   height: inherit;
+  overflow: hidden;
 
   .warpper {
     width: 100%;
@@ -15,9 +16,6 @@
     overflow: hidden;
     min-width: 1200px;
   }
-
-
-
 
   .el-popper .popper__arrow {
     display: none;
@@ -57,6 +55,8 @@
         padding-bottom: 2px;
       }
   
+      &:focus,
+      &:not(.is-disabled):hover,
       &:hover {
         color: #ededed;
         background-color: #2a2f32;
@@ -96,8 +96,8 @@
         line-height: 1.8;
         width: 70px;
         display: inline-block;
-  
-        &:hover {
+
+       &:hover {
           color: #ededed;
           background-color: #2a2f32;
         }
@@ -149,6 +149,11 @@
     }
   }
 
+  .el-autocomplete-suggestion__wrap {
+    padding-top: 0;
+    max-height: 580px;
+  }
+
   .el-autocomplete-suggestion {
     border-radius: 0;
     background-color: #373d41;
@@ -157,19 +162,41 @@
     margin-top: 11px!important;
     min-width: 320px;
 
+    .popper__arrow {
+      display: block;
+    }
+
+    &[x-placement^=bottom] .popper__arrow {
+      border-bottom-color: #2a2a2a;
+
+      &::after {
+        border-bottom-color: #373d41;
+      }
+    }
+
     li {
       color: #ededed;
+      border-bottom: 1px solid #545454;
+      line-height: normal;
+      padding: 5px 20px 10px;
+
+      .name {
+        line-height: 2.4;
+      }
 
       .description {
         font-size: 12px;
         color: #949494;
+        line-height: 1.8;
+
       }
 
       .keywords {
         color: #ffd04b;
         font-weight: 600;
       }
-  
+      
+      &.highlighted,
       &:hover {
         color: #ededed;
         background-color: #2a2f32;

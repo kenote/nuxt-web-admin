@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <page>
     Home Page 
     <p>site_url: {{ site_url }}</p>
     <el-button>TEST</el-button>
     <nuxt-link to="/panel">Panel</nuxt-link>
-  </div>
+  </page>
 </template>
 
 <script lang="ts">

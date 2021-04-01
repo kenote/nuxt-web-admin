@@ -102,11 +102,6 @@ module.exports = {
         path: '/',
         component: resolve(__dirname, 'client/pages/home.vue')
       })
-      // routes.push({
-      //   name: 'custom',
-      //   path: '*',
-      //   component: resolve(__dirname, 'client/components/error-page.vue')
-      // })
     }
   }
 }

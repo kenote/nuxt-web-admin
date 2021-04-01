@@ -45,21 +45,17 @@
             <web-sidebar v-if="selectedChannel.name" 
               :title="selectedChannel.name"
               :icon="selectedChannel.icon"
-              :data="[
-                {
-                  key: selectedChannel.key + '-index',
-                  name: '概述',
-                  route: selectedChannel.route
-                },
-                ...selectedChannel.children
-              ]"
+              :data="getChannelData()"
               :default-active="$route.path"
               />
           </div>
         </div>
         <!-- 内容页面 -->
         <div class="page-main">
-          <nuxt></nuxt>
+          <breadcrumb v-if="selectedChannel.name" :data="getChannelData()" :route-path="$route.path" />
+          <perfect-scrollbar :options="{ suppressScrollX: true }">
+            <nuxt :style="selectedChannel.name ? '' : 'padding-top:20px;'"></nuxt>
+          </perfect-scrollbar>
         </div>
       </div>
       <!-- 频道选项 -->
@@ -157,6 +153,23 @@ export default class DashboardLayout extends mixins(BaseMixin) {
     if (channelId === this.selectedChannel?.key) return
     await this.selectChannel(channelId ?? '0')
     this.collapse = false
+  }
+
+  getChannelData () {
+    let { key, name, route, children } = this.selectedChannel
+    if (!key) return []
+    return [
+      {
+        key: `${key}-index`,
+        name: '概览',
+        route,
+        maps: [
+          { key, name },
+          { key: `${key}-index`, name: '概览' }
+        ]
+      },
+      ...children ?? []
+    ]
   }
 
   /**
