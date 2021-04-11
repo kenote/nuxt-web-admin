@@ -3,6 +3,8 @@
 
 export declare namespace Account {
 
+  type verifyUserType = 'email' | 'mobile'
+
   interface login {
     username     ?: string
     password     ?: string
@@ -11,6 +13,25 @@ export declare namespace Account {
   interface uuidResult<T> {
     uuid         ?: string
     result        : T
+  }
+
+  interface inputValue {
+    name         ?: string
+  }
+
+  interface verifyUser {
+    type          : verifyUserType
+    email         : inputValue
+    mobile        : inputValue
+  }
+
+  interface verifyUserRequest {
+    type          : verifyUserType
+    name          : string
+  }
+
+  interface ticket {
+    cdkey        ?: string
   }
 }
 

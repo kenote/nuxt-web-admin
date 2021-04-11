@@ -1,5 +1,8 @@
 
 import { ChannelDataNode } from '@kenote/common'
+import { FilterData } from 'parse-string'
+import { Method } from 'axios'
+import { IncomingHttpHeaders } from 'http'
 
 export declare namespace Command {
 
@@ -51,9 +54,133 @@ export declare namespace NavMenu {
 export declare namespace Channel {
 
   type DataNode = ChannelDataNode<PlusNode>
+  type FormItemType = 
+    | 'input' 
+    | 'input-number' 
+    | 'radio' | 'radio-button' 
+    | 'checkbox' | 'checkbox-button' 
+    | 'select' 
+    | 'year' | 'month' | 'date' | 'dates' | 'week' | 'datetime' | 'time' | 'datetimerange' | 'daterange' | 'monthrange' | 'timerange'
+    | 'switch'
+    | 'slider'
+    | 'color-picker'
+    | 'cascader' | 'cascader-panel'
+    | 'rate'
+    | 'transfer'
+    | 'textarea' 
+    | 'text'
+  type FormItemData = Record<string, any>
 
   interface PlusNode {
     type          ?: string
     keywords      ?: string[]
+    queryer       ?: RequestConfig
+  }
+
+  // 查询器
+  interface Queryer {
+    api            : RequestConfig
+    columns       ?: FormItem[]
+    submitOptions ?: SubmitOptions
+  }
+
+  interface RequestConfig {
+    method        ?: Method
+    url           ?: string
+    headers       ?: IncomingHttpHeaders
+  }
+
+  // 表单单元
+  interface FormItem {
+    /**
+     * 字段名称
+     */
+    key            : string
+    /**
+     * 字段 Label
+     */
+    name          ?: string
+    /**
+     * 单元类型
+     */
+    type          ?: FormItemType
+    /**
+     * 占位描述
+     */
+    placeholder   ?: string | string[]
+    /**
+     * 禁用状态
+     */
+    disabled      ?: boolean
+    /**
+     * 指定单元宽度
+     */
+    width         ?: number
+    /**
+     * 多项选择时的数据
+     */
+    data          ?: FormItemData[]
+    /**
+     * data 键名配置选项
+     */
+    props         ?: Record<string, string> 
+    /**
+     * 获取异步选项数据
+     */
+    request       ?: RequestConfig
+    /**
+     * 最大值
+     */
+    min           ?: number
+    /**
+     * 最小值
+     */
+    max           ?: number
+    /**
+     * 步进
+     */
+     step         ?: number
+    /**
+     * 多项选择时支持多选
+     */
+    multiple      ?: boolean
+    /**
+     * 单选/多选时是否显示边框
+     */
+    border        ?: boolean
+    /**
+     * 显示的格式
+     */
+    format        ?: string
+    /**
+     * 指定输出的格式
+     */
+    valueFormat   ?: string
+    /**
+     * 日期范围选择时选中日期所使用的当日内具体时刻
+     */
+    defaultTime   ?: string[]
+    /**
+     * 单元特殊选项
+     */
+    options       ?: Record<string, any>
+  }
+
+  interface SubmitOptions {
+    name          ?: string
+  }
+}
+
+export declare namespace Verify {
+
+  type Rule = Partial<Omit<FilterData.rule, 'validator'>> & Verify.PlusFields
+
+  type Validator = (rule: any, value: any, done: (message?: string) => any) => (message?: string) => any
+  type PromiseValidtor = (rule: any, value: any, done: (message?: string) => any) => Promise<(message?: string) => any>
+
+  interface PlusFields {
+    type          ?: 'string' | 'number' | 'boolean' | 'method' | 'regexp' | 'integer' | 'float' | 'array' | 'object' | 'enum' | 'data' | 'url' | 'hex' | 'email'
+    trigger       ?: 'blur' | 'change' | Array<'blur' | 'change'>
+    validator     ?: Validator | PromiseValidtor
   }
 }
