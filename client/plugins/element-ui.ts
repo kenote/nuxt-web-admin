@@ -6,6 +6,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
+  Card,
   Carousel,
   CarouselItem,
   Cascader,
@@ -41,6 +42,7 @@ import {
   Submenu,
   Switch,
   TimePicker,
+  Tooltip,
   Transfer
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
@@ -53,6 +55,7 @@ export default () => {
   Vue.use(Breadcrumb)
   Vue.use(BreadcrumbItem)
   Vue.use(Button)
+  Vue.use(Card)
   Vue.use(Carousel)
   Vue.use(CarouselItem)
   Vue.use(Cascader)
@@ -86,6 +89,7 @@ export default () => {
   Vue.use(Submenu)
   Vue.use(Switch)
   Vue.use(TimePicker)
+  Vue.use(Tooltip)
   Vue.use(Transfer)
 
   Vue.component(CollapseTransition.name, CollapseTransition)

@@ -51,7 +51,7 @@
       width: 100%;
       padding: 20px 30px 0 30px;
       background-color: #fff;
-      z-index: 1;
+      z-index: 5;
 
       .el-breadcrumb {
         padding-left: 10px;
@@ -128,6 +128,14 @@
           margin-left: 0;
         }
 
+        .el-radio-button:first-child,
+        .el-radio-button:last-child {
+
+          .el-radio-button__inner {
+            border-radius: 0;
+          }
+        }
+
         .el-rate {
           margin-top: 10px;
         }
@@ -162,6 +170,33 @@
         .el-transfer-panel__item {
           margin-left: 0;
           display: block!important;
+        }
+      }
+    }
+
+    .example {
+      margin: auto;
+      margin-top: 10px;
+      max-width: 1200px;
+
+      .el-card__body h2 {
+        margin-top: 0;
+      }
+    }
+
+    .container {
+      position: relative;
+
+      .tools {
+        position: absolute;
+        z-index: 4;
+        bottom: 10px;
+        right: 10px;
+
+        .el-button--mini {
+          padding: 7px 9px;
+          background: transparent;
+          border: 0;
         }
       }
     }

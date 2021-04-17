@@ -1,13 +1,14 @@
 <template>
   <client-only placeholder="Page Loading...">
-    <fragment>
+    <perfect-scrollbar :options="{ suppressScrollX: true }">
       <div class="warpper">
         <header>
           <nuxt-link to="/">
             <img src="/images/logo.png" height="32" />
           </nuxt-link>
           <div class="list">
-            <nuxt-link to="/login">文档中心</nuxt-link>
+            <nuxt-link to="/login">登录</nuxt-link>
+            <nuxt-link to="/register">注册</nuxt-link>
             <nuxt-link to="/">首页</nuxt-link>
           </div>
         </header>
@@ -16,7 +17,7 @@
       <footer>
         
       </footer>
-    </fragment>
+    </perfect-scrollbar>
   </client-only>
 </template>
 

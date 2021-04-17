@@ -2,6 +2,7 @@ import { ActionTree, MutationTree, GetterTree, ActionContext } from 'vuex'
 import { RootState } from '~/store'
 import { NavMenu, Channel } from '@/types/client'
 import ruleJudgment from 'rule-judgment'
+import { MetaInfo } from 'vue-meta'
 
 export const name = 'setting'
 
@@ -11,6 +12,7 @@ export const types = {
   CHANNELS        : 'CHANNELS',
   SELECTCHANNEL   : 'SELECTCHANNEL',
   LOADING         : 'LOADING',
+  METAINFO        : 'METAINFO'
 }
 
 export interface State {
@@ -19,6 +21,7 @@ export interface State {
   channels        : Channel.DataNode[]
   loading         : Record<string, boolean>
   channelId      ?: string | null
+  metaInfo       ?: MetaInfo
 }
 
 export const namespaced: boolean = true
@@ -63,14 +66,17 @@ export const mutations: MutationTree<State> = {
   [types.CHANNELS] (state, channels: Channel.DataNode[]) {
     state.channels = channels
   },
-  [types.LOADING] (state: State, key: string): void {
+  [types.LOADING] (state: State, key: string) {
     state.loading[key] = true
     if (key === 'channel') {
       state.channelId = '0'
     }
   },
-  [types.SELECTCHANNEL] (state: State, channelId?: string | null): void {
+  [types.SELECTCHANNEL] (state: State, channelId?: string | null) {
     state.channelId = channelId
     state.loading.channel = false
   },
+  [types.METAINFO] (state: State, metaInfo?: MetaInfo) {
+    state.metaInfo = metaInfo
+  }
 }

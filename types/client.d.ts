@@ -67,6 +67,7 @@ export declare namespace Channel {
     | 'cascader' | 'cascader-panel'
     | 'rate'
     | 'transfer'
+    | 'codemirror'
     | 'textarea' 
     | 'text'
   type FormItemData = Record<string, any>
@@ -115,7 +116,11 @@ export declare namespace Channel {
     /**
      * 指定单元宽度
      */
-    width         ?: number
+    width         ?: number | 'auto'
+    /**
+     * 指定单元高度
+     */
+    height         ?: number
     /**
      * 多项选择时的数据
      */

@@ -139,5 +139,6 @@ export default class WebDrawer extends Vue {
   background-color: #000000;
   transition: all .5s;
   opacity: .4;
+  z-index: 1000;
 }
 </style>

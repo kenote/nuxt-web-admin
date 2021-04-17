@@ -45,7 +45,7 @@ export function filterDataNode (data: Channel.DataNode[], keywords: string, list
   let keys = map(list, 'key')
   let query: FilterQuery<Channel.DataNode> = {
     $or: [
-      { name: { $regex: new RegExp(keywords) } },
+      { name: { $regex: new RegExp(keywords, 'i') } },
       { keywords: { $_in: [ keywords.toLocaleLowerCase() ] } }
     ]
   }

@@ -14,7 +14,7 @@
           <template v-for="(ret, key) in item.maps">
             <fragment :key="key">
               <span v-if="key > 0"> &gt; </span>
-              <span v-html="ret.name.replace(trim(search), `<span class='keywords'>${trim(search)}</span>`)">{{ ret.name }}</span>
+              <span v-html="ret.name.replace(new RegExp(`(${trim(search)})`, 'gi'), `<span class='keywords'>$1</span>`)">{{ ret.name }}</span>
             </fragment>
           </template>
         </div>
@@ -62,7 +62,7 @@ export default class SearchBar extends Vue {
   @Watch('search')
   onSearchChange (val: string, oldVal: string) {
     if (val === oldVal) return
-    this.$emit('update', val)
+    this.update(val)
   }
 
   @Watch('value')
@@ -76,6 +76,9 @@ export default class SearchBar extends Vue {
     if (val === oldVal) return
     this.restaurants = initMaps(val)
   }
+
+  @Emit('update')
+  update (value: string) {}
 
   @Emit('command')
   handleCommand (value: string) {}

@@ -84,9 +84,13 @@ import { NavMenu, Channel } from '@/types/client'
 import { HttpResult } from '@/utils/http-client'
 import { Route } from 'vue-router'
 import { getChannelKey } from '@kenote/common'
+import { MetaInfo } from 'vue-meta'
 
 @Component<DashboardLayout>({
   name: 'dashboard-layout',
+  head () {
+    return { ...this.metaInfo }
+  },
   created () {
 
   },
@@ -102,6 +106,9 @@ export default class DashboardLayout extends mixins(BaseMixin) {
 
   @Store.Setting.State
   loading!: Record<string, boolean>
+
+  @Store.Setting.State
+  metaInfo!: MetaInfo
 
   @Provide()
   collapse: boolean = false

@@ -30,7 +30,8 @@ const nuxtPulgin: IModule.ssrPlugin = {
           site_url: 'http://localhost:4000',
           baseHost: `http://${host ?? '0.0.0.0'}:${port}`,
           dashboard: loadConfig<NavMenu.Configure>('config/dashboard', { mode: 'merge' }),
-          channels: loadConfig<Channel.DataNode[]>('config/channels', { type: 'array' })
+          channels: loadConfig<Channel.DataNode[]>('config/channels', { type: 'array' }),
+          metaInfo: head
         } as NuxtPayload
       }
       return next()

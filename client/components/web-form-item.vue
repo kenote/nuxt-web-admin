@@ -159,6 +159,21 @@
     >
     <span slot-scope="{ option }">{{ toFormatString(option, format) }}</span>
   </el-transfer>
+  <!-- CodeMirror -->
+  <web-codemirror v-else-if="type === 'codemirror'"
+    v-model="values" 
+    :theme="options && options.theme"
+    :content-type="options && options.contentType"
+    :placeholder="placeholder"
+    :disabled="disabled"
+    :line-numbers="options && options.lineNumbers"
+    :line-wrapping="options && options.lineWrapping"
+    :tab-size="options && options.tabSize"
+    :is-copy="options && options.isCopy"
+    :copyright="options && options.copyright"
+    :delimiter="options && options.delimiter"
+    :style="{ width: `450px`, height: `300px`, ...styles }"
+    />
   <!-- 数字输入框 -->
   <el-input-number v-else-if="type === 'input-number'"
     v-model="values"
@@ -194,7 +209,7 @@
 import { Component, Vue, Prop, Provide, Model, Watch, Emit } from 'nuxt-property-decorator'
 import { Channel } from '@/types/client'
 import { parseProps } from '@/utils'
-import { template } from 'lodash'
+import { template, unset } from 'lodash'
 import jsYaml from 'js-yaml'
 
 @Component<WebFormItem>({
@@ -208,7 +223,10 @@ import jsYaml from 'js-yaml'
     }
     this.values = this.value
     if (this.width) {
-      this.styles = { width: `${this.width}px`}
+      this.styles = { width: this.width === 'auto' ? this.width : `${this.width}px` }
+    }
+    if (this.height) {
+      this.styles = { ...this.styles, height: `${this.height}px` }
     }
     if (this.options?.filterMethod) {
       this.filterMethod = jsYaml.load(this.options.filterMethod) ?? null
@@ -233,7 +251,10 @@ export default class WebFormItem extends Vue {
   disabled!: boolean
 
   @Prop({ default: undefined })
-  width!: number
+  width!: number | 'auto'
+
+  @Prop({ default: undefined })
+  height!: number
 
   @Prop({ default: false })
   border!: boolean
@@ -286,16 +307,42 @@ export default class WebFormItem extends Vue {
   @Emit('get-data')
   getData (options: Channel.RequestConfig, next: (data: { key: number | string, name: string }[]) => void) {}
 
+  @Emit('change')
+  change (value: any) {}
+
   @Watch('values')
   onValuesChange (val: any, oldVal: any) {
     if (val === oldVal) return
     this.update(val)
+    this.change(val)
   }
 
   @Watch('value')
   onValueChange (val: any, oldVal: any) {
     if (val === oldVal) return
     this.values = val
+  }
+
+  @Watch('width')
+  onWidthChange (val: number | 'auto', oldVal: number | 'auto') {
+    if (val === oldVal) return
+    if (val) {
+      this.styles = { ...this.styles, width: val === 'auto' ? val : `${val}px` }
+    }
+    else {
+      unset(this.styles, 'width')
+    }
+  }
+
+  @Watch('height')
+  onHeightChange (val: number, oldVal: number) {
+    if (val === oldVal) return
+    if (val) {
+      this.styles = { ...this.styles, height: `${val}px` }
+    }
+    else {
+      unset(this.styles, 'height')
+    }
   }
 
   parseProps = parseProps

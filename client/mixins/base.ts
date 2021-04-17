@@ -1,11 +1,11 @@
 import { Component, Vue, Provide } from 'nuxt-property-decorator'
 import { Store, Types } from '~/store'
 import { UserDocument } from '@/types/services/db'
-import { parseCommand, parseProps } from '@/utils'
-import { NavMenu, Channel } from '@/types/client'
+import { parseProps } from '@/utils'
+import { Channel } from '@/types/client'
 
 @Component<BaseMixin>({
- name: 'base-mixin'
+  name: 'base-mixin'
 })
 export default class BaseMixin extends Vue {
 

@@ -22,26 +22,16 @@ module.exports = {
     ignorecase: false
   },
   /**
-   * Meta Tags and SEO
-   */
-  head: {
-    title: 'my website title',
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      {
-        hid: 'description',
-        name: 'description',
-        content: 'my website description'
-      }
-    ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
-  },
-  /**
    * 加载 Style 样式
    */
   css: [
 
+    // lib css
+    'codemirror/lib/codemirror.css',
+    // merge css
+    'codemirror/addon/merge/merge.css',
+    // theme css
+    'codemirror/theme/paraiso-light.css',
     '~/assets/iconfont/iconfont.css',
     '~/assets/scss/common.scss'
   ],
@@ -52,6 +42,7 @@ module.exports = {
     '~/plugins/component',
     '~/plugins/http-client',
     { src: '~/plugins/element-ui', ssr: true },
+    { src: '~/plugins/codemirror', ssr: false }
   ],
   /**
    * 页面 Loading 条设置
@@ -72,6 +63,7 @@ module.exports = {
    */
   components: [
     '~/components',
+    { path: '~/components/account', prefix: 'account' }
   ],
   /**
    * 编译配置
