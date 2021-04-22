@@ -1,0 +1,154 @@
+
+# 选项
+options:
+  attributeColumns: &attributeColumns
+    - key: name
+      name: 参数
+      align: left
+      width: 150
+    - key: description
+      name: 说明
+      align: left
+    - key: type
+      name: 类型
+      align: left
+      width: 250
+    - key: option
+      name: 可选值
+      defaultValue: —
+      align: left
+      width: 250
+    - key: default
+      name: 默认值
+      defaultValue: —
+      align: left
+      width: 150
+  eventColumns: &eventColumns
+    - key: name
+      name: 参数
+      align: left
+      width: 150
+    - key: description
+      name: 说明
+      align: left
+    - key: callback
+      name: 回调参数
+      defaultValue: —
+      align: left
+      width: 400
+# 示例视图
+display:
+  - key: 1-1
+    name: 基础用法
+    active: vue
+    tabPanes:
+      - key: vue
+        name: Vue
+        codemirror:
+          type: text/x-vue
+          code: |
+            <template>
+              <web-form-item
+                type="input"
+                :value="value"
+                placeholder="请输入名称"
+                :options="options"
+                />  
+            <template>
+
+            <script>
+            export default {
+              data() {
+                return {
+                  value: 'admin',
+                  options: {
+                    clearable: true
+                  }
+                }
+              }
+            }
+            </script>
+      - key: json
+        name: JSON
+        codemirror:
+          type: application/json
+          code: |
+            {
+              "type": "input",
+              "placeholder: "请输入名称",
+              "value": "admin",
+              "options": {
+                "clearable": true
+              }
+            }
+      - key: yaml
+        name: Yaml
+        codemirror:
+          type: text/x-yaml
+          code: |
+            # 表单组件类型
+            type: input
+            # 输入框占位文本
+            placeholder: 请输入名称
+            # 绑定值
+            value: admin
+            # 附加选项
+            options:
+              # 是否可清空
+              clearable: true
+    preview:
+      component: web-form-item
+      options:
+        type: input
+        placeholder: 请输入名称
+        options:
+          clearable: true
+      value: admin
+# 参数说明
+attributes:
+  - key: 1-1
+    name: Attributes
+    columns: *attributeColumns
+    data:
+      - name: placeholder
+        description: 输入框占位文本
+        type: string
+      - name: width
+        description: 输入框宽度
+        type: number / 'auto'
+        default: 300
+      - name: value
+        description: 绑定值
+        type: string
+      - name: disabled
+        description: 禁用
+        type: boolean
+        default: false
+      - name: min
+        description: 最小输入长度
+        type: number
+      - name: max
+        description: 最大输入长度
+        type: number
+      - name: options
+        description: 附加选项
+        type: object
+  - key: 1-2
+    name: Options
+    columns: *attributeColumns
+    data:
+      - name: showWordLimit
+        description: 是否显示输入字数统计，需要设置 max 属性
+        type: boolean
+        default: false
+      - name: clearable
+        description: 是否可清空
+        type: boolean
+        default: false
+  - key: 1-3
+    name: Event
+    columns: *eventColumns
+    data:
+      - name: change
+        description: 值改变时触发
+        callback: '(value: string)'
