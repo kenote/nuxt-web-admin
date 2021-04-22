@@ -1,0 +1,128 @@
+
+# 频道 key
+key: !!str 3
+# 频道 名称
+name: 示例中心
+# 频道标识
+label: examples
+# 频道描述
+description: 
+# 路由入口
+route: /examples
+# 
+options:
+  attributeColumns: &attributeColumns
+    - key: name
+      name: 参数
+      align: left
+      width: 150
+    - key: description
+      name: 说明
+      align: left
+    - key: type
+      name: 类型
+      align: left
+      width: 250
+    - key: option
+      name: 可选值
+      defaultValue: —
+      align: left
+      width: 250
+    - key: default
+      name: 默认值
+      defaultValue: —
+      align: left
+      width: 150
+  eventColumns: &eventColumns
+    - key: name
+      name: 参数
+      align: left
+      width: 150
+    - key: description
+      name: 说明
+      align: left
+    - key: callback
+      name: 回调参数
+      defaultValue: —
+      align: left
+      width: 400
+# 分栏页面
+children:
+  # 帐户管理
+  - key: 3-1
+    name: 表单组件
+    children:
+      - key: 3-1-1
+        name: Input 输入框
+        description: 通过鼠标或键盘输入字符
+        keywords: [ 示例中心, 表单组件, 文本框, 输入框, input ]
+        route: /examples/input
+        example: /data/examples/input.yaml
+          
+      - key: 3-1-2
+        name: InputNumber 计数器
+        description: 仅允许输入标准的数字值，可定义范围
+        keywords: [ 示例中心, 表单组件, 计数器, inputNumber ]
+        route: /examples/input-number
+        example: /data/examples/input-number.yaml
+
+      - key: 3-1-3
+        name: Textarea 文本域
+        description: 用于输入多行文本信息
+        keywords: [ 示例中心, 表单组件, 文本域, 多行文本, Textarea ]
+        route: /examples/textarea
+        example: /data/examples/textarea.yaml
+
+      - key: 3-1-4
+        name: InputPassword 密码框
+        description: 用于输入密码字符
+        keywords: [ 示例中心, 表单组件, 密码框, InputPassword ]
+        route: /examples/input-password
+        example: /data/examples/input-password.yaml
+
+      - key: 3-1-5
+        name: Radio 单选框
+        description: 在一组备选项中进行单选
+        keywords: [ 示例中心, 表单组件, 单选框, Radio ]
+        route: /examples/radio
+        example: /data/examples/radio.yaml
+
+      - key: 3-1-6
+        name: Checkbox 多选框
+        description: 一组备选项中进行多选
+        keywords: [ 示例中心, 表单组件, 多选框, Checkbox ]
+        route: /examples/checkbox
+        example: /data/examples/checkbox.yaml
+
+      - key: 3-1-7
+        name: Select 选择器
+        description: 当选项过多时，使用下拉菜单展示并选择内容。
+        keywords: [ 示例中心, 表单组件, 选择器, Select ]
+        route: /examples/select
+        example: /data/examples/select.yaml
+
+  # 编辑器
+  - key: 3-2
+    name: 编辑器组件
+    children:
+      - key: 3-2-1
+        name: CodeMirror
+        description: CodeMirror 是一个运行在网页中的代码编辑器组件。
+        keywords: [ 示例中心, 编辑器组件, 代码编辑器, codemirror ]
+        route: /examples/codemirror
+      - key: 3-2-2
+        name: Vditor
+        description: Vditor 一款浏览器端的 Markdown 编辑器，支持所见即所得（富文本）、即时渲染（类似 Typora）和分屏预览模式。
+      - key: 3-2-3
+        name: Monaco Editor
+        description: Monaco Editor 是微软开源的基于 VS Code 的代码编辑器，运行在浏览器环境中。编辑器提供代码提示，智能建议等功能。
+      - key: 3-2-4
+        name: wangEditor
+        description: Typescript 开发的 Web 富文本编辑器， 轻量、简洁、易用、开源免费。
+  # 视图组件
+  - key: 3-3
+    name: 视图组件
+    children:
+      - key: 3-3-1
+        name: Table 表格
+        route: /examples/table
