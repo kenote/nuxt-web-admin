@@ -13,6 +13,9 @@ import nuxtPulgin from '~/plugins/nuxt'
    */
   statics: {
     '/': path.resolve(process.cwd(), 'static')
+  },
+  options: {
+    dynamic: true
   }
 })
 class StaticModule {}
