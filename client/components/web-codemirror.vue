@@ -1,7 +1,7 @@
 <template>
   <section class="container" >
     <client-only placeholder="Codemirror Loading...">
-      <codemirror 
+      <codemirror v-if="initial"
         v-model="code" 
         :options="options"
         />
@@ -21,6 +21,9 @@ import { isEmpty, isBoolean } from 'lodash'
   name: 'web-codemirror',
   created () {
     this.code = this.value
+    setTimeout(() => {
+      this.initial = true
+    }, 300)
   }
 })
 export default class WebCodeMittor extends Vue {
@@ -54,6 +57,9 @@ export default class WebCodeMittor extends Vue {
 
   @Prop({ default: '\n\n----------------------------\n' })
   delimiter!: string
+
+  @Provide()
+  initial: boolean = false
 
   @Provide()
   code: string = ''
@@ -153,6 +159,10 @@ function getBoolean (value: boolean) {
   
   .CodeMirror {
     height: -webkit-fill-available;
+  }
+
+  .CodeMirror-simplescroll {
+    z-index: 4;
   }
   
 }

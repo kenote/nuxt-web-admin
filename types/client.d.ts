@@ -1,8 +1,9 @@
 
 import { ChannelDataNode } from '@kenote/common'
-import { FilterData } from 'parse-string'
+import { FilterData, ParseData } from 'parse-string'
 import { Method } from 'axios'
 import { IncomingHttpHeaders } from 'http'
+import { Codemirror } from '@/utils/codemirror'
 
 export declare namespace Command {
 
@@ -57,6 +58,7 @@ export declare namespace Channel {
   type FormItemType = 
     | 'input' 
     | 'input-number' 
+    | 'input-password'
     | 'radio' | 'radio-button' 
     | 'checkbox' | 'checkbox-button' 
     | 'select' 
@@ -76,6 +78,45 @@ export declare namespace Channel {
     type          ?: string
     keywords      ?: string[]
     queryer       ?: RequestConfig
+    example       ?: Example | string
+  }
+
+  interface Example {
+    display       ?: ExampleDisplay[]
+    attributes    ?: ExampleAttributes[]
+  }
+
+  interface ExampleDisplay {
+    key            : string
+    name           : string
+    layout        ?: 'horizontal' | 'vertical'
+    tabPanes       : ExampleTabPane[]
+    active         : string
+    preview       ?: ExamplePreview
+  }
+
+  interface ExampleTabPane {
+    key            : string
+    name           : string
+    codemirror     : ExampleCodeMirror
+  }
+
+  interface ExampleCodeMirror {
+    type          ?: Codemirror.modeType
+    code          ?: string
+  }
+
+  interface ExamplePreview {
+    component      : string
+    options        : Record<string, any>
+    value         ?: string | number
+  }
+
+  interface ExampleAttributes {
+    key            : string
+    name           : string
+    columns        : TableColumn[]
+    data           : Record<string, any>[]
   }
 
   // 查询器
@@ -174,6 +215,43 @@ export declare namespace Channel {
   interface SubmitOptions {
     name          ?: string
   }
+
+  // 表格单元
+  interface TableColumn {
+    /**
+     * 字段名称
+     */
+    key            : string
+    /**
+     * 字段 Label
+     */
+    name          ?: string
+    /**
+     * 列宽度
+     */
+    width         ?: number
+    /**
+     * 列最小宽度
+     */
+    minWidth      ?: number
+    /**
+     * 是否固定两端
+     */
+    fixed         ?: boolean | 'left' | 'right'
+    /**
+     * 位置
+     */
+    align         ?: 'left' | 'center' | 'right'
+    /**
+     * 格式化
+     */
+    format        ?: ParseData.format | ParseData.format[]
+    /**
+     * 默认值
+     */
+    defaultValue  ?: string | number
+  }
+
 }
 
 export declare namespace Verify {

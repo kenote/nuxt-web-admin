@@ -2,19 +2,19 @@
   <!-- 单选框 -->
   <el-radio-group v-if="/^(radio)/.test(type)" v-model="values" :disabled="disabled">
     <template v-if="/(button)$/.test(type)">
-      <el-radio-button v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key">{{ item.name }}</el-radio-button>
+      <el-radio-button v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :disabled="item.disabled">{{ item.name }}</el-radio-button>
     </template>
     <template v-else>
-      <el-radio v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :border="border">{{ item.name }}</el-radio>
+      <el-radio v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :disabled="item.disabled" :border="border">{{ item.name }}</el-radio>
     </template>
   </el-radio-group>
   <!-- 多选框 -->
   <el-checkbox-group v-else-if="/^(checkbox)/.test(type)" v-model="values" :disabled="disabled">
     <template v-if="/(button)$/.test(type)">
-      <el-checkbox-button v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key">{{ item.name }}</el-checkbox-button>
+      <el-checkbox-button v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :disabled="item.disabled">{{ item.name }}</el-checkbox-button>
     </template>
     <template v-else>
-      <el-checkbox v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :border="border">{{ item.name }}</el-checkbox>
+      <el-checkbox v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :disabled="item.disabled" :border="border">{{ item.name }}</el-checkbox>
     </template>
   </el-checkbox-group>
   <!-- 下拉选择器 -->
@@ -192,15 +192,34 @@
     v-model="values"
     :placeholder="placeholder"
     :disabled="disabled"
-    resize="none"
-    :autosize="{ minRows: min || 4, maxRows: max || 4 }"
+    :minlength="min"
+    :maxlength="max"
+    :resize="options && options.resize"
+    :rows="options && options.rows"
+    :autosize="options && options.autosize"
+    :show-word-limit="options && options.showWordLimit"
+    :clearable="options && options.clearable"
     :style="{ width: `450px`, ...styles }"
+    />
+  <!-- 密码输入框 -->
+  <el-input v-else-if="type === 'input-password'"
+    v-model="values" 
+    type="password"
+    :placeholder="placeholder" 
+    :disabled="disabled"
+    :show-password="options && options.showPassword"
+    :clearable="options && options.clearable"
+    :style="{ width: `300px`, ...styles }" 
     />
   <!-- 单行输入框 -->
   <el-input v-else-if="type === 'input'" 
     v-model="values" 
     :placeholder="placeholder" 
     :disabled="disabled" 
+    :minlength="min"
+    :maxlength="max"
+    :show-word-limit="options && options.showWordLimit"
+    :clearable="options && options.clearable"
     :style="{ width: `300px`, ...styles }" 
     />
 </template>
@@ -223,7 +242,8 @@ import jsYaml from 'js-yaml'
     }
     this.values = this.value
     if (this.width) {
-      this.styles = { width: this.width === 'auto' ? this.width : `${this.width}px` }
+      let _val = ['input'].includes(this.type) && this.width === 'auto' ? '100%' : this.width
+      this.styles = { width: this.width === 'auto' ? _val : `${this.width}px` }
     }
     if (this.height) {
       this.styles = { ...this.styles, height: `${this.height}px` }
@@ -327,7 +347,8 @@ export default class WebFormItem extends Vue {
   onWidthChange (val: number | 'auto', oldVal: number | 'auto') {
     if (val === oldVal) return
     if (val) {
-      this.styles = { ...this.styles, width: val === 'auto' ? val : `${val}px` }
+      let _val = ['input'].includes(this.type) && val === 'auto' ? '100%' : val
+      this.styles = { ...this.styles, width: val === 'auto' ? _val : `${val}px` }
     }
     else {
       unset(this.styles, 'width')

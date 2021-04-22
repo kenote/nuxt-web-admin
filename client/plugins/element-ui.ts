@@ -32,6 +32,7 @@ import {
   Notification,
   Option,
   OptionGroup,
+  Pagination,
   Radio,
   RadioButton,
   RadioGroup,
@@ -41,6 +42,10 @@ import {
   Slider,
   Submenu,
   Switch,
+  Table,
+  TableColumn,
+  Tabs,
+  TabPane,
   TimePicker,
   Tooltip,
   Transfer
@@ -79,6 +84,7 @@ export default () => {
   Vue.use(MenuItem)
   Vue.use(Option)
   Vue.use(OptionGroup)
+  Vue.use(Pagination)
   Vue.use(Radio)
   Vue.use(RadioButton)
   Vue.use(RadioGroup)
@@ -88,6 +94,10 @@ export default () => {
   Vue.use(Slider)
   Vue.use(Submenu)
   Vue.use(Switch)
+  Vue.use(Table)
+  Vue.use(TableColumn)
+  Vue.use(Tabs)
+  Vue.use(TabPane)
   Vue.use(TimePicker)
   Vue.use(Tooltip)
   Vue.use(Transfer)

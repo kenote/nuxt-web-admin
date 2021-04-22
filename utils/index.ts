@@ -3,6 +3,7 @@ import nunjucks from 'nunjucks'
 import { Command, Channel } from '@/types/client'
 import { dataNodeProxy, FilterQuery } from '@kenote/common'
 import { map, get } from 'lodash'
+import jsYaml from 'js-yaml'
 
 /**
  * 解析命令指向
@@ -55,4 +56,15 @@ export function filterDataNode (data: Channel.DataNode[], keywords: string, list
     filterDataNode(data, keywords, list)
   }
   return
+}
+
+/**
+ * 判断 Yaml 格式
+ */
+export function isYaml (str: string): boolean {
+  try {
+    return !!jsYaml.load(str)
+  } catch (error) {
+    return false
+  }
 }
