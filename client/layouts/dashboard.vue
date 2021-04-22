@@ -41,7 +41,7 @@
       <div class="bodyer" v-bind:style="collapse ? 'left:-260px' : ''">
         <!-- 侧栏导航 -->
         <div class="sidebar-nav" v-if="$route.path !== '/dashboard'" v-loading="loading.channel">
-          <div v-if="selectedChannel.name">
+          <div v-if="selectedChannel.name" style="height:100%">
             <web-sidebar v-if="selectedChannel.name" 
               :title="selectedChannel.name"
               :icon="selectedChannel.icon"

@@ -4,7 +4,7 @@
       <i v-if="icon" v-bind:class="icon"></i>
       <span>{{ title }}</span>
     </div>
-    <perfect-scrollbar :options="{ suppressScrollX: true }">
+    <perfect-scrollbar :options="{ suppressScrollX: true }" style="height: calc(100% - 56px);">
       <el-menu
         :default-active="defaultActive"
         :background-color="'#444c54'"

@@ -101,6 +101,13 @@ children:
         route: /examples/select
         example: /data/examples/select.yaml
 
+      - key: 3-1-8
+        name: Cascader 级联选择器
+        description: 当一个数据集合有清晰的层级结构时，可通过级联选择器逐级查看并选择。
+        keywords: [ 示例中心, 表单组件, 级联选择器, Cascader ]
+        route: /examples/cascader
+        example: /data/examples/cascader.yaml
+
   # 编辑器
   - key: 3-2
     name: 编辑器组件

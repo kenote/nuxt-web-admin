@@ -145,7 +145,7 @@
     :filter-method="filterMethod"
     :placeholder="placeholder"
     :disabled="disabled"
-    :style="{ display: 'inline-flex', ...styles }" 
+    :style="{ display: 'inline-flex', width: `300px`, ...styles }" 
     />
   <!-- 级联面板 -->
   <el-cascader-panel v-else-if="type === 'cascader-panel'"
