@@ -108,6 +108,13 @@ children:
         route: /examples/cascader
         example: /data/examples/cascader.yaml
 
+      - key: 3-1-9
+        name: Switch 开关
+        description: 表示两种相互对立的状态间的切换，多用于触发「开/关」。
+        keywords: [ 示例中心, 表单组件, 开关, Switch ]
+        route: /examples/switch
+        example: /data/examples/switch.yaml
+
   # 编辑器
   - key: 3-2
     name: 编辑器组件
