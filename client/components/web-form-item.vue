@@ -2,19 +2,41 @@
   <!-- 单选框 -->
   <el-radio-group v-if="/^(radio)/.test(type)" v-model="values" :disabled="disabled">
     <template v-if="/(button)$/.test(type)">
-      <el-radio-button v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :disabled="item.disabled">{{ item.name }}</el-radio-button>
+      <el-radio-button v-for="(item, key) in propData.map(parseProps(props))" 
+        :key="key" 
+        :label="item.key" 
+        :disabled="item.disabled">
+        {{ toFormatString(item, format || '{name}') }}
+      </el-radio-button>
     </template>
     <template v-else>
-      <el-radio v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :disabled="item.disabled" :border="border">{{ item.name }}</el-radio>
+      <el-radio v-for="(item, key) in propData.map(parseProps(props))" 
+        :key="key" 
+        :label="item.key" 
+        :disabled="item.disabled" 
+        :border="border">
+        {{ toFormatString(item, format || '{name}') }}
+      </el-radio>
     </template>
   </el-radio-group>
   <!-- 多选框 -->
   <el-checkbox-group v-else-if="/^(checkbox)/.test(type)" v-model="values" :disabled="disabled">
     <template v-if="/(button)$/.test(type)">
-      <el-checkbox-button v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :disabled="item.disabled">{{ item.name }}</el-checkbox-button>
+      <el-checkbox-button v-for="(item, key) in propData.map(parseProps(props))" 
+        :key="key" 
+        :label="item.key" 
+        :disabled="item.disabled">
+        {{ toFormatString(item, format || '{name}') }}
+      </el-checkbox-button>
     </template>
     <template v-else>
-      <el-checkbox v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="item.key" :disabled="item.disabled" :border="border">{{ item.name }}</el-checkbox>
+      <el-checkbox v-for="(item, key) in propData.map(parseProps(props))" 
+        :key="key" 
+        :label="item.key" 
+        :disabled="item.disabled" 
+        :border="border">
+        {{ toFormatString(item, format || '{name}') }}
+      </el-checkbox>
     </template>
   </el-checkbox-group>
   <!-- 下拉选择器 -->
@@ -24,11 +46,16 @@
     :disabled="disabled"
     :style="{ width: `300px`, ...styles }" 
     :multiple="multiple"
-    :filter-method="filterMethod"
+    :clearable="options && options.clearable"
     collapse-tags
     filterable >
     <template v-if="propData">
-      <el-option v-for="(item, key) in propData.map(parseProps(props))" :key="key" :label="toFormatString(item, format || '{name}')" :value="item.key"></el-option>
+      <el-option v-for="(item, key) in propData.map(parseProps(props))" 
+        :key="key" 
+        :label="toFormatString(item, format || '{name}')" 
+        :value="item.key" 
+        :disabled="item.disabled">
+      </el-option>
     </template>
   </el-select>
   <!-- 单日期选择 -->
@@ -228,7 +255,7 @@
 import { Component, Vue, Prop, Provide, Model, Watch, Emit } from 'nuxt-property-decorator'
 import { Channel } from '@/types/client'
 import { parseProps } from '@/utils'
-import { template, unset } from 'lodash'
+import { template, unset, isString, isFunction } from 'lodash'
 import jsYaml from 'js-yaml'
 
 @Component<WebFormItem>({
@@ -249,7 +276,16 @@ import jsYaml from 'js-yaml'
       this.styles = { ...this.styles, height: `${this.height}px` }
     }
     if (this.options?.filterMethod) {
-      this.filterMethod = jsYaml.load(this.options.filterMethod) ?? null
+      if (isString(this.options.filterMethod)) {
+        try {
+          this.filterMethod = jsYaml.load(this.options.filterMethod) ?? null
+        } catch (error) {
+          
+        }
+      }
+      else if (isFunction(this.options.filterMethod)) {
+        this.filterMethod = this.options.filterMethod
+      }
     }
   }
 })

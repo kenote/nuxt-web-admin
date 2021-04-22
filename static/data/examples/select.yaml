@@ -49,10 +49,11 @@ display:
           code: |
             <template>
               <web-form-item
-                type="radio"
+                type="select"
                 :value="value"
                 :data="data"
                 :props="props"
+                :format="format"
                 />  
             <template>
 
@@ -69,9 +70,9 @@ display:
                   ],
                   props: {
                     key: "value",
-                    name: "label",
-                    disabled: "disabled"
-                  }
+                    name: "label"
+                  },
+                  format: "[{ key }] - { name }"
                 }
               }
             }
@@ -82,7 +83,7 @@ display:
           type: application/json
           code: |
             {
-              "type": "radio",
+              "type": "select",
               "value": "01",
               "data": [
                 { "value": "01", "label": "选项一" },
@@ -92,9 +93,9 @@ display:
               ],
               "props": {
                 "key": "value",
-                "name": "label",
-                "disabled": "disabled"
-              }
+                "name": "label"
+              },
+              "format": "[{ key }] - { name }"
             }
       - key: yaml
         name: Yaml
@@ -102,7 +103,7 @@ display:
           type: text/x-yaml
           code: |
             # 表单组件类型
-            type: radio
+            type: select
             # 数据源数据
             data:
               - value: '01'
@@ -118,13 +119,14 @@ display:
             props:
               key: value
               name: label
-              disabled: disabled
+            # 格式化显示名称
+            format: '[{ key }] - { name }'
             # 绑定值
             value: '01'
     preview:
       component: web-form-item
       options:
-        type: radio
+        type: select
         data:
           - value: '01'
             label: '选项一'
@@ -138,7 +140,7 @@ display:
         props:
           key: value
           name: label
-          disabled: disabled
+        format: '[{ key }] - { name }'
       value: '01'
 # 参数说明
 attributes:
@@ -146,6 +148,13 @@ attributes:
     name: Attributes
     columns: *attributeColumns
     data:
+      - name: placeholder
+        description: 输入框占位文本
+        type: string
+      - name: width
+        description: 输入框宽度
+        type: number / 'auto'
+        default: 300
       - name: value
         description: 绑定值
         type: string / number
@@ -165,6 +174,13 @@ attributes:
       - name: format
         description: 格式化显示名称，‘{ key } { name }’
         type: string
+      - name: multiple
+        description: 是否可多选
+        type: boolean
+        default: false
+      - name: options
+        description: 附加选项
+        type: object
   - key: 1-2
     name: Request
     columns: *attributeColumns
@@ -180,6 +196,14 @@ attributes:
       - name: headers
         description: HTTP 请求头部信息
         type: object
+  - key: 1-4
+    name: Options
+    columns: *attributeColumns
+    data:
+      - name: clearable
+        description: 是否可清空
+        type: boolean
+        default: false
   - key: 1-3
     name: Event
     columns: *eventColumns

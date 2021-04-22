@@ -27,7 +27,7 @@ export function parseCommand (value: string): Command.value | null {
 export function parseProps (props?: Record<string, string>) {
   return (data: Record<string, any>) => {
     if (!props) return data
-    let result = {}
+    let result = data
     for (let [key, val] of Object.entries(props)) {
       result[key] = /(\{)/.test(val) ? nunjucks.renderString(val, data) : get(data, val)
     }

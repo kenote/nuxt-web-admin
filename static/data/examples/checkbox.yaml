@@ -52,6 +52,7 @@ display:
                 type="checkbox"
                 :value="value"
                 :data="data"
+                :props="props"
                 />  
             <template>
 
@@ -161,6 +162,9 @@ attributes:
       - name: request
         description: 异步拉取数据源数据配置
         type: object
+      - name: format
+        description: 格式化显示名称，‘{ key } { name }’
+        type: string
   - key: 1-2
     name: Request
     columns: *attributeColumns
