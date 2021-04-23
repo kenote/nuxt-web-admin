@@ -115,6 +115,13 @@ children:
         route: /examples/switch
         example: /data/examples/switch.yaml
 
+      - key: 3-1-10
+        name: Slider 滑块
+        description: 通过拖动滑块在一个固定区间内进行选择
+        keywords: [ 示例中心, 表单组件, 滑块, Slider ]
+        route: /examples/slider
+        example: /data/examples/slider.yaml
+
   # 编辑器
   - key: 3-2
     name: 编辑器组件

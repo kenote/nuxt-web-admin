@@ -124,7 +124,10 @@
     :max="max"
     :step="step"
     :range="multiple"
-    :marks="options"
+    :marks="props"
+    :show-stops="options && options.showStops"
+    :show-tooltip="options && options.showTooltip"
+    :vertical="options && options.vertical"
     :disabled="disabled"
     />
   <!-- 颜色选择器 -->
