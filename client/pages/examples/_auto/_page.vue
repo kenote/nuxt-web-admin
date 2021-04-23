@@ -1,6 +1,6 @@
 <template>
-  <dashboard v-loading="initinal">
-    <section class="example-container" v-if="pageSetting.example">
+  <dashboard v-loading="initinal || refresh">
+    <section class="example-container" v-if="pageSetting.example && !refresh">
       <h2>{{ name }}</h2>
       <p v-if="description">{{ description }}</p>
       

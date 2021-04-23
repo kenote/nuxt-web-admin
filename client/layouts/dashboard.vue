@@ -54,13 +54,11 @@
         <div class="page-main">
           <breadcrumb v-if="selectedChannel.name" :data="getChannelData()" :route-path="$route.path" />
           <div class="page-tools">
-            <el-tooltip content="刷新">
-              <el-button 
-                icon="el-icon-refresh" 
-                @click="handleCommand('command:refresh')" 
-                v-bind:class="refresh ? 'refresh' : ''">
-              </el-button>
-            </el-tooltip>
+            <el-button 
+              icon="el-icon-refresh" 
+              @click="handleCommand('command:refresh')" 
+              v-bind:class="refresh ? 'refresh' : ''">
+            </el-button>
           </div>
           <perfect-scrollbar :options="{ suppressScrollX: true }">
             <nuxt :style="selectedChannel.name ? '' : 'padding-top:20px;'"></nuxt>
@@ -209,7 +207,6 @@ export default class DashboardLayout extends mixins(BaseMixin) {
   handleCommand (value: string) {
     let command = parseCommand(value)
     if (!command) return
-    console.log(command)
     // 处理自定义指令
     if (command.type === 'command') {
       switch (command.path) {

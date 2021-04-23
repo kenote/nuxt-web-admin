@@ -2,6 +2,7 @@ import Vue from 'vue'
 import {
   Autocomplete,
   Avatar,
+  Backtop,
   Badge,
   Breadcrumb,
   BreadcrumbItem,
@@ -56,6 +57,7 @@ import CascaderPanel from 'element-ui/lib/cascader-panel'
 export default () => {
   Vue.use(Autocomplete)
   Vue.use(Avatar)
+  Vue.use(Backtop)
   Vue.use(Badge)
   Vue.use(Breadcrumb)
   Vue.use(BreadcrumbItem)
