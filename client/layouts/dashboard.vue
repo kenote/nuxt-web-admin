@@ -53,6 +53,15 @@
         <!-- 内容页面 -->
         <div class="page-main">
           <breadcrumb v-if="selectedChannel.name" :data="getChannelData()" :route-path="$route.path" />
+          <div class="page-tools">
+            <el-tooltip content="刷新">
+              <el-button 
+                icon="el-icon-refresh" 
+                @click="handleCommand('command:refresh')" 
+                v-bind:class="refresh ? 'refresh' : ''">
+              </el-button>
+            </el-tooltip>
+          </div>
           <perfect-scrollbar :options="{ suppressScrollX: true }">
             <nuxt :style="selectedChannel.name ? '' : 'padding-top:20px;'"></nuxt>
           </perfect-scrollbar>
@@ -62,7 +71,10 @@
       <web-drawer title="频道导航" placement="left" width="250" :visible="drawerType === 'channels'" @close="handleCloseDrawer">
         <perfect-scrollbar :options="{ suppressScrollX: true }">
           <div class="main">
-            <web-list :data="(channels || []).map(parseProps({ key: 'key', name: 'name', icon: 'icon', link: 'route' }))" @command="path => path && handleCommand('router:' + path)" />
+            <web-list 
+              :data="(channels || []).map(parseProps({ key: 'key', name: 'name', icon: 'icon', link: 'route' }))" 
+              @command="path => path && handleCommand('router:' + path)" 
+              />
           </div>
         </perfect-scrollbar>
       </web-drawer>
@@ -109,6 +121,9 @@ export default class DashboardLayout extends mixins(BaseMixin) {
 
   @Store.Setting.State
   metaInfo!: MetaInfo
+
+  @Store.Setting.State
+  refresh!: boolean
 
   @Provide()
   collapse: boolean = false
@@ -204,6 +219,9 @@ export default class DashboardLayout extends mixins(BaseMixin) {
         case 'channels':
           this.drawerVisible = true
           this.drawerType = 'channels'
+          break
+        case 'refresh':
+          this.$store.commit(Types.setting.REFRESH, true)
           break
         case 'logout':
           this.logout()

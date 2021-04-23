@@ -75,6 +75,27 @@
       }
     }
 
+    .page-tools {
+      position: absolute;
+      z-index: 5;
+      width: 100%;
+      padding: 15px 30px 0px;
+      text-align: right;
+
+      .el-button {
+        border: 0;
+        background-color: transparent;
+
+        &.refresh {
+          animation: rotating 2s linear infinite;
+        }
+      }
+
+      i {
+        font-size: 16px;
+      }
+    }
+
     .form-container {
       padding: 0 30px;
       font-family: Lantinghei;

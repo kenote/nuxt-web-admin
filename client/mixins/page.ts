@@ -3,6 +3,7 @@ import BaseMixin from './base'
 import { HttpClientOptions } from '@/utils/http-client'
 import { Channel } from '@/types/client'
 import { dataNodeProxy } from '@kenote/common'
+import { Store, Types } from '~/store'
 
 @Component<PageMixin>({
   name: 'page-mixin',
@@ -14,6 +15,9 @@ import { dataNodeProxy } from '@kenote/common'
   }
 })
 export default class PageMixin extends mixins(BaseMixin) {
+
+  @Store.Setting.State
+  refresh!: boolean
  
   @Provide()
   loading: boolean = false
@@ -47,6 +51,10 @@ export default class PageMixin extends mixins(BaseMixin) {
       this.pageSetting = pageSetting ?? {}
       this.initinal = false
     }, 500)
+  }
+
+  completeRefresh () {
+    this.$store.commit(Types.setting.REFRESH, false)
   }
    
 }

@@ -12,7 +12,8 @@ export const types = {
   CHANNELS        : 'CHANNELS',
   SELECTCHANNEL   : 'SELECTCHANNEL',
   LOADING         : 'LOADING',
-  METAINFO        : 'METAINFO'
+  METAINFO        : 'METAINFO',
+  REFRESH         : 'REFRESH'
 }
 
 export interface State {
@@ -22,6 +23,7 @@ export interface State {
   loading         : Record<string, boolean>
   channelId      ?: string | null
   metaInfo       ?: MetaInfo
+  refresh        ?: boolean
 }
 
 export const namespaced: boolean = true
@@ -33,7 +35,8 @@ export const state: () => State = () => ({
   },
   channels: [],
   loading: { channel: false },
-  channelId: '0'
+  channelId: '0',
+  refresh: false
 })
 
 export const getters: GetterTree<State, RootState> = {
@@ -78,5 +81,8 @@ export const mutations: MutationTree<State> = {
   },
   [types.METAINFO] (state: State, metaInfo?: MetaInfo) {
     state.metaInfo = metaInfo
+  },
+  [types.REFRESH] (state: State, refresh: boolean) {
+    state.refresh = refresh
   }
 }

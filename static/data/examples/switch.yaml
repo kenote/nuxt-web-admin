@@ -123,7 +123,7 @@ display:
           code: |
             {
               "type": "switch",
-              “options": {
+              "options": {
                 "activeText": "开",
                 "inactiveText": "关"
               },
@@ -187,7 +187,7 @@ display:
           code: |
             {
               "type": "switch",
-              “options": {
+              "options": {
                 "activeIconClass": "el-icon-platform-eleme",
                 "inactiveIconClass": "el-icon-eleme"
               },
@@ -253,7 +253,7 @@ display:
           code: |
             {
               "type": "switch",
-              “options": {
+              "options": {
                 "activeText": "100",
                 "inactiveText": "0",
                 "activeValue": "100",

@@ -72,10 +72,37 @@ import { isYaml } from '@/utils'
 })
 export default class AutoPage extends mixins(PageMixin) {
 
+  @Watch('refresh')
+  onrefreshChange (val: boolean, oldVal: boolean) {
+    if (val === oldVal) return
+    if (val) {
+      setTimeout(async () => {
+        await this.initinalPage(this.pageSetting)
+        this.completeRefresh()
+      }, 800)
+    }
+  }
+
   @Watch('pageSetting')
   async onPageSetting(val: Partial<Channel.DataNode>, oldVal: Partial<Channel.DataNode>) {
     if (val === oldVal) return
-    let { example, name, description } = val
+    this.initinalPage(val)
+  }
+
+  @Provide()
+  name: string = ''
+  
+  @Provide()
+  description?: string
+
+  @Provide()
+  displays?: Channel.ExampleDisplay[] = []
+  
+  @Provide()
+  attributes: Channel.ExampleAttributes[] = []
+
+  async initinalPage (options: Partial<Channel.DataNode>) {
+    let { example, name, description } = options
     this.name = name!
     this.description = description
     if (!example) return
@@ -96,18 +123,6 @@ export default class AutoPage extends mixins(PageMixin) {
       this.attributes = attributes ?? []
     }
   }
-
-  @Provide()
-  name: string = ''
-  
-  @Provide()
-  description?: string
-
-  @Provide()
-  displays?: Channel.ExampleDisplay[] = []
-  
-  @Provide()
-  attributes: Channel.ExampleAttributes[] = []
 }
 </script>
 
