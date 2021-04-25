@@ -1,0 +1,393 @@
+
+# 选项
+options:
+  formatColumns: &formatColumns
+    - key: value
+      name: 格式
+      align: left
+      width: 150
+    - key: label
+      name: 含义
+      align: left
+      width: 200
+    - key: description
+      name: 备注
+      align: left
+    - key: example
+      name: 举例
+      align: left
+      width: 150
+  attributeColumns: &attributeColumns
+    - key: name
+      name: 参数
+      align: left
+      width: 150
+    - key: description
+      name: 说明
+      align: left
+    - key: type
+      name: 类型
+      align: left
+      width: 250
+    - key: option
+      name: 可选值
+      defaultValue: —
+      align: left
+      width: 250
+    - key: default
+      name: 默认值
+      defaultValue: —
+      align: left
+      width: 150
+  eventColumns: &eventColumns
+    - key: name
+      name: 参数
+      align: left
+      width: 150
+    - key: description
+      name: 说明
+      align: left
+    - key: callback
+      name: 回调参数
+      defaultValue: —
+      align: left
+      width: 400
+# 示例视图
+display:
+  - key: 1-1
+    name: 基础用法
+    active: vue
+    tabPanes:
+      - key: vue
+        name: Vue
+        codemirror:
+          type: text/x-vue
+          code: |
+            <template>
+              <web-form-item
+                type="date"
+                :value="value"
+                />  
+            <template>
+
+            <script>
+            export default {
+              data() {
+                return {
+                  value: new Date('2021-04-23')
+                }
+              }
+            }
+            </script>
+      - key: json
+        name: JSON
+        codemirror:
+          type: application/json
+          code: |
+            {
+              "type": "date",
+              "value": "2021-04-23"
+            }
+      - key: yaml
+        name: Yaml
+        codemirror:
+          type: text/x-yaml
+          code: |
+            # 表单组件类型
+            type: date
+            # 绑定值
+            value: 2021-04-23
+    preview:
+      description: 支持类型： year | month ｜ date ｜ week ｜ datetime
+      component: web-form-item
+      options:
+        type: date
+      value: 2021-04-23
+  - key: 1-2
+    name: 多个日期
+    active: vue
+    tabPanes:
+      - key: vue
+        name: Vue
+        codemirror:
+          type: text/x-vue
+          code: |
+            <template>
+              <web-form-item
+                type="dates"
+                :value="value"
+                />  
+            <template>
+
+            <script>
+            export default {
+              data() {
+                return {
+                  value: [
+                    '2021-04-23',
+                    '2021-04-24',
+                    '2021-04-25'
+                  ]
+                }
+              }
+            }
+            </script>
+      - key: json
+        name: JSON
+        codemirror:
+          type: application/json
+          code: |
+            {
+              "type": "dates",
+              "value": [
+                "2021-04-23",
+                "2021-04-24",
+                "2021-04-25"
+              ]
+            }
+      - key: yaml
+        name: Yaml
+        codemirror:
+          type: text/x-yaml
+          code: |
+            # 表单组件类型
+            type: dates
+            # 绑定值
+            value:
+              - 2021-04-23
+              - 2021-04-24
+              - 2021-04-25
+    preview:
+      description: 支持类型： dates
+      component: web-form-item
+      options:
+        type: dates
+      value:
+        - 2021-04-23
+        - 2021-04-24
+        - 2021-04-25
+  - key: 1-3
+    name: 日期范围
+    active: vue
+    tabPanes:
+      - key: vue
+        name: Vue
+        codemirror:
+          type: text/x-vue
+          code: |
+            <template>
+              <web-form-item
+                type="daterange"
+                :value="value"
+                />  
+            <template>
+
+            <script>
+            export default {
+              data() {
+                return {
+                  value: [
+                    '2021-04-23',
+                    '2021-04-25'
+                  ]
+                }
+              }
+            }
+            </script>
+      - key: json
+        name: JSON
+        codemirror:
+          type: application/json
+          code: |
+            {
+              "type": "daterange",
+              "value": [
+                "2021-04-23",
+                "2021-04-25"
+              ]
+            }
+      - key: yaml
+        name: Yaml
+        codemirror:
+          type: text/x-yaml
+          code: |
+            # 表单组件类型
+            type: daterange
+            # 绑定值
+            value:
+              - 2021-04-23
+              - 2021-04-25
+    preview:
+      description: 支持类型： daterange | datetimerange | monthrange
+      component: web-form-item
+      options:
+        type: daterange
+      value:
+        - 2021-04-23
+        - 2021-04-25
+# 参数说明
+attributes:
+  - key: 1-1
+    name: 日期格式
+    description: 使用 format 指定输入框的格式；使用 value-format 指定绑定值的格式。
+    columns: *formatColumns
+    data:
+      - value: yyyy
+        label: 年
+        example: '2017'
+      - value: M
+        label: 月
+        description: 不补0
+        example: '1'
+      - value: MM
+        label: 月
+        example: '01'
+      - value: W
+        label: 周
+        description: 仅周选择器的 format 可用；不补0
+        example: '1'
+      - value: W
+        label: 周
+        description: 仅周选择器的 format 可用
+        example: '01'
+      - value: d
+        label: 日
+        description: 不补0
+        example: '2'
+      - value: d
+        label: 日
+        example: '02'
+      - value: H
+        label: 小时
+        description: 24小时制；不补0
+        example: '3'
+      - value: HH
+        label: 小时
+        description: 24小时制
+        example: '03'
+      - value: h
+        label: 小时
+        description: 12小时制，须和 A 或 a 使用；不补0
+        example: '3'
+      - value: hh
+        label: 小时
+        description: 12小时制，须和 A 或 a 使用
+        example: '03'
+      - value: m
+        label: 分钟
+        description: 不补0
+        example: '4'
+      - value: mm
+        label: 分钟
+        example: '04'
+      - value: s
+        label: 秒
+        description: 不补0
+        example: '5'
+      - value: ss
+        label: 秒
+        example: '05'
+      - value: A
+        label: AM/PM
+        description: 仅 format 可用，大写
+        example: AM
+      - value: am
+        label: am/pm
+        description: 仅 format 可用，大写
+        example: am
+      - value: timestamp
+        label: JS时间戳
+        description: 仅 value-format 可用；组件绑定值为number类型
+        example: '1483326245000'
+      - value: '[MM]'
+        label: 不需要格式化字符
+        description: 使用方括号标识不需要格式化的字符 (如 [A] [MM])
+        example: MM
+  - key: 1-2
+    name: Attributes
+    columns: *attributeColumns
+    data:
+      - name: value
+        description: 绑定值
+        type: date | date[]
+      - name: disabled
+        description: 禁用
+        type: boolean
+        default: false
+      - name: placeholder
+        description: 占位内容
+        type: string | string[]
+      - name: format
+        description: 输入框中的格式
+        type: string
+        option: 见日期格式
+        default: yyyy-MM-dd
+      - name: valueFormat
+        description: 绑定值的格式。不指定则绑定值为 Date 对象
+        type: string
+      - name: props
+        description: 当前时间日期选择器特有的选项
+        type: object
+        default: '{}'
+      - name: options
+        description: 附加选项
+        type: object
+  - key: 1-3
+    name: Options
+    columns: *attributeColumns
+    data:
+      - name: defaultTime
+        description: 范围选择时选中日期所使用的当日内具体时刻
+        type: string[]
+        option: 数组，长度为 2，每项值为字符串，形如12:00:00，第一项指定开始日期的时刻，第二项指定结束日期的时刻，不指定会使用时刻 00:00:00
+      - name: rangeSeparator
+        description: 选择范围时的分隔符
+        type: string
+        default: |
+          '-'
+      - name: align
+        description: 对齐方式
+        type: string
+        option: left, center, right
+        default: left
+      - name: clearable
+        description: 是否显示清除按钮
+        type: boolean
+        default: true
+      - name: editable
+        description: 文本框可输入
+        type: boolean
+        default: true
+      - name: readonly
+        description: 完全只读
+        type: boolean
+        default: false
+  - key: 1-4
+    name: Props
+    columns: *attributeColumns
+    data:
+      - name: firstDayOfWeek
+        description: 周起始日
+        type: number
+        option: 1 到 7
+        default: '7'
+      - name: shortcuts
+        description: 设置快捷选项
+        type: object[]
+  - key: 1-5
+    name: Shortcuts
+    columns: *attributeColumns
+    data:
+      - name: label
+        description: 标题文本
+        type: string
+      - name: value
+        description: 设置选择器的值。
+        type: string | Date
+  - key: 1-6
+    name: Event
+    columns: *eventColumns
+    data:
+      - name: change
+        description: 值改变时触发
+        callback: '(value: string)'

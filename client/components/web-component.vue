@@ -1,7 +1,7 @@
 <template>
   <div v-if="type === 'web-form-item'">
     <web-form-item
-      :value="value"
+      v-model="values"
       :type="options && options.type"
       :data="options && options.data"
       :props="options && options.props"
@@ -24,10 +24,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Model } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Model, Provide, Emit, Watch } from 'nuxt-property-decorator'
 
 @Component<WebComponent>({
-  name: 'web-component'
+  name: 'web-component',
+  created () {
+    this.values = this.value
+  }
 })
 export default class WebComponent extends Vue {
   
@@ -38,7 +41,25 @@ export default class WebComponent extends Vue {
   options!: Record<string, any>
 
   @Model('update')
-  value!: string
+  value!: any
+
+  @Emit('update')
+  update (value: any) {}
+
+  @Provide()
+  values: any = ''
+
+  @Watch('values')
+  onValuesChange (val: any, oldVal: any) {
+    if (val === oldVal) return
+    this.update(val)
+  }
+
+  @Watch('value')
+  onValueChange (val: any, oldVal: any) {
+    if (val === oldVal) return
+    this.values = val
+  }
 
 
 }

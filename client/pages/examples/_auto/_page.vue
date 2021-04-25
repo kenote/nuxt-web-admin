@@ -12,9 +12,10 @@
             <div class="preview" v-if="display.preview">
               <el-tabs value="preview" type="card">
                 <el-tab-pane label="Preview" name="preview" lazy>
+                  <p v-if="display.preview.description">{{ display.preview.description }}</p>
                   <web-component
                     :type="display.preview.component"
-                    :value="display.preview.value"
+                    v-model="display.preview.value"
                     :options="display.preview.options"
                     />
                 </el-tab-pane>
@@ -47,6 +48,7 @@
       <template v-for="(attribute, key) in attributes">
         <fragment :key="attribute.key || key">
           <h3>{{ attribute.name }}</h3>
+          <p v-if="attribute.description">{{ attribute.description }}</p>
           <web-table 
             :columns="attribute.columns"
             :data="attribute.data"

@@ -256,7 +256,7 @@ attributes:
     data:
       - name: value
         description: 绑定值
-        type: boolean / string / number
+        type: number
       - name: disabled
         description: 禁用
         type: boolean

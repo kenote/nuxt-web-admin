@@ -122,6 +122,13 @@ children:
         route: /examples/slider
         example: /data/examples/slider.yaml
 
+      - key: 3-1-11
+        name: DatePicker 日期选择器
+        description: 用于选择或输入日期
+        keywords: [ 示例中心, 表单组件, 日期选择器, DatePicker ]
+        route: /examples/date-picker
+        example: /data/examples/date-picker.yaml
+
   # 编辑器
   - key: 3-2
     name: 编辑器组件

@@ -25,7 +25,6 @@
                 :step="item.step"
                 :format="item.format"
                 :value-format="item.valueFormat"
-                :default-time="item.defaultTime"
                 :options="item.options"
                 :multiple="item.multiple"
                 :disabled="item.disabled"

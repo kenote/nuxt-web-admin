@@ -89,6 +89,10 @@
         &.refresh {
           animation: rotating 2s linear infinite;
         }
+
+        &:focus, &:hover {
+          color: #606266;
+        }
       }
 
       i {

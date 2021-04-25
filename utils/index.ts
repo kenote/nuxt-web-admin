@@ -2,7 +2,7 @@
 import nunjucks from 'nunjucks'
 import { Command, Channel } from '@/types/client'
 import { dataNodeProxy, FilterQuery } from '@kenote/common'
-import { map, get } from 'lodash'
+import { map, get, template, isDate } from 'lodash'
 import jsYaml from 'js-yaml'
 
 /**
@@ -67,4 +67,39 @@ export function isYaml (str: string): boolean {
   } catch (error) {
     return false
   }
+}
+
+/**
+ * 解析成时间格式
+ */
+export function parseDate (value: string | Date) {
+  if (isDate(value)) {
+    return value
+  }
+  let data = {
+    'now': new Date(),
+    'today': new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
+    'days': new Date().getDate(),
+    'month': new Date().getMonth(),
+    'year': new Date().getFullYear()
+  }
+  let result =  template(value, { interpolate: /{([\s\S]+?)}/g })(data)
+  // tslint:disable-next-line: no-eval
+  let time = eval(result)
+  if (/(years)/.test(value)) {
+    time = new Date().setFullYear(time, 0, 0)
+  }
+  else if (/(year)/.test(value)) {
+    time = new Date().setFullYear(time)
+  }
+  else if (/(months)/.test(value)) {
+    time = new Date().setMonth(time, 0)
+  }
+  else if (/(month)/.test(value)) {
+    time = new Date().setMonth(time)
+  }
+  else if (/(days)/.test(value)) {
+    time = new Date().setDate(time)
+  }
+  return new Date(time)
 }

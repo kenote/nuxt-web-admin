@@ -107,6 +107,7 @@ export declare namespace Channel {
   }
 
   interface ExamplePreview {
+    description   ?: string
     component      : string
     options        : Record<string, any>
     value         ?: string | number
@@ -115,6 +116,7 @@ export declare namespace Channel {
   interface ExampleAttributes {
     key            : string
     name           : string
+    description   ?: string
     columns        : TableColumn[]
     data           : Record<string, any>[]
   }

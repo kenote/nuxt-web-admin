@@ -66,7 +66,11 @@
     :value-format="valueFormat"
     :placeholder="placeholder"
     :disabled="disabled"
-    :picker-options="options"
+    :align="options && options.align"
+    :clearable="options && options.clearable"
+    :editable="options && options.editable"
+    :readonly="options && options.readonly"
+    :picker-options="props"
     :style="{ ...styles }" 
     />
   <!-- 日期范围选择 -->
@@ -75,11 +79,16 @@
     :type="type"
     :format="format"
     :value-format="valueFormat"
-    :default-time="defaultTime"
+    :default-time="options && options.defaultTime"
     :start-placeholder="placeholder && placeholder[0]"
     :end-placeholder="placeholder && placeholder[1]"
     :disabled="disabled"
-    :picker-options="options"
+    :align="options && options.align"
+    :clearable="options && options.clearable"
+    :editable="options && options.editable"
+    :readonly="options && options.readonly"
+    :range-separator="options && options.rangeSeparator"
+    :picker-options="props"
     :style="{ ...styles }" 
     />
   <!-- 单时间选择 -->
@@ -257,8 +266,8 @@
 <script lang="ts">
 import { Component, Vue, Prop, Provide, Model, Watch, Emit } from 'nuxt-property-decorator'
 import { Channel } from '@/types/client'
-import { parseProps } from '@/utils'
-import { template, unset, isString, isFunction } from 'lodash'
+import { parseProps, parseDate } from '@/utils'
+import { template, unset, isString, isFunction, isArray } from 'lodash'
 import jsYaml from 'js-yaml'
 
 @Component<WebFormItem>({
@@ -289,6 +298,17 @@ import jsYaml from 'js-yaml'
       else if (isFunction(this.options.filterMethod)) {
         this.filterMethod = this.options.filterMethod
       }
+    }
+    if (isArray(this.props?.shortcuts)) {
+      this.props.shortcuts = this.props?.shortcuts.map( shortcut => {
+        let value = isArray(shortcut.value) ? shortcut.value.map(parseDate) : parseDate(shortcut.value)
+        return {
+          text: shortcut.label,
+          onClick (picker: Vue) {
+            picker.$emit('pick', value)
+          }
+        }
+      })
     }
   }
 })
@@ -337,10 +357,7 @@ export default class WebFormItem extends Vue {
   valueFormat!: string
 
   @Prop({ default: undefined })
-  defaultTime!: string[]
-
-  @Prop({ default: undefined })
-  props!: Record<string, string>
+  props!: Record<string, any>
 
   @Prop({ default: undefined })
   options!: Record<string, any>
@@ -358,7 +375,7 @@ export default class WebFormItem extends Vue {
   values: any = ''
 
   @Model('update')
-  value!: string
+  value!: any
 
   @Emit('update')
   update (value: any) {}
