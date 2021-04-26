@@ -153,7 +153,7 @@
     :color-format="format"
     :predefine="options && options.predefine"
     :disabled="disabled"
-    show-alpha
+    :show-alpha="options && options.showAlpha"
     />
   <!-- 级联选择器 -->
   <el-cascader v-else-if="type === 'cascader'"

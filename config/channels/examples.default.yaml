@@ -143,6 +143,13 @@ children:
         route: /examples/rate
         example: /data/examples/rate.yaml
 
+      - key: 3-1-14
+        name: ColorPicker 颜色选择器
+        description: 用于颜色选择，支持多种格式。
+        keywords: [ 示例中心, 表单组件, 颜色选择器, ColorPicker ]
+        route: /examples/color-picker
+        example: /data/examples/color-picker.yaml
+
   # 编辑器
   - key: 3-2
     name: 编辑器组件
