@@ -268,6 +268,7 @@ display:
             }
         # multiple: true
       value: [ zhinan, daohang, dingbudaohang ]
+      callback: true
   - key: 1-2
     name: 面板用法
     layout: vertical
@@ -467,6 +468,7 @@ display:
           value: key
           label: name
       value: [ zhinan, daohang, dingbudaohang ]
+      callback: true
 # 参数说明
 attributes:
   - key: 1-1

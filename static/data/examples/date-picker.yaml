@@ -103,6 +103,7 @@ display:
       options:
         type: date
       value: 2021-04-23
+      callback: true
   - key: 1-2
     name: 多个日期
     active: vue
@@ -166,6 +167,7 @@ display:
         - 2021-04-23
         - 2021-04-24
         - 2021-04-25
+      callback: true
   - key: 1-3
     name: 日期范围
     active: vue
@@ -225,6 +227,7 @@ display:
       value:
         - 2021-04-23
         - 2021-04-25
+      callback: true
 # 参数说明
 attributes:
   - key: 1-1

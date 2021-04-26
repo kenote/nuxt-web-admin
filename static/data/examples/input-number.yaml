@@ -101,6 +101,7 @@ display:
         min: 1
         max: 10
       value: 7
+      callback: true
 # 参数说明
 attributes:
   - key: 1-1

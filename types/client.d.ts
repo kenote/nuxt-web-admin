@@ -111,6 +111,7 @@ export declare namespace Channel {
     component      : string
     options        : Record<string, any>
     value         ?: string | number
+    callback      ?: boolean
   }
 
   interface ExampleAttributes {

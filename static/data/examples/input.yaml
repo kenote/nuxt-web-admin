@@ -104,6 +104,7 @@ display:
         options:
           clearable: true
       value: admin
+      callback: true
 # 参数说明
 attributes:
   - key: 1-1

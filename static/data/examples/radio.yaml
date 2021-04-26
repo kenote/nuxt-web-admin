@@ -140,6 +140,7 @@ display:
           name: label
           disabled: disabled
       value: '01'
+      callback: true
 # 参数说明
 attributes:
   - key: 1-1

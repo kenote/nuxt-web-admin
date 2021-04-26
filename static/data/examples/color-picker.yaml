@@ -86,6 +86,7 @@ display:
       options:
         type: color-picker
       value: '#409EFF'
+      callback: true
 # 参数说明
 attributes:
   - key: 1-1

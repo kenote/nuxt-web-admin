@@ -142,6 +142,7 @@ display:
           name: label
         format: '[{ key }] - { name }'
       value: '01'
+      callback: true
 # 参数说明
 attributes:
   - key: 1-1

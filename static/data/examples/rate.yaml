@@ -86,6 +86,7 @@ display:
       options:
         type: rate
       value: 3
+      callback: true
 # 参数说明
 attributes:
   - key: 1-2

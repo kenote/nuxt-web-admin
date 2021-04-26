@@ -136,6 +136,7 @@ display:
           resize: none
       value: |
         通过设置 autosize 属性可以使得文本域的高度能够根据文本内容自动进行调整，并且 autosize 还可以设定为一个对象，指定最小行数和最大行数。
+      callback: true
 # 参数说明
 attributes:
   - key: 1-1

@@ -87,6 +87,7 @@ display:
         type: time
         placeholder: 请选择时间
       value: '18:40:00'
+      callback: true
   - key: 1-2
     name: 时间范围
     active: vue
@@ -136,6 +137,7 @@ display:
         type: timerange
         placeholder: [ 开始时间, 结束时间 ]
       value: [ '18:40:00', '21:10:00' ]
+      callback: true
 # 参数说明
 attributes:
   - key: 1-2

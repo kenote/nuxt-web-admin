@@ -18,6 +18,7 @@
                     v-model="display.preview.value"
                     :options="display.preview.options"
                     />
+                  <el-button v-if="display.preview.callback" type="primary" style="margin-top:20px" @click="handleShowValue(display.preview.value)">查看 value</el-button>
                 </el-tab-pane>
               </el-tabs>
             </div>
@@ -125,7 +126,17 @@ export default class AutoPage extends mixins(PageMixin) {
       this.attributes = attributes ?? []
     }
   }
+
+  handleShowValue (value: any) {
+    let val = value
+    if (!isString(value)) {
+      val = JSON.stringify(value, null)
+    }
+    val = val.replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
+    this.$alert(val, '查看 value', { dangerouslyUseHTMLString: true })
+  }
 }
+
 </script>
 
 <style lang="scss">
