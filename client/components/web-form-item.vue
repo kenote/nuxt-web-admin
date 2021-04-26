@@ -94,23 +94,31 @@
   <!-- 单时间选择 -->
   <el-time-picker v-else-if="type === 'time'"
     v-model="values"
-    arrow-control
+    :arrow-control="options && options.arrowControl"
     :value-format="valueFormat || 'HH:mm:ss'"
     :placeholder="placeholder"
     :disabled="disabled"
-    :picker-options="options"
+    :align="options && options.align"
+    :clearable="options && options.clearable"
+    :editable="options && options.editable"
+    :readonly="options && options.readonly"
+    :picker-options="props"
     :style="{ ...styles }" 
     />
   <!-- 单时间选择 -->
   <el-time-picker v-else-if="type === 'timerange'"
     v-model="values"
     is-range
-    arrow-control
+    :arrow-control="options && options.arrowControl"
     :value-format="valueFormat || 'HH:mm:ss'"
     :start-placeholder="placeholder && placeholder[0]"
     :end-placeholder="placeholder && placeholder[1]"
-    :picker-options="options"
+    :picker-options="props"
     :disabled="disabled"
+    :align="options && options.align"
+    :clearable="options && options.clearable"
+    :editable="options && options.editable"
+    :readonly="options && options.readonly"
     :style="{ ...styles }" 
     />
   <!-- 开关 -->

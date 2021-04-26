@@ -390,4 +390,4 @@ attributes:
     data:
       - name: change
         description: 值改变时触发
-        callback: '(value: string)'
+        callback: '(value: string | date)'
