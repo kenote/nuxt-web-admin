@@ -136,6 +136,13 @@ children:
         route: /examples/time-picker
         example: /data/examples/time-picker.yaml
 
+      - key: 3-1-13
+        name: Rate 评分
+        description: 评分组件
+        keywords: [ 示例中心, 表单组件, 评分, Rate ]
+        route: /examples/rate
+        example: /data/examples/rate.yaml
+
   # 编辑器
   - key: 3-2
     name: 编辑器组件

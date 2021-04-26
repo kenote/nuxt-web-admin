@@ -190,6 +190,8 @@
     :show-score="options && options.showScore"
     :allow-half="options && options.allowHalf"
     :score-template="options && options.scoreTemplate"
+    :low-threshold="options && options.lowThreshold"
+    :high-threshold="options && options.highThreshold"
     :disabled="disabled"
     />
   <!-- 穿梭框 -->

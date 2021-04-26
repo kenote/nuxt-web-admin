@@ -70,7 +70,7 @@ display:
           code: |
             {
               "type": "time",
-              "value": "18:40:00
+              "value": "18:40:00"
             }
       - key: yaml
         name: Yaml
