@@ -150,6 +150,13 @@ children:
         route: /examples/color-picker
         example: /data/examples/color-picker.yaml
 
+      - key: 3-1-15
+        name: Transfer 穿梭框
+        description: 双栏穿梭选择框。
+        keywords: [ 示例中心, 表单组件, 穿梭框, Transfer ]
+        route: /examples/transfer
+        example: /data/examples/transfer.yaml
+
   # 编辑器
   - key: 3-2
     name: 编辑器组件

@@ -199,11 +199,13 @@
     v-model="values"
     :data="propData"
     :props="props"
-    filterable
-    :filter-placeholder="placeholder"
+    :filterable="options && options.filterable"
+    :filter-placeholder="options && options.filterPlaceholder"
     :titles="options && options.titles"
     :button-texts="options && options.buttonTexts"
     :target-order="options && options.targetOrder"
+    :left-default-checked="options && options.leftDefaultChecked"
+    :right-default-checked="options && options.rightDefaultChecked"
     :filter-method="filterMethod"
     >
     <span slot-scope="{ option }">{{ toFormatString(option, format) }}</span>

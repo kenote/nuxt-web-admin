@@ -183,6 +183,38 @@ export default class AutoPage extends mixins(PageMixin) {
       .el-tabs__content {
         padding: 20px 40px;
       }
+        
+      .el-transfer__buttons {
+        display: inline-flex;
+        flex-direction: column;
+  
+        .el-button--primary {
+          width: auto;
+          border-radius: 4px;
+        }
+
+        .el-button+.el-button {
+          margin-left: 0;
+        }
+
+      }
+
+      .el-transfer-panel {
+        width: 240px;
+      }
+
+      .el-transfer-panel__body {
+        height: 264px;
+
+        .el-input {
+          padding-right: 30px;
+        }
+      }
+
+      .el-transfer-panel__item {
+        margin-left: 0;
+        display: block!important;
+      }
     }
 
     &.vertical {
