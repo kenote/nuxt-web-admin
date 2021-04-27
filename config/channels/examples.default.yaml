@@ -166,6 +166,7 @@ children:
         description: CodeMirror 是一个运行在网页中的代码编辑器组件。
         keywords: [ 示例中心, 编辑器组件, 代码编辑器, codemirror ]
         route: /examples/codemirror
+        example: /data/examples/codemirror.yaml
       - key: 3-2-2
         name: Vditor
         description: Vditor 一款浏览器端的 Markdown 编辑器，支持所见即所得（富文本）、即时渲染（类似 Typora）和分屏预览模式。

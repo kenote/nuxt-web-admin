@@ -17,6 +17,7 @@ import {
   Col,
   ColorPicker,
   DatePicker,
+  Dialog,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -73,6 +74,7 @@ export default () => {
   Vue.use(Col)
   Vue.use(ColorPicker)
   Vue.use(DatePicker)
+  Vue.use(Dialog)
   Vue.use(Dropdown)
   Vue.use(DropdownItem)
   Vue.use(DropdownMenu)

@@ -32,7 +32,7 @@ export default class WebCodeMittor extends Vue {
   placeholder!: string
 
   @Prop({ default: false })
-  disabled!: boolean
+  readOnly!: boolean
 
   @Prop({ default: 'application/json' })
   contentType!: Codemirror.modeType
@@ -78,7 +78,7 @@ export default class WebCodeMittor extends Vue {
     mode: this.contentType,
     theme: this.theme,
     placeholder: this.placeholder,
-    readOnly: getBoolean(this.disabled)
+    readOnly: getBoolean(this.readOnly)
   }
 
   @Model('update')

@@ -18,7 +18,7 @@
                     v-model="display.preview.value"
                     :options="display.preview.options"
                     />
-                  <el-button v-if="display.preview.callback" type="primary" style="margin-top:20px" @click="handleShowValue(display.preview.value)">查看 value</el-button>
+                  <el-button v-if="display.preview.callback" type="primary" style="margin-top:20px" @click="handleShowValue(display.preview.value)">查看 Value</el-button>
                 </el-tab-pane>
               </el-tabs>
             </div>
@@ -35,10 +35,11 @@
                     lineNumbers: true,
                     lineWrapping: true,
                     tabSize: 2,
-                    isCopy: true
+                    isCopy: true,
+                    readOnly: true
                   }"
                   style="margin: 0 10px;"
-                  disabled />
+                  />
               </el-tab-pane>
             </el-tabs>
           </div>
@@ -57,6 +58,23 @@
         </fragment>
       </template>
     </section>
+
+    <!-- Dialog -->
+    <el-dialog :title="dialog.title" :visible="dialog.visible" @close="dialog.visible = false">
+      <web-form-item 
+        v-model="dialog.content" 
+        type="codemirror" 
+        width="auto" 
+        :options="{
+          theme: 'mdn-like',
+          lineNumbers: true,
+          lineWrapping: true,
+          tabSize: 2,
+          isCopy: true,
+          readOnly: true
+        }"
+        />
+    </el-dialog>
   </dashboard>
 </template>
 
@@ -67,6 +85,12 @@ import { Channel } from '@/types/client'
 import jsYaml from 'js-yaml'
 import { isString } from 'lodash'
 import { isYaml } from '@/utils'
+
+interface DialogOptions {
+  visible   ?: boolean
+  title     ?: string
+  content   ?: string
+}
 
 @Component<AutoPage>({
   name: 'auto-page',
@@ -104,6 +128,9 @@ export default class AutoPage extends mixins(PageMixin) {
   @Provide()
   attributes: Channel.ExampleAttributes[] = []
 
+  @Provide()
+  dialog: DialogOptions = {}
+
   async initinalPage (options: Partial<Channel.DataNode>) {
     let { example, name, description } = options
     this.name = name!
@@ -130,10 +157,9 @@ export default class AutoPage extends mixins(PageMixin) {
   handleShowValue (value: any) {
     let val = value
     if (!isString(value)) {
-      val = JSON.stringify(value, null)
+      val = jsYaml.dump(value)
     }
-    val = val.replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
-    this.$alert(val, '查看 value', { dangerouslyUseHTMLString: true })
+    this.dialog = { visible: true, title: '查看 Value', content: val }
   }
 }
 

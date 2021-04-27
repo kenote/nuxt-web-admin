@@ -216,7 +216,7 @@
     :theme="options && options.theme"
     :content-type="options && options.contentType"
     :placeholder="placeholder"
-    :disabled="disabled"
+    :read-only="options && options.readOnly"
     :line-numbers="options && options.lineNumbers"
     :line-wrapping="options && options.lineWrapping"
     :tab-size="options && options.tabSize"
