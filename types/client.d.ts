@@ -112,6 +112,8 @@ export declare namespace Channel {
     options        : Record<string, any>
     value         ?: string | number
     callback      ?: boolean
+    styles        ?: Record<string, any>
+    height        ?: string
   }
 
   interface ExampleAttributes {
@@ -255,6 +257,21 @@ export declare namespace Channel {
     defaultValue  ?: string | number
   }
 
+}
+
+export declare namespace EditorConfig {
+
+  interface Emoji {
+    key           : string
+    value         : string
+  }
+}
+
+export declare interface EditorConfig {
+  /**
+   * 表情包
+   */
+  emoji          ?: Record<string, string>
 }
 
 export declare namespace Verify {

@@ -32,6 +32,8 @@ module.exports = {
     'codemirror/addon/merge/merge.css',
     // theme css
     'codemirror/theme/paraiso-light.css',
+    // vditor
+    'vditor/dist/index.css',
     '~/assets/iconfont/iconfont.css',
     '~/assets/scss/common.scss'
   ],

@@ -207,5 +207,23 @@
   .el-cascader-menu__wrap {
     margin-bottom: 0 !important;
   }
+
+  .vditor-toolbar--pin {
+    position: initial;
+  }
+
+  .disabled {
+    .vditor-toolbar--pin {
+      pointer-events: none;
+    }
+  }
+
+  .vditor-img {
+    z-index: 5;
+  }
+
+  .vditor-reset .language-abc {
+    text-align: center;
+  }
 }
 

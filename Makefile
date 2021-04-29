@@ -13,3 +13,6 @@ install:
 reinstall:
 	@make clear
 	@make install
+
+vditor:
+	@cp -r node_modules/vditor/dist/. static/dist

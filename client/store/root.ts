@@ -19,11 +19,12 @@ export const mutations: MutationTree<State> = {}
 
 export const actions: Actions<State, RootState> = {
   async nuxtServerInit ({ commit }, { req }) {
-    let { site_url, baseHost, dashboard, channels, metaInfo } = req.$__payload ?? {}
+    let { site_url, baseHost, dashboard, channels, metaInfo, editorConfig } = req.$__payload ?? {}
     commit(Types.setting.SITEURL, site_url)
     commit(Types.setting.DASHBOARD, dashboard)
     commit(Types.setting.CHANNELS, channels)
     commit(Types.setting.METAINFO, metaInfo)
+    commit(Types.setting.EDITORCONFIG, editorConfig)
     
     let jwtoken = getCookie('jwtoken', req.headers.cookie)
     try {

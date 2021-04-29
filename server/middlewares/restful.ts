@@ -3,6 +3,11 @@ import { HttpError } from 'http-errors'
 import * as service from '~/services'
 import { setJwToken } from './auth'
 import { UserDocument } from '@/types/services/db'
+import fs from 'fs'
+import path from 'path'
+import { loadConfig } from '@kenote/config'
+import { ServerConfigure } from '@/types/config'
+import ruleJudgment from 'rule-judgment'
 
 @Middleware({
   // HTTP 头信息
@@ -78,6 +83,21 @@ export default class Restful {
       return { ...user, jw_token: jwtoken }
     }
   }
+
+  @Action()
+  downloadFile (ctx: Context) {
+    return (filePath: string) => {
+      if (!fs.existsSync(filePath)) {
+        return ctx.notfound()
+      }
+      let fileStream = fs.readFileSync(filePath)
+      let extname = path.extname(filePath)
+      let { previewTypes } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
+      let contentType = previewTypes?.find( ruleJudgment({ extname: { $_in: extname } }) )?.type ?? 'application/octet-stream'
+      ctx.setHeader('Content-Type', contentType)
+      return ctx.send(fileStream)
+    }
+  }
 }
 
 // 扩展到 @kenote/core 中 Context 类型
@@ -113,5 +133,9 @@ declare module '@kenote/core' {
      * JET 登录
      */
     jwtLogin (user: UserDocument): Promise<UserDocument>
+    /**
+     * Download
+     */
+     downloadFile (filePath: string): Context
   }
 }

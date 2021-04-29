@@ -1,6 +1,6 @@
 import { ActionTree, MutationTree, GetterTree, ActionContext } from 'vuex'
 import { RootState } from '~/store'
-import { NavMenu, Channel } from '@/types/client'
+import { NavMenu, Channel, EditorConfig } from '@/types/client'
 import ruleJudgment from 'rule-judgment'
 import { MetaInfo } from 'vue-meta'
 
@@ -13,6 +13,7 @@ export const types = {
   SELECTCHANNEL   : 'SELECTCHANNEL',
   LOADING         : 'LOADING',
   METAINFO        : 'METAINFO',
+  EDITORCONFIG    : 'EDITORCONFIG',
   REFRESH         : 'REFRESH'
 }
 
@@ -23,6 +24,7 @@ export interface State {
   loading         : Record<string, boolean>
   channelId      ?: string | null
   metaInfo       ?: MetaInfo
+  editorConfig   ?: EditorConfig
   refresh        ?: boolean
 }
 
@@ -81,6 +83,9 @@ export const mutations: MutationTree<State> = {
   },
   [types.METAINFO] (state: State, metaInfo?: MetaInfo) {
     state.metaInfo = metaInfo
+  },
+  [types.EDITORCONFIG] (state: State, editorConfig?: EditorConfig) {
+    state.editorConfig = editorConfig
   },
   [types.REFRESH] (state: State, refresh: boolean) {
     state.refresh = refresh

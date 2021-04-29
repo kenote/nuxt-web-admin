@@ -2,7 +2,7 @@ import { IncomingMessage } from 'http'
 import Koa from 'koa'
 import { RouterContext } from '@koa/router'
 import { MetaInfo } from 'vue-meta'
-import { NavMenu, Channel } from './client'
+import { NavMenu, Channel, EditorConfig } from './client'
 
 export declare interface HTTPServer {
   req   : IncomingMessage & { $__payload: NuxtPayload, ctx: Koa.Context & RouterContext }
@@ -14,4 +14,5 @@ export declare interface NuxtPayload {
   dashboard     : NavMenu.Configure
   channels      : Channel.DataNode[]
   metaInfo     ?: MetaInfo
+  editorConfig  : EditorConfig
 }

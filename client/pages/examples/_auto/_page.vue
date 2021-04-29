@@ -9,7 +9,7 @@
         <fragment :key="display.key || key">
           <h3>{{ display.name }}</h3>
           <div class="display" v-bind:class="display.layout === 'vertical' ? 'vertical' : ''">
-            <div class="preview" v-if="display.preview">
+            <div class="preview" v-if="display.preview" :style="{ heigtht: display.preview.height || '500px' }">
               <el-tabs value="preview" type="card">
                 <el-tab-pane label="Preview" name="preview" lazy>
                   <p v-if="display.preview.description">{{ display.preview.description }}</p>
@@ -17,6 +17,9 @@
                     :type="display.preview.component"
                     v-model="display.preview.value"
                     :options="display.preview.options"
+                    :style="display.preview.styles"
+                    :http-options="httpOptions"
+                    :editor-config="editorConfig"
                     />
                   <el-button v-if="display.preview.callback" type="primary" style="margin-top:20px" @click="handleShowValue(display.preview.value)">查看 Value</el-button>
                 </el-tab-pane>
@@ -96,6 +99,9 @@ interface DialogOptions {
   name: 'auto-page',
   middleware: [ 'authenticated' ],
   layout: 'dashboard',
+  created () {
+    // this.httpOptions.headers
+  }
 })
 export default class AutoPage extends mixins(PageMixin) {
 
@@ -260,11 +266,11 @@ export default class AutoPage extends mixins(PageMixin) {
       .preview {
         border-right: 0;
         border-bottom: 1px #e4e4e4 solid;
-        height: 500px;
+        // height: 500px;
       }
 
       .el-tabs {
-        height: 500px;
+        min-height: 300px;
       }
     }
   }

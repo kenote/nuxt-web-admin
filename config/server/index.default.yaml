@@ -36,3 +36,30 @@ metaInfo:
     - rel: icon
       type: image/x-icon
       href: /favicon.ico
+
+# 可查看文件类型表
+previewTypes:
+  - type: image/png
+    extname: [ .png ]
+  - type: image/gif
+    extname: [ .gif ]
+  - type: image/jpeg
+    extname: [ .jpg, .jpeg ]
+  - type: application/json
+    extname: [ .json ]
+  - type: text/yaml
+    extname: [ .yml, .yaml ]
+  - type: text/html
+    extname: [ .htm, .html ]
+  - type: image/webp
+    extname: [ .webp ]
+  - type: text/css
+    extname: [ .css ]
+  - type: image/vnd.microsoft.icon
+    extname: [ .ico ]
+  - type: application/javascript
+    extname: [ .js ]
+  - type: font/woff
+    extname: [ .woff ]
+  - type: font/woff2
+    extname: [ .woff2 ]

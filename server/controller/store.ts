@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Context, NextHandler } from '@kenote/core'
 import { authenticate } from '~/plugins/passport'
-// import { putStream } from '@kenote/upload'
 import path from 'path'
 import { isArray } from 'lodash'
 
@@ -31,6 +30,25 @@ export default class StoreController {
         throw httpError(ErrorCode.ERROR_UPLOAD_NOT_FILE)
       }
       return ctx.api(result)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  @Get('/uploadfiles/:filename')
+  @Get('/uploadfiles/:type/:filename')
+  async download (ctx: Context, next: NextHandler) {
+    let { type, filename } = ctx.params
+    let { dir } = ctx.query
+    let { Store, nextError } = ctx.service
+    let { root_dir } = Store.getOptions(type) ?? {}
+    try {
+      if (!root_dir) {
+        return ctx.notfound()
+      }
+      let rootDir = path.resolve(process.cwd(), root_dir!, String(dir ?? '').replace(/^\//, ''))
+      let filePath = path.resolve(rootDir, filename)
+      return ctx.downloadFile(filePath)
     } catch (error) {
       nextError(error, ctx, next)
     }

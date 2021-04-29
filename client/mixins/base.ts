@@ -2,7 +2,7 @@ import { Component, Vue, Provide } from 'nuxt-property-decorator'
 import { Store, Types } from '~/store'
 import { UserDocument } from '@/types/services/db'
 import { parseProps } from '@/utils'
-import { Channel } from '@/types/client'
+import { Channel, EditorConfig } from '@/types/client'
 
 @Component<BaseMixin>({
   name: 'base-mixin'
@@ -29,6 +29,9 @@ export default class BaseMixin extends Vue {
 
   @Store.Setting.State
   channelId!: string | null
+
+  @Store.Setting.State
+  editorConfig!: EditorConfig
 
   @Store.Setting.Getter
   selectedChannel!: Channel.DataNode

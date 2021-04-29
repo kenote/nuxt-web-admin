@@ -35,6 +35,10 @@ export declare interface ServerConfigure {
    * MetaInfo
    */
   metaInfo            ?: MetaInfo
+  /**
+   * 可查看文件类型表
+   */
+   previewTypes       ?: ServerConfigure.FileType[]
 }
 
 export declare namespace ServerConfigure {
@@ -50,5 +54,11 @@ export declare namespace ServerConfigure {
      * 连接选项
      */
     options   ?: mongoose.ConnectionOptions
+
+  }
+
+  interface FileType {
+    type       : string
+    extname    : string[]
   }
 }

@@ -164,18 +164,25 @@ children:
       - key: 3-2-1
         name: CodeMirror
         description: CodeMirror 是一个运行在网页中的代码编辑器组件。
-        keywords: [ 示例中心, 编辑器组件, 代码编辑器, codemirror ]
+        keywords: [ 示例中心, 编辑器组件, 代码编辑器, CodeMirror, Editor ]
         route: /examples/codemirror
         example: /data/examples/codemirror.yaml
       - key: 3-2-2
         name: Vditor
         description: Vditor 一款浏览器端的 Markdown 编辑器，支持所见即所得（富文本）、即时渲染（类似 Typora）和分屏预览模式。
+        keywords: [ 示例中心, 编辑器组件, Markdown编辑器, Vditor, Markdown, Editor ]
+        route: /examples/vditor
+        example: /data/examples/vditor.yaml
       - key: 3-2-3
         name: Monaco Editor
         description: Monaco Editor 是微软开源的基于 VS Code 的代码编辑器，运行在浏览器环境中。编辑器提供代码提示，智能建议等功能。
+        keywords: [ 示例中心, 编辑器组件, 代码编辑器, Monaco, Editor, vscode ]
+        route: /examples/monaco-editor
       - key: 3-2-4
         name: wangEditor
         description: Typescript 开发的 Web 富文本编辑器， 轻量、简洁、易用、开源免费。
+        keywords: [ 示例中心, 编辑器组件, 富文本编辑器, 富文本, wangEditor, Editor， RichText ]
+        route: /examples/wangeditor
   # 视图组件
   - key: 3-3
     name: 视图组件

@@ -21,10 +21,29 @@
       :request="options && options.request"
       />
   </div>
+  <div v-else-if="type === 'web-vditor'">
+    <web-vditor
+      v-model="values"
+      :placeholder="options && options.placeholder" 
+      :width="options && options.width" 
+      :min-height="options && options.minHeight" 
+      :height="options && options.height" 
+      :upload="options && options.upload"
+      :counter="options && options.counter"
+      :disabled="options && options.disabled"
+      :http-options="httpOptions"
+      :editor-config="editorConfig"
+      />
+  </div>
+  <fragment v-else-if="type === 'web-markdown'">
+    <web-markdown :content="values" />
+  </fragment>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Model, Provide, Emit, Watch } from 'nuxt-property-decorator'
+import { HttpClientOptions } from '@/utils/http-client'
+import { EditorConfig } from '@/types/client'
 
 @Component<WebComponent>({
   name: 'web-component',
@@ -39,6 +58,12 @@ export default class WebComponent extends Vue {
 
   @Prop({ default: undefined })
   options!: Record<string, any>
+
+  @Prop({ default: undefined })
+  httpOptions!: HttpClientOptions
+
+  @Prop({ default: undefined })
+  editorConfig!: EditorConfig
 
   @Model('update')
   value!: any
