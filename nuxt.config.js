@@ -76,7 +76,8 @@ module.exports = {
         ['component', {
           libraryName: 'element-ui',
           styleLibraryName: 'theme-chalk'
-        }]
+        }],
+        ['@babel/plugin-proposal-private-methods', { loose: true }]
       ],
       comments: true
     },

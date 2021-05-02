@@ -31,7 +31,7 @@
     "v-clipboard": "^2.2.3",
     "vditor": "^3.8.4",
     "vue-codemirror": "^4.0.6",
-    "vue-fragment": "^1.5.2",
+    "vue-fragment": "1.5.1",
     "vue2-perfect-scrollbar": "^1.5.0"
   },
   "devDependencies": {
@@ -63,9 +63,7 @@
     "initdata": "nodemon --config nodemon.json ./server/scripts/initdata.ts",
     "build": "nuxt build && rm -rf ./dist && tsc --project server/tsconfig.production.json && tscpaths -p server/tsconfig.production.json -s ./server -o ./dist",
     "build:nuxt": "nuxt build",
-    "start": "cross-env NODE_ENV=production node ./dist/index.js",
-    "start:pm2": "pm2 start scosystem.config.js",
-    "delete:pm2": "pm2 delete scosystem.config.js"
+    "start": "cross-env NODE_ENV=production node ./dist/index.js"
   },
   "engines": {
     "node": ">=10.20.0"

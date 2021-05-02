@@ -7,7 +7,7 @@ const config = {
   name: server.name,
   max_memory_restart: '200M',
   instances: 1,
-  instance_var: 'INSTANCE_ID',
+  instance_var: server.secretKey || 'INSTANCE_ID',
   exec_mode: 'cluster',
   cwd: './',
   env: {
