@@ -188,5 +188,11 @@ children:
     name: 视图组件
     children:
       - key: 3-3-1
+        name: Markdown 文档
+        description: 渲染 Markdown 文档视图。
+        keywords: [ 示例中心, 视图组件, Markdown ]
+        route: /examples/markdown
+        example: /data/examples/markdown.yaml
+      - key: 3-3-2
         name: Table 表格
         route: /examples/table

@@ -6,7 +6,7 @@ host: 0.0.0.0
 # 服务器端口
 port: 4000
 # secret
-secret: kenote-nuxtjs-admin
+secretKey: kenote-nuxtjs-admin
 # Redis
 redisOpts:
   host: 127.0.0.1

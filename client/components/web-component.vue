@@ -36,7 +36,7 @@
       />
   </div>
   <fragment v-else-if="type === 'web-markdown'">
-    <web-markdown :content="values" />
+    <web-markdown :content="options && options.content" />
   </fragment>
 </template>
 

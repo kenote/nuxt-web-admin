@@ -3,7 +3,6 @@ import { ChannelDataNode } from '@kenote/common'
 import { FilterData, ParseData } from 'parse-string'
 import { Method } from 'axios'
 import { IncomingHttpHeaders } from 'http'
-import { Codemirror } from '@/utils/codemirror'
 
 export declare namespace Command {
 
@@ -102,7 +101,7 @@ export declare namespace Channel {
   }
 
   interface ExampleCodeMirror {
-    type          ?: Codemirror.modeType
+    type          ?: string
     code          ?: string
   }
 

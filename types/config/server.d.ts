@@ -1,6 +1,7 @@
 import redis from 'redis'
 import mongoose from 'mongoose'
 import { MetaInfo } from 'vue-meta'
+import { RegisterDocument } from '@/types/services/db/user'
 
 export declare interface ServerConfigure {
   /**
@@ -38,7 +39,11 @@ export declare interface ServerConfigure {
   /**
    * 可查看文件类型表
    */
-   previewTypes       ?: ServerConfigure.FileType[]
+  previewTypes       ?: ServerConfigure.FileType[]
+  /**
+   * 
+   */
+  initialAccount      : RegisterDocument
 }
 
 export declare namespace ServerConfigure {

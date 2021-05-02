@@ -205,6 +205,7 @@ export default class AutoPage extends mixins(PageMixin) {
     .el-tabs {
       width: 100%;
       height: 100%;
+      padding-bottom: 20px;
     }
 
     .el-tabs--card>.el-tabs__header .el-tabs__nav {
