@@ -10,6 +10,7 @@ start(){
   case $type in
     create)
       mkdir -p $release
+      rsync -av ./config/ $release/config/ --exclude='*.yml' --exclude='*.yaml' --delete
     ;;
     dist)
       rsync -av $release/ .deploy/dist/

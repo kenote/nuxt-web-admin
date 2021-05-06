@@ -14,7 +14,7 @@ start(){
 
   rsync -av ./nuxt.config.js .deploy/dist/nuxt.config.js --delete
   rsync -av ./package.json .deploy/dist/package.json --delete
-  rsync -av ./scosystem.config.js .deploy/dist/scosystem.config.js --delete
+  rsync -av ./ecosystem.config.js .deploy/dist/ecosystem.config.js --delete
 
   echo
 }
