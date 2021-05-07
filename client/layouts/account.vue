@@ -24,15 +24,23 @@
 <script lang="ts">
 import { Component, mixins } from 'nuxt-property-decorator'
 import BaseMixin from '~/mixins/base'
+import { Store } from '~/store'
+import { MetaInfo } from 'vue-meta'
 import '~/assets/scss/account/warpper.scss'
 
 @Component<AccountLayout>({
   name: 'account-layout',
+  head () {
+    return { ...this.metaInfo }
+  },
   mounted () {
     document.body.className = 'account-body'
   }
 })
 export default class AccountLayout extends mixins(BaseMixin) {
+
+  @Store.Setting.State
+  metaInfo!: MetaInfo
   
 }
 </script>

@@ -78,6 +78,7 @@ export declare namespace Channel {
     keywords      ?: string[]
     queryer       ?: RequestConfig
     example       ?: Example | string
+    refresh       ?: boolean
   }
 
   interface Example {

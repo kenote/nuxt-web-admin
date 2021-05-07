@@ -54,13 +54,13 @@
         <div class="page-main">
           <breadcrumb v-if="selectedChannel.name" :data="getChannelData()" :route-path="$route.path" />
           <div class="page-tools">
-            <el-button 
+            <el-button v-if="pageSetting && pageSetting.refresh"
               icon="el-icon-refresh" 
               @click="handleCommand('command:refresh')" 
               v-bind:class="refresh ? 'refresh' : ''">
             </el-button>
           </div>
-          <perfect-scrollbar :options="{ suppressScrollX: true }">
+          <perfect-scrollbar :options="{ suppressScrollX: true }" ref="mainScroll">
             <nuxt :style="selectedChannel.name ? '' : 'padding-top:20px;'"></nuxt>
           </perfect-scrollbar>
         </div>
@@ -93,7 +93,7 @@ import { Store, Types } from '~/store'
 import { NavMenu, Channel } from '@/types/client'
 import { HttpResult } from '@/utils/http-client'
 import { Route } from 'vue-router'
-import { getChannelKey } from '@kenote/common'
+import { getChannelKey, dataNodeProxy } from '@kenote/common'
 import { MetaInfo } from 'vue-meta'
 
 @Component<DashboardLayout>({
@@ -141,11 +141,25 @@ export default class DashboardLayout extends mixins(BaseMixin) {
   @Provide() 
   editMode: boolean = false
 
+  @Provide()
+  pageSetting: Partial<Channel.DataNode> = {}
+
   @Watch('$route')
   async onRouteChange (val: Route, oldVal: Route) {
     if (val === oldVal) return
     await this.updateChannel(val.path)
     this.handleCloseDrawer()
+    let mainScroll = this.$refs['mainScroll'] as Vue
+    mainScroll.$el.scrollTop = 0
+    let pageSetting = dataNodeProxy(this.selectedChannel.children ?? []).find({ route: this.$route.path })
+    this.pageSetting = pageSetting ?? {}
+  }
+
+  @Watch('selectedChannel')
+  async onSelectedChannel (val: Channel.DataNode, oldVal: Channel.DataNode) {
+    if (val === oldVal) return
+    let pageSetting = dataNodeProxy(val.children ?? []).find({ route: this.$route.path })
+    this.pageSetting = pageSetting ?? {}
   }
 
   handleVisible (visible: boolean) {

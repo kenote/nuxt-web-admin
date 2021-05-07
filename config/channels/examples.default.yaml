@@ -58,6 +58,7 @@ children:
         keywords: [ 示例中心, 表单组件, 文本框, 输入框, input ]
         route: /examples/input
         example: /data/examples/input.yaml
+        refresh: true
           
       - key: 3-1-2
         name: InputNumber 计数器
@@ -65,6 +66,7 @@ children:
         keywords: [ 示例中心, 表单组件, 计数器, inputNumber ]
         route: /examples/input-number
         example: /data/examples/input-number.yaml
+        refresh: true
 
       - key: 3-1-3
         name: Textarea 文本域
@@ -72,6 +74,7 @@ children:
         keywords: [ 示例中心, 表单组件, 文本域, 多行文本, Textarea ]
         route: /examples/textarea
         example: /data/examples/textarea.yaml
+        refresh: true
 
       - key: 3-1-4
         name: InputPassword 密码框
@@ -79,6 +82,7 @@ children:
         keywords: [ 示例中心, 表单组件, 密码框, InputPassword ]
         route: /examples/input-password
         example: /data/examples/input-password.yaml
+        refresh: true
 
       - key: 3-1-5
         name: Radio 单选框
@@ -86,6 +90,7 @@ children:
         keywords: [ 示例中心, 表单组件, 单选框, Radio ]
         route: /examples/radio
         example: /data/examples/radio.yaml
+        refresh: true
 
       - key: 3-1-6
         name: Checkbox 多选框
@@ -93,6 +98,7 @@ children:
         keywords: [ 示例中心, 表单组件, 多选框, Checkbox ]
         route: /examples/checkbox
         example: /data/examples/checkbox.yaml
+        refresh: true
 
       - key: 3-1-7
         name: Select 选择器
@@ -100,6 +106,7 @@ children:
         keywords: [ 示例中心, 表单组件, 选择器, Select ]
         route: /examples/select
         example: /data/examples/select.yaml
+        refresh: true
 
       - key: 3-1-8
         name: Cascader 级联选择器
@@ -107,6 +114,7 @@ children:
         keywords: [ 示例中心, 表单组件, 级联选择器, Cascader ]
         route: /examples/cascader
         example: /data/examples/cascader.yaml
+        refresh: true
 
       - key: 3-1-9
         name: Switch 开关
@@ -114,6 +122,7 @@ children:
         keywords: [ 示例中心, 表单组件, 开关, Switch ]
         route: /examples/switch
         example: /data/examples/switch.yaml
+        refresh: true
 
       - key: 3-1-10
         name: Slider 滑块
@@ -121,6 +130,7 @@ children:
         keywords: [ 示例中心, 表单组件, 滑块, Slider ]
         route: /examples/slider
         example: /data/examples/slider.yaml
+        refresh: true
 
       - key: 3-1-11
         name: DatePicker 日期选择器
@@ -128,6 +138,7 @@ children:
         keywords: [ 示例中心, 表单组件, 日期选择器, DatePicker ]
         route: /examples/date-picker
         example: /data/examples/date-picker.yaml
+        refresh: true
 
       - key: 3-1-12
         name: TimePicker 时间选择器
@@ -135,6 +146,7 @@ children:
         keywords: [ 示例中心, 表单组件, 时间选择器, TimePicker ]
         route: /examples/time-picker
         example: /data/examples/time-picker.yaml
+        refresh: true
 
       - key: 3-1-13
         name: Rate 评分
@@ -142,6 +154,7 @@ children:
         keywords: [ 示例中心, 表单组件, 评分, Rate ]
         route: /examples/rate
         example: /data/examples/rate.yaml
+        refresh: true
 
       - key: 3-1-14
         name: ColorPicker 颜色选择器
@@ -149,6 +162,7 @@ children:
         keywords: [ 示例中心, 表单组件, 颜色选择器, ColorPicker ]
         route: /examples/color-picker
         example: /data/examples/color-picker.yaml
+        refresh: true
 
       - key: 3-1-15
         name: Transfer 穿梭框
@@ -156,6 +170,7 @@ children:
         keywords: [ 示例中心, 表单组件, 穿梭框, Transfer ]
         route: /examples/transfer
         example: /data/examples/transfer.yaml
+        refresh: true
 
   # 编辑器
   - key: 3-2
@@ -167,12 +182,14 @@ children:
         keywords: [ 示例中心, 编辑器组件, 代码编辑器, CodeMirror, Editor ]
         route: /examples/codemirror
         example: /data/examples/codemirror.yaml
+        refresh: true
       - key: 3-2-2
         name: Vditor
         description: Vditor 一款浏览器端的 Markdown 编辑器，支持所见即所得（富文本）、即时渲染（类似 Typora）和分屏预览模式。
         keywords: [ 示例中心, 编辑器组件, Markdown编辑器, Vditor, Markdown, Editor ]
         route: /examples/vditor
         example: /data/examples/vditor.yaml
+        refresh: true
       - key: 3-2-3
         name: Monaco Editor
         description: Monaco Editor 是微软开源的基于 VS Code 的代码编辑器，运行在浏览器环境中。编辑器提供代码提示，智能建议等功能。
@@ -193,6 +210,7 @@ children:
         keywords: [ 示例中心, 视图组件, Markdown ]
         route: /examples/markdown
         example: /data/examples/markdown.yaml
+        refresh: true
       - key: 3-3-2
         name: Table 表格
         route: /examples/table

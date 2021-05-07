@@ -99,8 +99,12 @@ interface DialogOptions {
   name: 'auto-page',
   middleware: [ 'authenticated' ],
   layout: 'dashboard',
+  scrollToTop: true,
   created () {
     // this.httpOptions.headers
+  },
+  mounted () {
+    
   }
 })
 export default class AutoPage extends mixins(PageMixin) {

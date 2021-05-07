@@ -91,7 +91,7 @@ export default class WebVditor extends Vue {
 
   initialEditor () {
     let headers = getHeaders(this.httpOptions) as IObject
-    let { emoji } = this.editorConfig
+    let { emoji } = this.editorConfig ?? {}
 
     let options: IOptions = {
       // 编辑器总宽度，支持 %

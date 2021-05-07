@@ -1,11 +1,9 @@
 <template>
   <section class="container" >
-    <client-only placeholder="Codemirror Loading...">
-      <codemirror v-if="initial"
-        v-model="code" 
-        :options="options"
-        />
-    </client-only>
+    <codemirror 
+      v-model="code" 
+      :options="options"
+      />
     <div class="tools">
       <el-button v-if="isCopy" size="mini" icon="el-icon-document-copy" v-clipboard="handleClipboard"></el-button>
     </div>
@@ -19,11 +17,8 @@ import { isEmpty, isBoolean } from 'lodash'
 
 @Component<WebCodeMittor>({
   name: 'web-codemirror',
-  created () {
+  mounted () {
     this.code = this.value
-    setTimeout(() => {
-      this.initial = true
-    }, 300)
   }
 })
 export default class WebCodeMittor extends Vue {
