@@ -13,6 +13,9 @@ import { EditorConfig } from '@/types/client'
   name: 'web-vditor',
   mounted () {
     this.initialEditor()
+  },
+  beforeDestroy () {
+    this.contentEditor?.destroy()
   }
 })
 export default class WebVditor extends Vue {

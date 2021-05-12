@@ -61,6 +61,7 @@ export declare namespace Channel {
     | 'radio' | 'radio-button' 
     | 'checkbox' | 'checkbox-button' 
     | 'select' 
+    | 'group-picker'
     | 'year' | 'month' | 'date' | 'dates' | 'week' | 'datetime' | 'time' | 'datetimerange' | 'daterange' | 'monthrange' | 'timerange'
     | 'switch'
     | 'slider'

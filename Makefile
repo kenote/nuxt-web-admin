@@ -21,7 +21,7 @@ start:
 	@[ -f ecosystem.config.js ] && pm2 start ecosystem.config.js
 
 delete:
-	@[ -f ecosystem.config.js ] && pm2 delete scosystem.config.js
+	@[ -f ecosystem.config.js ] && pm2 delete ecosystem.config.js
 
 deploy:
 	@kenote deploy

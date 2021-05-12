@@ -58,6 +58,18 @@
       </el-option>
     </template>
   </el-select>
+  <!-- 群组选择器 -->
+  <group-picker v-else-if="type === 'group-picker'"
+    v-model="values"
+    :data="propData"
+    :props="props"
+    :multiple="multiple"
+    :format="format"
+    :width="width"
+    :span="options && options.span"
+    :title="options && options.title"
+    :disabled="disabled"
+    />
   <!-- 单日期选择 -->
   <el-date-picker v-else-if="['year', 'month', 'date', 'dates', 'week', 'datetime'].includes(type)" 
     v-model="values"
