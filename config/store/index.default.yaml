@@ -18,3 +18,23 @@ default:
   urlprefix: http://localhost:4000/uploadfiles
   # 使用源文件名称
   original_name: true
+
+# 头像
+avatar:
+  name: 头像
+  description: 用户头像
+  # 最大上传文件大小
+  max_limit: 4mb
+  # 支持文件类型
+  mime_types:
+    - image/png
+    - image/jpeg
+    - image/webp
+  # 主目录
+  root_dir: uploadfiles/avatar
+  # URL入口
+  urlprefix: http://localhost:4000/uploadfiles/avatar
+  # 使用源文件名称
+  original_name: true
+  # 使用用户目录
+  userDir: true

@@ -9,9 +9,12 @@ const errors: Record<'limit' | 'mimetype', number> = {
   mimetype  : ErrorCode.ERROR_UPLOAD_FILE_MIMETYPE
 }
 
+interface StoreBaseInfo extends BaseInfo {
+  userDir  ?: boolean
+}
 
 export const getOptions = (name: string = 'default') => {
-  let stores = loadConfig<Record<string, UploadStoreOptions<BaseInfo>>>('config/store', { mode: 'merge' })
+  let stores = loadConfig<Record<string, UploadStoreOptions<StoreBaseInfo>>>('config/store', { mode: 'merge' })
   
   for (let [key, val] of Object.entries(stores)) {
     stores[key].errors = errors

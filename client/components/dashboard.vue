@@ -3,6 +3,7 @@
     <client-only placeholder="Page Loading...">
       <slot></slot>
       <div class="page-fixed-tools" v-show="!refresh">
+        <slot name="tools"></slot>
         <el-button type="info" icon="el-icon-message" circle></el-button>
         <el-button type="warning" icon="el-icon-star-off" circle></el-button>
       </div>
@@ -33,7 +34,7 @@ export default class Dashboard extends mixins(BaseMixin) {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 .page-fixed-tools {
   position: fixed;
   bottom: 150px;
@@ -42,7 +43,7 @@ export default class Dashboard extends mixins(BaseMixin) {
   flex-direction: column;
   z-index: 4;
   
-  * {
+  .el-button {
     margin: 0;
     margin-top: 8px;
     font-size: 16px;

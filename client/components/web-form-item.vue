@@ -70,6 +70,18 @@
     :title="options && options.title"
     :disabled="disabled"
     />
+  <!-- 头像选择器 -->
+  <avatar-picker v-else-if="type === 'avatar-picker'"
+    v-model="values"
+    :quality="options && options.quality"
+    :file-type="options && options.fileType"
+    :filename="options && options.filename"
+    :is-upload="options && options.isUpload"
+    :options="avatarOptions"
+    @upload-file="uploadFile"
+    :width="width"
+    :height="height"
+    />
   <!-- 单日期选择 -->
   <el-date-picker v-else-if="['year', 'month', 'date', 'dates', 'week', 'datetime'].includes(type)" 
     v-model="values"
@@ -386,6 +398,9 @@ export default class WebFormItem extends Vue {
   @Prop({ default: undefined })
   options!: Record<string, any>
 
+  @Prop({ default: undefined })
+  avatarOptions!: Record<string, any>
+
   @Provide()
   styles: Record<string, any> = {}
 
@@ -406,6 +421,9 @@ export default class WebFormItem extends Vue {
 
   @Emit('get-data')
   getData (options: Channel.RequestConfig, next: (data: { key: number | string, name: string }[]) => void) {}
+
+  @Emit('upload-file')
+  uploadFile (file: File | File[] | string, options: any, next: (doc: any, err?: Error) => void) {}
 
   @Emit('change')
   change (value: any) {}
@@ -447,6 +465,7 @@ export default class WebFormItem extends Vue {
   }
 
   parseProps = parseProps
+  console = console
 
   toFormatString (data: Record<string, any>, format: string = '{label}') {
     if (this.props) {

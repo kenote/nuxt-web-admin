@@ -6,7 +6,10 @@ export const name = 'auth'
 
 export const types = {
   AUTH            : 'AUTH',
-  TIMESTAMP       : 'TIMESTAMP'
+  TIMESTAMP       : 'TIMESTAMP',
+  AVATAR          : 'AVATAR',
+  EMAIL           : 'EMAIL',
+  MOBILE          : 'MOBILE',
 }
 
 export interface State {
@@ -41,5 +44,10 @@ export const mutations: MutationTree<State> = {
   },
   [types.TIMESTAMP] (state) {
     state.timestamp = Date.now()
+  },
+  [types.AVATAR] (state: State, avatar: string) {
+    if (!state.auth) return
+    state.auth.avatar = avatar
+    state.timestamp = Date.now() 
   }
 }

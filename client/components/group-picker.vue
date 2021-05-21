@@ -225,6 +225,7 @@ export default class WebSelect extends mixins(Emitter) {
     }
     this.dialog = { visible: false, value: this.multiple ? [] : '' }
     this.handleCleanKeywords()
+    this.fullscreen = false
   }
 
   /**

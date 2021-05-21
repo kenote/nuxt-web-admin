@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Context, NextHandler } from '@kenote/core'
 import { authenticate } from '~/plugins/passport'
 import { CreateGroupDocument, UserDocument, VerifyDocument } from '@/types/services/db'
-import { isArray, compact, omit, get } from 'lodash'
+import { isArray, compact, omit, get, pick } from 'lodash'
 import * as filter from '~/filters/api'
 import { Account } from '@/types/account'
 
@@ -77,6 +77,28 @@ export default class AccountController {
       ctx.logout()
       ctx.cookie('jwtoken', '')
       return ctx.api({ result: true })
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 修改基本信息
+   */
+  @Post('/baseinfo', { filters: [ ...authenticate ] })
+  @Put('/baseinfo/:type(avatar)', { filters: [ ...authenticate ] })
+  async baseinfo (ctx: Context, next: NextHandler) {
+    let { nextError, db } = ctx.service
+    let data = filter.account.getUserDocument(ctx.body, ctx.user)
+    let props: string[] | null = null
+    if (ctx.params.type === 'avatar') {
+      props = ['avatar', 'update_at']
+    }
+    try {
+      data.update_at = new Date()
+      await db.user.Dao.updateOne({ _id: ctx.user._id }, props ? pick(data, props) : data)
+      let info = await db.user.Dao.findOne({ _id: ctx.user._id })
+      return ctx.api(props ? pick(info, props) : info)
     } catch (error) {
       nextError(error, ctx, next)
     }

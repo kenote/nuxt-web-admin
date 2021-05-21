@@ -41,7 +41,7 @@ import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { FilterData } from 'parse-string'
 import { Form as ElForm } from 'element-ui'
-import { HttpResult } from '@/utils/http-client'
+import { HttpResult } from '@/types/client'
 import { UserDocument } from '@/types/services/db'
 import { Account } from '@/types/account'
 

@@ -2,8 +2,9 @@ import { GetterTree, ActionContext, ActionTree, MutationTree } from 'vuex'
 import { RootState, Types } from './'
 import { HTTPServer } from '@/types/nuxtServer'
 import { compact, trim, fromPairs, get } from 'lodash'
-import { httpClient, HttpClientOptions, HttpResult } from '@/utils/http-client'
+import { httpClient } from '@/utils/http-client'
 import { UserDocument } from '@/types/services/db'
+import { HttpClientOptions, HttpResult } from '@/types/client'
   
 export interface State extends Record<string, any> {}
 

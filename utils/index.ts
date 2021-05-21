@@ -2,8 +2,10 @@
 import nunjucks from 'nunjucks'
 import { Command, Channel } from '@/types/client'
 import { dataNodeProxy, FilterQuery } from '@kenote/common'
-import { map, get, template, isDate } from 'lodash'
+import { map, get, template, isDate, isString } from 'lodash'
 import jsYaml from 'js-yaml'
+import urlParse from 'url-parse'
+import qs from 'query-string'
 
 /**
  * 解析命令指向
@@ -102,4 +104,29 @@ export function parseDate (value: string | Date) {
     time = new Date().setDate(time)
   }
   return new Date(time)
+}
+
+/**
+ * 获取 URL 附带时间戳
+ */
+export function getUrl (url: string, params?: Record<string, string>) {
+  let { origin, pathname, query } = urlParse(url)
+  let queryStr = query as unknown as string ?? ''
+  let payload = {
+    ...qs.parse(queryStr),
+    ...params,
+    t: String(Date.now())
+  }
+  return `${origin}${pathname}?${qs.stringify(payload)}`
+}
+
+/**
+ * 解析参数
+ */
+ export function parseParams (params: any) {
+  return (data?: Record<string, any>) => {
+    let str = isString(params) ? params : jsYaml.safeDump(params)
+    let val = nunjucks.renderString(str, data ?? {})
+    return jsYaml.load(val)
+  }
 }

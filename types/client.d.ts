@@ -1,8 +1,16 @@
 
-import { ChannelDataNode } from '@kenote/common'
+import { ChannelDataNode, HeaderOptions } from '@kenote/common'
 import { FilterData, ParseData } from 'parse-string'
 import { Method } from 'axios'
 import { IncomingHttpHeaders } from 'http'
+import { AxiosRequestConfig } from 'axios'
+
+export type HttpClientOptions = HeaderOptions<AxiosRequestConfig>
+
+export interface HttpResult<T = any> {
+  data   ?: T
+  error  ?: string
+}
 
 export declare namespace Command {
 
@@ -36,6 +44,15 @@ export declare namespace NavMenu {
   interface Configure {
     navmenu        : NavMenu.RootDataItem[]
     authpanel      : AuthPanel
+    avatar         : AvatarOptions
+  }
+
+  interface AvatarOptions {
+    default       ?: string
+    baseUrl        : string
+    data           : Array<{ key: string, name: string }>
+    save          ?: Channel.RequestConfig
+    upload        ?: string
   }
 
   interface MoreItem {
@@ -48,6 +65,7 @@ export declare namespace NavMenu {
     top           ?: DataItem[]
     main          ?: DataItem[]
     exit          ?: MoreItem
+    avatar        ?: string
   }
 }
 
@@ -61,7 +79,7 @@ export declare namespace Channel {
     | 'radio' | 'radio-button' 
     | 'checkbox' | 'checkbox-button' 
     | 'select' 
-    | 'group-picker'
+    | 'group-picker' | 'avatar-picker' | 'item-picker'
     | 'year' | 'month' | 'date' | 'dates' | 'week' | 'datetime' | 'time' | 'datetimerange' | 'daterange' | 'monthrange' | 'timerange'
     | 'switch'
     | 'slider'
@@ -80,6 +98,35 @@ export declare namespace Channel {
     queryer       ?: RequestConfig
     example       ?: Example | string
     refresh       ?: boolean
+    configuration ?: Configuration | string
+  }
+
+  interface Configuration {
+    container     ?: Container[]
+    tools         ?: Tool[]
+    components    ?: Component[]
+  }
+
+  interface Container {
+    key           : string
+    /**
+     * horizontal 水平 ｜ vertical 垂直
+     */
+    layout        ?: 'horizontal' | 'vertical'
+    components    ?: Component[]
+  }
+
+  interface Tool {
+    key           : string
+    name         ?: string
+    icon         ?: string
+    command      ?: string
+  }
+
+  interface Component {
+    key            : string
+    name           : string
+    options        : Record<string, any>
   }
 
   interface Example {
@@ -136,6 +183,18 @@ export declare namespace Channel {
     method        ?: Method
     url           ?: string
     headers       ?: IncomingHttpHeaders
+    params        ?: any
+  }
+
+  // 表单器
+  interface Form {
+    name          ?: string
+    columns       ?: FormItem[]
+    rules         ?: Record<string, Array<Verify.Rule>>
+    action        ?: RequestConfig
+    exclude       ?: string[]
+    submitName    ?: string
+    defaultValues ?: Record<string, any> | string
   }
 
   // 表单单元
@@ -191,7 +250,7 @@ export declare namespace Channel {
     /**
      * 步进
      */
-     step         ?: number
+    step         ?: number
     /**
      * 多项选择时支持多选
      */
@@ -220,6 +279,7 @@ export declare namespace Channel {
 
   interface SubmitOptions {
     name          ?: string
+    reset         ?: string
   }
 
   // 表格单元

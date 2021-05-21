@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Put, Delete, Context, NextHandler } from '@kenote/core'
 import { authenticate } from '~/plugins/passport'
 import path from 'path'
-import { isArray } from 'lodash'
+import { isArray, compact } from 'lodash'
+import { UserDocument } from '@/types/services/db'
 
 /**
  * 设置主路径
@@ -21,11 +22,19 @@ export default class StoreController {
       if (!store) {
         return await ctx.notfound()
       }
+      let fileDir = isArray(dir) ? dir[0] : dir ?? ''
+      let { userDir } = Store.getOptions(type ?? 'default')
+      if (userDir) {
+        let user = ctx.user as UserDocument
+        let dirArr = compact([ fileDir ])
+        dirArr.push(user._id)
+        fileDir = dirArr.join('/')
+      }
       let putStream = Store.putStreams[store.type ?? 'local']
       if (!putStream) {
         throw httpError(ErrorCode.ERROR_MISSING_CONFIG_PARAMETER)
       }
-      let result = await store.upload(putStream, httpError, isArray(dir) ? dir[0] : dir ?? '')
+      let result = await store.upload(putStream, httpError, fileDir)
       if (result.length === 0) {
         throw httpError(ErrorCode.ERROR_UPLOAD_NOT_FILE)
       }

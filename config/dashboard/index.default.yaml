@@ -37,6 +37,7 @@ navmenu:
 
 # 账号面板
 authpanel:
+  avatar: https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png
   top:
     - name: 基本资料
       link: router:/account/baseinfo
@@ -57,3 +58,27 @@ authpanel:
   exit:
     name: 退出控制台
     link: command:logout
+
+# 头像
+avatar:
+  default: https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png
+  baseUrl: /images/avatar/
+  data:
+    - key: beauty
+      name: default_beauty.jpg
+    - key: colleagues
+      name: default_colleagues.jpg
+    - key: family
+      name: default_family.jpg
+    - key: friend
+      name: default_friend.jpg
+    - key: handsome
+      name: default_handsome.jpg
+    - key: trade
+      name: default_trade.jpg
+  upload: /upload/avatar
+  save:
+    method: put
+    url: /api/account/baseinfo/avatar
+    params: |-
+      avatar: '{{ url }}'

@@ -6,8 +6,8 @@
 import { Component, Vue, Model, Watch , Emit, Prop, Provide, mixins } from 'nuxt-property-decorator'
 import Vditor from 'vditor'
 import { isBoolean, isEmpty, zipObject, map, merge, get } from 'lodash'
-import { HttpClientOptions, getHeaders, HttpResult } from '@/utils/http-client'
-import { EditorConfig } from '@/types/client'
+import { getHeaders } from '@/utils/http-client'
+import { EditorConfig, HttpClientOptions, HttpResult } from '@/types/client'
 
 @Component<WebVditor>({
   name: 'web-vditor',

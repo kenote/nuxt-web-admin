@@ -1,7 +1,7 @@
 import { Component, mixins, Provide } from 'nuxt-property-decorator'
 import BaseMixin from './base'
-import { HttpClientOptions } from '@/utils/http-client'
-import { Channel } from '@/types/client'
+// import { HttpClientOptions } from '@/utils/http-client'
+import { Channel, NavMenu, HttpClientOptions } from '@/types/client'
 import { dataNodeProxy } from '@kenote/common'
 import { Store, Types } from '~/store'
 
@@ -18,6 +18,9 @@ export default class PageMixin extends mixins(BaseMixin) {
 
   @Store.Setting.State
   refresh!: boolean
+
+  @Store.Setting.Getter
+  avatarOptions!: NavMenu.AvatarOptions
  
   @Provide()
   loading: boolean = false

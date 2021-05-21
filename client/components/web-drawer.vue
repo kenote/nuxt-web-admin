@@ -61,7 +61,7 @@ export default class WebDrawer extends Vue {
     if (this.lock) return
     let drawer = this.$refs['theDrawer'] as HTMLElement
     let paths = get(evt, 'path').map( el =>  el.className )
-    if (!paths.includes(drawer.className ?? '')) {
+    if (!paths.includes(drawer?.className ?? '')) {
       this.visible && this.$emit('close', null)
     }
   }
@@ -128,6 +128,33 @@ export default class WebDrawer extends Vue {
   .main {
     flex: 1;
     overflow-y: auto;
+  }
+
+  &>.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .drawer__header {
+      height: 50px;
+      background-color: transparent;
+      color: #545454;
+      border: 0;
+      text-align: inherit;
+      padding: 20px 20px 0;
+      line-height: 1;
+      // margin-bottom: 20px;
+
+      span {
+        font-size: 16px;
+        font-weight: 400;
+      }
+    }
+
+    .drawer__bodyer {
+      // height: calc(100% - 70px);
+      padding: 15px 20px;
+    }
   }
 }
 .web-drawer-backdrop {

@@ -33,7 +33,11 @@ export const namespaced: boolean = true
 export const state: () => State = () => ({
   dashboard: {
     navmenu: [],
-    authpanel: {}
+    authpanel: {},
+    avatar: {
+      baseUrl: '/images/avatar/',
+      data: []
+    }
   },
   channels: [],
   loading: { channel: false },
@@ -44,6 +48,9 @@ export const state: () => State = () => ({
 export const getters: GetterTree<State, RootState> = {
   selectedChannel: state => {
     return state.channels.find( ruleJudgment({ key: state.channelId })) ?? {}
+  },
+  avatarOptions: state => {
+    return state.dashboard.avatar
   }
 }
 

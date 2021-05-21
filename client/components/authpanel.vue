@@ -39,9 +39,15 @@
 import { Component, mixins, Prop, Provide, Emit, Watch } from 'nuxt-property-decorator'
 import BaseMixin from '~/mixins/base'
 import { NavMenu } from '@/types/client'
+import { getUrl } from '@/utils'
 
 @Component<AuthPanel>({
   name: 'authpanel',
+  created () {
+    if (this.auth?.avatar) {
+      this.avatar = getUrl(this.auth.avatar)
+    }
+  }
 })
 export default class AuthPanel extends mixins(BaseMixin) {
 
@@ -52,7 +58,18 @@ export default class AuthPanel extends mixins(BaseMixin) {
   visible: boolean = false
 
   @Provide()
-  avatar: string = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+  avatar: string = this.options.avatar!
+
+  @Watch('timestamp')
+  onTimestamp (val: number, oldVal: number) {
+    if (val === oldVal) return
+    if (this.auth?.avatar) {
+      this.avatar = getUrl(this.auth.avatar)
+    }
+    else {
+      this.avatar = this.options.avatar!
+    }
+  }
 
   handleVisible (visible: boolean) {
     this.visible = visible

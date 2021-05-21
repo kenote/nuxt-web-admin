@@ -24,6 +24,7 @@ import {
   Form,
   FormItem,
   Icon,
+  Image,
   Input,
   InputNumber,
   Loading,
@@ -50,7 +51,8 @@ import {
   TabPane,
   TimePicker,
   Tooltip,
-  Transfer
+  Transfer,
+  Upload
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 import CascaderPanel from 'element-ui/lib/cascader-panel'
@@ -81,6 +83,7 @@ export default () => {
   Vue.use(Form)
   Vue.use(FormItem)
   Vue.use(Icon)
+  Vue.use(Image)
   Vue.use(Input)
   Vue.use(InputNumber)
   Vue.use(Loading.directive)
@@ -105,6 +108,7 @@ export default () => {
   Vue.use(TimePicker)
   Vue.use(Tooltip)
   Vue.use(Transfer)
+  Vue.use(Upload)
 
   Vue.component(CollapseTransition.name, CollapseTransition)
 

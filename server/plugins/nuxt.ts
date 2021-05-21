@@ -10,7 +10,7 @@ import { NavMenu, Channel, EditorConfig } from '@/types/client'
 
 const { metaInfo: head, host, port } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 const dev = process.env.NODE_ENV !== 'production'
-const nuxt: Nuxt = new Nuxt(merge(nuxtConfig, { head, dev }))
+const nuxt: Nuxt = new Nuxt(merge(nuxtConfig, { dev }))
 
 async function nuxtReady () {
   await nuxt.ready()
