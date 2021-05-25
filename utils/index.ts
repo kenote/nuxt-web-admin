@@ -1,11 +1,12 @@
 
 import nunjucks from 'nunjucks'
-import { Command, Channel } from '@/types/client'
+import { Command, Channel, Verify } from '@/types/client'
 import { dataNodeProxy, FilterQuery } from '@kenote/common'
-import { map, get, template, isDate, isString } from 'lodash'
+import { map, get, template, isDate, isString, isArray, merge } from 'lodash'
 import jsYaml from 'js-yaml'
 import urlParse from 'url-parse'
 import qs from 'query-string'
+import * as validate from './validate'
 
 /**
  * 解析命令指向
@@ -129,4 +130,24 @@ export function getUrl (url: string, params?: Record<string, string>) {
     let val = nunjucks.renderString(str, data ?? {})
     return jsYaml.load(val)
   }
+}
+
+/**
+ * 解析验证规则
+ */
+export function  parseRules (rules: Record<string, Verify.Rule[]>, self?: Record<string, any>) {
+  if (!rules) return rules
+  for (let [key, rule] of Object.entries(rules)) {
+    rules[key] = rule.map( item => {
+      if (item.validator && isArray(item.validator)) {
+        let [ name, ...props ] = item.validator
+        let validator = get(validate, name as string)
+        if (validator) {
+          return merge(item, { validator: validator(...props, self) })
+        }
+      }
+      return item
+    })
+  }
+  return rules
 }

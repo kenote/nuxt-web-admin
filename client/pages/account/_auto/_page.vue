@@ -15,6 +15,7 @@
       @get-data="handleGetData"
       @upload-file="uploadFile"
       @submit="handleSubmit"
+      :unique="handleUnique"
       :loading="loading"
       />
     <!-- 创建工具按钮 -->
@@ -58,12 +59,12 @@
 <script lang="ts">
 import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
-import { Channel, Verify, HttpResult } from '@/types/client'
-import { isString, merge } from 'lodash'
-import { isYaml, parseParams, parseCommand } from '@/utils'
+import { Channel, HttpResult, HttpClientOptions } from '@/types/client'
+import { isString, merge, get } from 'lodash'
+import { isYaml, parseParams, parseCommand, } from '@/utils'
 import jsYaml from 'js-yaml'
-// import { HttpResult } from '@/utils/http-client'
 import { PutResult } from '@kenote/upload'
+import nunjucks from 'nunjucks'
 
 interface DrawerOptions {
   key         : string
@@ -83,9 +84,6 @@ interface DrawerOptions {
 export default class AutoPage extends mixins(PageMixin) {
 
   @Provide()
-  containers: Channel.Container[] = []
-
-  @Provide()
   tools: Channel.Tool[] = []
 
   @Provide()
@@ -103,10 +101,14 @@ export default class AutoPage extends mixins(PageMixin) {
   @Provide()
   configuration: string = ''
 
+  @Provide()
+  uniqueOptions: Channel.RequestConfig = {}
+
   @Watch('refresh')
   onrefreshChange (val: boolean, oldVal: boolean) {
     if (val === oldVal) return
     if (val) {
+      this.components = []
       setTimeout(async () => {
         await this.initinalPage(this.pageSetting)
         this.completeRefresh()
@@ -145,21 +147,21 @@ export default class AutoPage extends mixins(PageMixin) {
       try {
         let result = await this.$httpClient().GET(configuration)
         if (!isString(result) && !isYaml(result)) return
-        let { container, tools, components } = jsYaml.load(result) as Channel.Configuration
-        console.log(components)
-        this.containers = container ?? []
+        let { tools, components, uniqueOptions } = jsYaml.load(result) as Channel.Configuration
         this.tools = tools ?? []
         this.configuration = result
         this.components = components ?? []
+        this.uniqueOptions = uniqueOptions ?? {}
       } catch (error) {
         
       }
     }
     else {
-      let { container, tools } = configuration as Channel.Configuration
-      this.containers = container ?? []
+      let { tools, components, uniqueOptions } = configuration as Channel.Configuration
       this.tools = tools ?? []
-        this.configuration = jsYaml.dump(configuration)
+      this.configuration = jsYaml.dump(configuration)
+      this.components = components ?? []
+      this.uniqueOptions = uniqueOptions ?? {}
     }
   }
 
@@ -267,6 +269,26 @@ export default class AutoPage extends mixins(PageMixin) {
   handleCloseDrawer () {
     // this.drawerVisible = false
     this.drawerOptions = { key: '' }
+  }
+
+  /**
+   * 查询验证 用户名/邮箱/手机号重名
+   */
+  async handleUnique (name: string, path: string | null, type: string) {
+    let { url, params, headers } = this.uniqueOptions
+    let Iurl = nunjucks.renderString(url ?? '', { type })
+    let Iparams = nunjucks.renderString(params ?? '', { name, _id: get(this, path!) })
+    let values = jsYaml.safeLoad(Iparams)
+    let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
+    try {
+      let result = await this.$httpClient(httpOptions).PUT<HttpResult<boolean>>(Iurl, values)
+      if (result?.error) {
+        return false
+      }
+      return true
+    } catch (error) {
+      this.$message.warning(error.message)
+    }
   }
   
 }

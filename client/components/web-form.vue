@@ -3,13 +3,13 @@
     <h2>{{ name }}</h2>
     <el-row :gutter="20">
       <el-col :span="display ? 12 : 24">
-        <el-form ref="theForm" :model="values" :rules="rules" @submit.native.prevent="handleSubmit" label-width="150px" v-loading="loading">
+        <el-form ref="theForm" :model="values" :rules="Rules" @submit.native.prevent="handleSubmit" label-width="150px" v-loading="loading">
           <template v-if="columns">
             <el-form-item v-for="(item, key) in columns" 
               :key="key" 
               :prop="item.type === 'avatar-picker' ? undefined : item.key" 
               :label="item.name" 
-              :rules="rules[item.key]" 
+              :rules="Rules && Rules[item.key]" 
               :style="item.type === 'color-picker' ? 'height:40px;' : ''">
               <web-form-item 
                 v-model="values[item.key]"
@@ -57,11 +57,13 @@ import { Verify, Channel } from '@/types/client'
 import { Form as ElForm } from 'element-ui'
 import { zipObject, unset } from 'lodash'
 import { formatData, ParseData, parseBody } from 'parse-string'
+import { parseRules } from '@/utils'
 
 @Component<WebForm>({
   name: 'web-form',
   created () {
     this.values = cloneDeep(this.defaultValues ?? {})
+    this.Rules = parseRules(this.rules, this)
   }
 })
 export default class WebForm extends Vue {
@@ -105,8 +107,14 @@ export default class WebForm extends Vue {
   @Prop({ default: undefined })
   valueFormat!: Record<string, ParseData.format>
 
+  @Prop({ default: undefined })
+  unique!: (name: string, path: string | null, type: string) => Promise<any>
+
   @Provide()
   values: Record<string, any> = {}
+
+  @Provide()
+  Rules: Record<string, Array<Verify.Rule>> = {}
 
   @Emit('submit')
   submit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {}

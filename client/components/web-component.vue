@@ -1,30 +1,30 @@
 <template>
-  <div v-if="type === 'web-form-item'">
-    <web-form-item
-      v-model="values"
-      :type="options && options.type"
-      :data="options && options.data"
-      :props="options && options.props"
-      :placeholder="options && options.placeholder" 
-      :width="options && options.width"
-      :height="options && options.height"
-      :border="options && options.border"
-      :min="options && options.min"
-      :max="options && options.max"
-      :step="options && options.step"
-      :format="options && options.format"
-      :value-format="options && options.valueFormat"
-      :default-time="options && options.defaultTime"
-      :options="options && options.options"
-      :multiple="options && options.multiple"
-      :disabled="options && options.disabled"
-      :request="options && options.request"
-      :avatar-options="avatarOptions"
-      @get-data="getData"
-      @upload-file="uploadFile"
-      @change="change"
-      />
-  </div>
+  <!-- 表单单元 -->
+  <web-form-item v-if="type === 'web-form-item'"
+    v-model="values"
+    :type="options && options.type"
+    :data="options && options.data"
+    :props="options && options.props"
+    :placeholder="options && options.placeholder" 
+    :width="options && options.width"
+    :height="options && options.height"
+    :border="options && options.border"
+    :min="options && options.min"
+    :max="options && options.max"
+    :step="options && options.step"
+    :format="options && options.format"
+    :value-format="options && options.valueFormat"
+    :default-time="options && options.defaultTime"
+    :options="options && options.options"
+    :multiple="options && options.multiple"
+    :disabled="options && options.disabled"
+    :request="options && options.request"
+    :avatar-options="avatarOptions"
+    @get-data="getData"
+    @upload-file="uploadFile"
+    @change="change"
+    />
+  <!-- 表单 -->
   <div v-else-if="type === 'web-form'" style="display:inline-block;width:fit-content;">
     <web-form 
       :name="options && options.name" 
@@ -42,27 +42,49 @@
       @upload-file="uploadFile"
       @change="change"
       @submit="submit"
+      :unique="unique"
       />
   </div>
-  <div v-else-if="type === 'web-vditor'">
-    <web-vditor
-      v-model="values"
-      :placeholder="options && options.placeholder" 
-      :width="options && options.width" 
-      :min-height="options && options.minHeight" 
-      :height="options && options.height" 
-      :upload="options && options.upload"
-      :counter="options && options.counter"
-      :disabled="options && options.disabled"
-      :http-options="httpOptions"
-      :editor-config="editorConfig"
-      />
-  </div>
-  <fragment v-else-if="type === 'web-markdown'">
-    <web-markdown :content="options && options.content" />
-  </fragment>
+  <!-- MarkDown编辑器 -->
+  <web-vditor v-else-if="type === 'web-vditor'"
+    v-model="values"
+    :placeholder="options && options.placeholder" 
+    :width="options && options.width" 
+    :min-height="options && options.minHeight" 
+    :height="options && options.height" 
+    :upload="options && options.upload"
+    :counter="options && options.counter"
+    :disabled="options && options.disabled"
+    :http-options="httpOptions"
+    :editor-config="editorConfig"
+    />
+  <!-- MarkDown文档 -->
+  <web-markdown v-else-if="type === 'web-markdown'" 
+    :content="options && options.content" 
+    />
+  <!-- HTML -->
+  <web-table v-else-if="type === 'web-table'"
+    :columns="options && options.columns"
+    :data="options && options.data"
+    />
+  <!-- 视图容器 -->
   <web-container v-else-if="type === 'web-container'"
-    :layout="options && options.layout">
+    :layout="options && options.layout"
+    :width="options && options.width"
+    :min-width="options && options.minWidth"
+    :max-width="options && options.maxWidth"
+    :height="options && options.height"
+    :min-height="options && options.minHeight"
+    :max-height="options && options.maxHeight"
+    :margin="options && options.margin"
+    :padding="options && options.padding"
+    :background="options && options.background"
+    :border="options && options.border"
+    :justify-content="options && options.justifyContent"
+    :align-items="options && options.alignItems"
+    :flex="options && options.flex"
+    :content="options && options.content" 
+    >
     <template v-if="options && options.children">
       <web-component v-for="component in options.children"
         :key="component.key"
@@ -77,6 +99,7 @@
         @get-data="getData"
         @upload-file="uploadFile"
         @submit="submit"
+        :unique="unique"
         :loading="loading"
         />
     </template>
@@ -85,7 +108,6 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Model, Provide, Emit, Watch } from 'nuxt-property-decorator'
-// import { HttpClientOptions } from '@/utils/http-client'
 import { EditorConfig, HttpClientOptions } from '@/types/client'
 import { Channel, NavMenu } from '@/types/client'
 import { merge } from 'lodash'
@@ -125,6 +147,9 @@ export default class WebComponent extends Vue {
   @Prop({ default: undefined })
   defaultValues!: Record<string, any>
 
+  @Prop({ default: undefined })
+  unique!: (name: string, path: string | null, type: string) => Promise<any>
+
   @Model('update')
   value!: any
 
@@ -158,9 +183,13 @@ export default class WebComponent extends Vue {
     this.values = val
   }
 
+  @Watch('options')
+  onOptionsChange (val: any, oldVal: any) {
+    console.log('options', val)
+  }
+
   merge = merge
   parseParams = parseParams
-
 
 }
 </script>

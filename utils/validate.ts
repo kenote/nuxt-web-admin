@@ -1,13 +1,15 @@
 import validator from 'validator'
+import { get } from 'lodash'
 
-export function validateMobile (lang: validator.MobilePhoneLocale = 'zh-CN', unique?: (value: string, type: string) => Promise<boolean>) {
+export function validateMobile (lang: validator.MobilePhoneLocale = 'zh-CN', unique: string | null, path: string | null, self?: Record<string, any>) {
   return async (rule: any, value: any, callback: (message?: string) => any) => {
     let valid = validator.isMobilePhone(value, lang)
     if (!valid) {
       return callback('请输入正确的手机号码，且不可使用虚拟手机号码')
     }
     if (unique) {
-      valid = await unique(value, 'mobile')
+      let Iunique = get(self, 'unique')
+      valid = await Iunique(value, path, unique)
     }
     if (!valid) {
       return callback('该邮箱已绑定其他帐号')
@@ -26,9 +28,13 @@ export function validatePassword () {
   }
 }
 
-export function validaterRepassed (password: string) {
+export function validaterRepassed (password: string, self?: Record<string, any>) {
   return (rule: any, value: any, callback: (message?: string) => any) => {
-    let valid = password === value
+    let Ipassword = password
+    if (self) {
+      Ipassword = get(self, ['values', password])
+    }
+    let valid = Ipassword === value
     if (!valid) {
       return callback('两次输入的密码不一致')
     }
@@ -36,10 +42,11 @@ export function validaterRepassed (password: string) {
   }
 }
 
-export function validateEmail (unique?: (value: string, type: string) => Promise<boolean>) {
+export function validateEmail (unique: string | null, path: string | null, self?: Record<string, any>) {
   return async (rule: any, value: any, callback: (message?: string) => any) => {
     if (unique) {
-      let valid = await unique(value, 'email')
+      let Iunique = get(self, 'unique')
+      let valid = await Iunique(value, path, unique)
       if (!valid) {
         return callback('该邮箱已绑定其他帐号')
       }
@@ -48,7 +55,7 @@ export function validateEmail (unique?: (value: string, type: string) => Promise
   }
 }
 
-export function validateUsername (unique?: (value: string, type: string) => Promise<boolean>) {
+export function validateUsername (unique: string | null, path: string | null, self?: Record<string, any>) {
   return async (rule: any, value: any, callback: (message?: string) => any) => {
     let valid = /^[a-zA-Z]{1}[a-zA-Z0-9\_\-]/.test(value)
     if (!valid) {
@@ -58,7 +65,8 @@ export function validateUsername (unique?: (value: string, type: string) => Prom
       return callback('账号名限定 5 - 20 位字符')
     }
     if (unique) {
-      valid = await unique(value, 'email')
+      let Iunique = get(self, 'unique')
+      valid = await Iunique(value, path, unique)
       if (!valid) {
         return callback('该账号已注册')
       }
@@ -68,7 +76,7 @@ export function validateUsername (unique?: (value: string, type: string) => Prom
 }
 
 export function validateCDKey (name: string) {
-  return (rule: any, value: any, callback: (message?: string) =>any) => {
+  return (rule: any, value: any, callback: (message?: string) => any) => {
     let valid = validator.isUUID(value, 4)
     if (!valid) {
       return callback(`请输入正确的${ name }`)

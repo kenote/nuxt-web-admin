@@ -65,7 +65,7 @@ export default class VerifyUser extends Vue {
   mobileRules: Record<string, Array<Verify.Rule>> = {
     name: [
       { required: true, message: '请输入手机号码' },
-      { validator: validateMobile('zh-CN'), trigger: ['blur', 'change'] }
+      { validator: validateMobile('zh-CN', null, null), trigger: ['blur', 'change'] }
     ]
   }
 

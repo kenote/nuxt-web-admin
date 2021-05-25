@@ -167,3 +167,9 @@ export declare interface EncryptDocument {
    */
   salt                 : string
 }
+
+export declare interface CheckWarning {
+  username             : number
+  email                : number
+  mobile               : number
+}

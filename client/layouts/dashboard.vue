@@ -202,7 +202,7 @@ export default class DashboardLayout extends mixins(BaseMixin) {
           { key: `${key}-index`, name: '概览' }
         ]
       },
-      ...children ?? []
+      ...(children ?? []).filter( item => item.route !== route )
     ]
   }
 

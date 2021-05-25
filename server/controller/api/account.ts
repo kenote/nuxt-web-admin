@@ -4,7 +4,8 @@ import { CreateGroupDocument, UserDocument, VerifyDocument } from '@/types/servi
 import { isArray, compact, omit, get, pick } from 'lodash'
 import * as filter from '~/filters/api'
 import { Account } from '@/types/account'
-
+import { FilterQuery } from 'mongoose'
+import { CheckWarning } from '@/types/services/db/user'
 
 
 @Controller('/account')
@@ -99,6 +100,36 @@ export default class AccountController {
       await db.user.Dao.updateOne({ _id: ctx.user._id }, props ? pick(data, props) : data)
       let info = await db.user.Dao.findOne({ _id: ctx.user._id })
       return ctx.api(props ? pick(info, props) : info)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 验证名称是否占用
+   */
+  @Put('/check/:type(username|email|mobile)')
+  async check (ctx: Context, next: NextHandler) {
+    let { nextError, db, ErrorCode, httpError } = ctx.service
+    let { type } = ctx.params as { type: 'username' | 'email' | 'moble' }
+    let { name, _id } = ctx.body
+    let warnings: CheckWarning = {
+      username: ErrorCode.ERROR_VALID_USERNAME_UNIQUE,
+      email: ErrorCode.ERROR_VALID_EMAIL_UNIQUE,
+      mobile: ErrorCode.ERROR_VALID_MOBILE_UNIQUE
+    }
+    let conditions: FilterQuery<UserDocument> = {
+      [type]: { $eq: name }
+    }
+    if (_id) {
+      conditions._id = { $ne: _id }
+    }
+    try {
+      let result = await db.user.Dao.findOne(conditions)
+      if (result) {
+        throw httpError(warnings[type])
+      }
+      return ctx.api(!result)
     } catch (error) {
       nextError(error, ctx, next)
     }

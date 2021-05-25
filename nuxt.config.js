@@ -96,6 +96,9 @@ module.exports = {
       routes.push({
         path: '/',
         component: resolve(__dirname, 'client/pages/home.vue')
+      }, {
+        path: '/:channel(component|openapi)?/*',
+        component: resolve(__dirname, 'client/pages/account/_auto/_page.vue')
       })
     }
   }

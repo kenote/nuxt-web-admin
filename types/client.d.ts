@@ -102,9 +102,9 @@ export declare namespace Channel {
   }
 
   interface Configuration {
-    container     ?: Container[]
     tools         ?: Tool[]
     components    ?: Component[]
+    uniqueOptions ?: RequestConfig
   }
 
   interface Container {
@@ -345,6 +345,6 @@ export declare namespace Verify {
   interface PlusFields {
     type          ?: 'string' | 'number' | 'boolean' | 'method' | 'regexp' | 'integer' | 'float' | 'array' | 'object' | 'enum' | 'data' | 'url' | 'hex' | 'email'
     trigger       ?: 'blur' | 'change' | Array<'blur' | 'change'>
-    validator     ?: Validator | PromiseValidtor
+    validator     ?: Validator | PromiseValidtor | Array<string | number | boolean>
   }
 }
