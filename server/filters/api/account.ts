@@ -3,7 +3,7 @@ import { filterData, FilterData } from 'parse-string'
 import { loadConfig } from '@kenote/config'
 import { Account } from '@/types/account'
 import { EditUserDocument, UserDocument } from '@/types/services/db'
-import { intersection, map } from 'lodash'
+import { intersection, map, pick } from 'lodash'
 
 export async function login (ctx: Context, next: NextHandler) {
   let { nextError } = ctx.service
@@ -29,9 +29,16 @@ export async function loginSelect (ctx: Context, next: NextHandler) {
   }
 }
 
-
 export function getUserDocument (body: EditUserDocument, auth: UserDocument) {
-  let { nickname, sex, teams, avatar } = body
-  let teamsValues = intersection( map(auth.teams, '_id').map(String), teams ?? [] )
-  return { nickname, sex, teams: teamsValues, avatar } as EditUserDocument
+  let user: EditUserDocument = {}
+  let payload = pick(body, ['avatar', 'nickname', 'sex', 'teams'])
+  for (let [key, val] of Object.entries(payload)) {
+    if (key === 'teams') {
+      user[key] = intersection( map(auth.teams, '_id').map(String), val as string[] ?? [] )
+    }
+    else {
+      user[key] = val
+    }
+  }
+  return user
 }

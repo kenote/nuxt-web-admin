@@ -43,6 +43,8 @@
       @change="change"
       @submit="submit"
       :unique="unique"
+      :times="times"
+      :env="env"
       />
   </div>
   <!-- MarkDown编辑器 -->
@@ -86,22 +88,23 @@
     :content="options && options.content" 
     >
     <template v-if="options && options.children">
-      <web-component v-for="component in options.children"
-        :key="component.key"
-        :type="component.name"
-        v-model="component.value"
-        :options="merge(component.options, { 
-          options: { avatar: avatarOptions },
-          defaultValues: parseParams(component.options.defaultValues || '')({ auth })
-        })"
-        :http-options="httpOptions"
-        :editor-config="editorConfig"
-        @get-data="getData"
-        @upload-file="uploadFile"
-        @submit="submit"
-        :unique="unique"
-        :loading="loading"
-        />
+      <template v-for="component in options.children">
+        <web-component v-if="isFilter(component.conditions)"
+          :key="component.key"
+          :type="component.name"
+          v-model="component.value"
+          :options="getComponentOptions(component)"
+          :http-options="httpOptions"
+          :editor-config="editorConfig"
+          @get-data="getData"
+          @upload-file="uploadFile"
+          @submit="submit"
+          :unique="unique"
+          :loading="loading"
+          :times="times"
+          :env="env"
+          />
+      </template>
     </template>
   </web-container>
 </template>
@@ -110,10 +113,14 @@
 import { Component, Vue, Prop, Model, Provide, Emit, Watch } from 'nuxt-property-decorator'
 import { EditorConfig, HttpClientOptions } from '@/types/client'
 import { Channel, NavMenu } from '@/types/client'
-import { merge } from 'lodash'
-import { parseParams } from '@/utils'
+import { merge, isString, isPlainObject } from 'lodash'
+import { parseParams, isYaml } from '@/utils'
 import { Store } from '~/store'
 import { UserDocument } from '@/types/services/db'
+import ruleJudgment from 'rule-judgment'
+import { FilterQuery } from '@kenote/common'
+import nunjucks from 'nunjucks'
+import jsYaml from 'js-yaml'
 
 @Component<WebComponent>({
   name: 'web-component',
@@ -149,6 +156,12 @@ export default class WebComponent extends Vue {
 
   @Prop({ default: undefined })
   unique!: (name: string, path: string | null, type: string) => Promise<any>
+
+  @Prop({ default: 0 })
+  times!: number
+
+  @Prop({ default: undefined })
+  env!: Record<string, any>
 
   @Model('update')
   value!: any
@@ -190,6 +203,24 @@ export default class WebComponent extends Vue {
 
   merge = merge
   parseParams = parseParams
+
+  isFilter (conditions: FilterQuery<any> | string) {
+    if (!conditions) return true
+    let query = conditions
+    if (isString(conditions) && isYaml(conditions)) {
+      query = jsYaml.safeLoad(nunjucks.renderString(conditions, this.env)) as FilterQuery<any>
+      if (!isPlainObject(query)) return true
+    } 
+    let filter = ruleJudgment(query as FilterQuery<any>)
+    return filter(this.env)
+  }
+
+  getComponentOptions (component: Channel.Component) {
+    return merge(component.options, { 
+      options: { avatar: this.avatarOptions },
+      defaultValues: parseParams(component.options.defaultValues || '')(this.env)
+    })
+  }
 
 }
 </script>

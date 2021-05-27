@@ -1,0 +1,96 @@
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-1-1
+          name: web-form
+          options:
+            name: 基本信息
+            # 表单条目
+            columns:
+              - key: avatar
+                type: avatar-picker
+                width: 512
+                height: 512
+                options:
+                  isUpload: true
+                  fileType: image/webp
+                  quality: 0.75
+                  filename: avatar.webp
+              - key: username
+                name: 用户名
+                type: input
+                placeholder: 请输入用户名称
+                disabled: true
+              - key: group
+                name: 用户组/角色
+                type: select
+                request:
+                  method: POST
+                  url: /api/group/list
+                props:
+                  key: _id
+                format: '[{id}] {name}'
+                disabled: true
+              - key: nickname
+                name: 昵称
+                type: input
+                placeholder: 请输入昵称
+              - key: sex
+                name: 性别
+                type: radio
+                data:
+                  - key: 0
+                    name: 未定义
+                  - key: 1
+                    name: 男
+                  - key: 2
+                    name: 女
+            # 规则验证
+            rules:
+              username:
+                - required: true
+                  message: 用户名不能为空
+              nickname:
+                - pattern: !!js/regexp /^([^\x00-\xff]|\w){2,8}$/
+                  message: 只支持英文、数字、下划线和全角字符；且长度在2～8字符之间
+            # 请求地址
+            action:
+              method: POST
+              url: /api/account/baseinfo
+            # 排除项
+            exclude:
+              - avatar
+              - username
+              - group
+            # 提交按钮名称
+            submitName: 保 存
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              success: 信息已更新
+              commit: auth.AUTH
+              changeSubmit: 数据好像没什么改变，无需提交!
+              step: 5
+            # 设置默认值
+            defaultValues: |-
+              avatar: {{auth.avatar}}
+              username: {{auth.username}}
+              group: {{auth.group._id}}
+              nickname: {{auth.nickname}}
+              sex: {{auth.sex}}
+            # 对提交值格式化
+            valueFormat:
+              sex:
+                type: number
+
+
+          
+
+
+

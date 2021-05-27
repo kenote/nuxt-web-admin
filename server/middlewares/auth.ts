@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken'
 import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 import * as service from '~/services'
+import { UserDocument } from '@/types/services/db'
+import { omit } from 'lodash'
 
 const { secretKey } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 
@@ -67,3 +69,11 @@ export const setJwToken = (payload: Jwtpayload, options?: jwt.SignOptions) => jw
  * @returns 
  */
 export const verifyJwToken = (token: string, options?: jwt.VerifyOptions) => jwt.verify(token, jwtOptions.secretOrKey as jwt.Secret, options) as Jwtpayload
+
+/**
+ * 过滤用户信息
+ * @param data 
+ */
+export function toUser (data: UserDocument) {
+  return omit(JSON.parse(JSON.stringify(data)), ['salt', 'encrypt'])
+}

@@ -1,5 +1,5 @@
 
-import { ChannelDataNode, HeaderOptions } from '@kenote/common'
+import { ChannelDataNode, HeaderOptions, FilterQuery } from '@kenote/common'
 import { FilterData, ParseData } from 'parse-string'
 import { Method } from 'axios'
 import { IncomingHttpHeaders } from 'http'
@@ -127,6 +127,7 @@ export declare namespace Channel {
     key            : string
     name           : string
     options        : Record<string, any>
+    conditions    ?: FilterQuery<any>
   }
 
   interface Example {
@@ -188,13 +189,42 @@ export declare namespace Channel {
 
   // 表单器
   interface Form {
+    /**
+     * 标题名称
+     */
     name          ?: string
+    /**
+     * 单元元素
+     */
     columns       ?: FormItem[]
+    /**
+     * 验证规则
+     */
     rules         ?: Record<string, Array<Verify.Rule>>
+    /**
+     * 表单提交地址
+     */
     action        ?: RequestConfig
+    /**
+     * 排除字段
+     */
     exclude       ?: string[]
+    /**
+     * 提交按钮名称
+     */
     submitName    ?: string
+    /**
+     * 起始默认值
+     */
     defaultValues ?: Record<string, any> | string
+    /**
+     * 提交选项
+     */
+    submitOptions?: SubmitOptions
+    /**
+     * 格式化提交值
+     */
+    valueFormat  ?: Record<string, ParseData.format | ParseData.format[]>
   }
 
   // 表单单元
@@ -218,7 +248,7 @@ export declare namespace Channel {
     /**
      * 禁用状态
      */
-    disabled      ?: boolean
+    disabled      ?: boolean | FilterQuery<any>
     /**
      * 指定单元宽度
      */
@@ -275,11 +305,37 @@ export declare namespace Channel {
      * 单元特殊选项
      */
     options       ?: Record<string, any>
+    /**
+     * 显示条件
+     */
+    conditions    ?: FilterQuery<any>
   }
 
   interface SubmitOptions {
-    name          ?: string
+    /**
+     * 开启重置按钮
+     */
     reset         ?: string
+    /**
+     * 提交成功信息
+     */
+    success       ?: string
+    /**
+     * 提交成功后本地store存储指令
+     */
+    commit        ?: string
+    /**
+     * 有变化才提交
+     */
+    changeSubmit  ?: string
+    /**
+     * 提交间隔，单位：秒
+     */
+    step          ?: number
+    /**
+     * 回调更新
+     */
+    next          ?: (values: Record<string, any>) => void
   }
 
   // 表格单元

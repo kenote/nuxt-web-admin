@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Put, Delete, Context, NextHandler } from '@kenote/core'
 import { authenticate } from '~/plugins/passport'
 import { CreateGroupDocument, UserDocument, VerifyDocument } from '@/types/services/db'
-import { isArray, compact, omit, get, pick } from 'lodash'
+import { isArray, compact, omit, get, pick, cloneDeep, unset } from 'lodash'
 import * as filter from '~/filters/api'
 import { Account } from '@/types/account'
 import { FilterQuery } from 'mongoose'
 import { CheckWarning } from '@/types/services/db/user'
+import { toUser } from 'middlewares/auth'
 
 
 @Controller('/account')
@@ -29,7 +30,7 @@ export default class AccountController {
       }
       else {
         let user = await ctx.jwtLogin(result)
-        return ctx.api(user)
+        return ctx.api(toUser(user))
       }
     } catch (error) {
       nextError(error, ctx, next)
@@ -45,7 +46,7 @@ export default class AccountController {
     try {
       let result = await db.user.loginSlect(ctx.payload)
       let user = await ctx.jwtLogin(result)
-      return ctx.api(user)
+      return ctx.api(toUser(user))
     } catch (error) {
       nextError(error, ctx, next)
     }
@@ -64,7 +65,7 @@ export default class AccountController {
    */
   @Get('/accesstoken', { filters: [ ...authenticate ] })
   async accessToken (ctx: Context) {
-    return ctx.api(ctx.user)
+    return ctx.api(toUser(ctx.user))
   }
 
   /**
@@ -97,9 +98,9 @@ export default class AccountController {
     }
     try {
       data.update_at = new Date()
-      await db.user.Dao.updateOne({ _id: ctx.user._id }, props ? pick(data, props) : data)
+      await db.user.Dao.updateOne({ _id: ctx.user._id }, props ? pick(data, props) : omit(data, ['avatar']))
       let info = await db.user.Dao.findOne({ _id: ctx.user._id })
-      return ctx.api(props ? pick(info, props) : info)
+      return ctx.api(props ? pick(info, props) : toUser(info))
     } catch (error) {
       nextError(error, ctx, next)
     }

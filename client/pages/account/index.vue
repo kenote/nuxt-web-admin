@@ -1,5 +1,5 @@
 <template>
-  <dashboard>
+  <dashboard v-loading="initinal">
     
   </dashboard>
 </template>

@@ -2,22 +2,23 @@
   <dashboard v-loading="initinal">
     
     <!-- 创建视图容器 -->
-    <web-component v-for="component in components" 
-      :key="component.key"
-      :type="component.name"
-      v-model="component.value"
-      :options="merge(component.options, { 
-        options: { avatar: avatarOptions },
-        defaultValues: parseParams(component.options.defaultValues || '')({ auth })
-      })"
-      :http-options="httpOptions"
-      :editor-config="editorConfig"
-      @get-data="handleGetData"
-      @upload-file="uploadFile"
-      @submit="handleSubmit"
-      :unique="handleUnique"
-      :loading="loading"
-      />
+    <template v-for="component in components">
+      <web-component v-if="isFilter(component.conditions)"
+        :key="component.key"
+        :type="component.name"
+        v-model="component.value"
+        :options="getComponentOptions(component)"
+        :http-options="httpOptions"
+        :editor-config="editorConfig"
+        @get-data="handleGetData"
+        @upload-file="uploadFile"
+        @submit="handleSubmit"
+        :unique="handleUnique"
+        :loading="loading"
+        :times="times"
+        :env="env"
+        />
+    </template>
     <!-- 创建工具按钮 -->
     <fragment slot="tools">
       <template v-for="tool in tools">
@@ -60,11 +61,14 @@
 import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Channel, HttpResult, HttpClientOptions } from '@/types/client'
-import { isString, merge, get } from 'lodash'
+import { isString, merge, get, isPlainObject } from 'lodash'
 import { isYaml, parseParams, parseCommand, } from '@/utils'
 import jsYaml from 'js-yaml'
 import { PutResult } from '@kenote/upload'
 import nunjucks from 'nunjucks'
+import { UserDocument } from '@/types/services/db'
+import ruleJudgment from 'rule-judgment'
+import { FilterQuery } from '@kenote/common'
 
 interface DrawerOptions {
   key         : string
@@ -77,6 +81,12 @@ interface DrawerOptions {
   name: 'auto-page',
   middleware: [ 'authenticated' ],
   layout: 'dashboard',
+  created () {
+    this.env = {
+      auth: this.auth,
+      selected: this.selected
+    }
+  },
   mounted () {
     
   }
@@ -104,6 +114,15 @@ export default class AutoPage extends mixins(PageMixin) {
   @Provide()
   uniqueOptions: Channel.RequestConfig = {}
 
+  @Provide()
+  data: any = null
+
+  @Provide()
+  selected: Record<string, any> | null = null
+
+  @Provide()
+  env: Record<string, any> = {}
+
   @Watch('refresh')
   onrefreshChange (val: boolean, oldVal: boolean) {
     if (val === oldVal) return
@@ -127,7 +146,6 @@ export default class AutoPage extends mixins(PageMixin) {
     if (val === oldVal) return
     if (val.key) {
       let drawerContauner = this.$refs['drawerContauner'] as HTMLDivElement
-      console.log(drawerContauner && drawerContauner.clientHeight)
       if (drawerContauner) {
         this.drawerContaunerHeight = drawerContauner.clientHeight
       }
@@ -136,6 +154,24 @@ export default class AutoPage extends mixins(PageMixin) {
 
   merge = merge
   parseParams = parseParams
+
+  isFilter (conditions: FilterQuery<any> | string) {
+    if (!conditions) return true
+    let query = conditions
+    if (isString(conditions) && isYaml(conditions)) {
+      query = jsYaml.safeLoad(nunjucks.renderString(conditions, this.env)) as FilterQuery<any>
+      if (!isPlainObject(query)) return true
+    } 
+    let filter = ruleJudgment(query as FilterQuery<any>)
+    return filter(this.env)
+  }
+
+  getComponentOptions (component: Channel.Component) {
+    return merge(component.options, { 
+      options: { avatar: this.avatarOptions },
+      defaultValues: parseParams(component.options.defaultValues || '')(this.env)
+    })
+  }
   
   /**
    * 初始化页面
@@ -181,12 +217,34 @@ export default class AutoPage extends mixins(PageMixin) {
   /**
    * 提交数据
    */
-  handleSubmit (values: any, action: Channel.RequestConfig, options: Channel.SubmitOptions) {
-    console.log(values, action, options)
+  handleSubmit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {
+    let { method, url, headers } = action
+    let { success, commit } = options
+    let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
     this.loading = true
-    setTimeout(() => {
+    setTimeout(async () => {
+      try {
+        let result = await this.$httpClient(httpOptions)[method ?? 'POST'](url ?? '', values) as HttpResult<any>
+        if (options.step) {
+          this.sendWait(options.step)
+        }
+        if (result.error) {
+          this.$message.error(result.error)
+        }
+        else {
+          this.data = result.data
+          if (commit) {
+            let commitType = get(this.types, commit)
+            commitType && this.$store.commit(commitType, result.data)
+          }
+          this.$message.success(success ?? '信息已更新')
+          options.next && options.next(values)
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+      }
       this.loading = false
-    }, 3000);
+    }, 300)
     
   }
 

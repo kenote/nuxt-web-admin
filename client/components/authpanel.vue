@@ -2,12 +2,12 @@
   <el-dropdown :trigger="options.trigger" @visible-change="handleVisible" @command="handleCommand">
     <a class="header-link" style="padding:0 15px;" v-bind:class="visible ? 'active' : ''">
       <span class="el-dropdown-link">
-        <el-avatar icon="el-icon-user-solid" size="small" :src="avatar"></el-avatar>
+        <el-avatar icon="el-icon-user-solid" size="medium" :src="avatar"></el-avatar>
       </span>
     </a>
     <el-dropdown-menu slot="dropdown" class="header-link-dropdown">
       <div class="header-link-dropdown-head">
-        <h3><span>{{ auth && auth.username || '' }}</span></h3>
+        <h3><span>{{ username }}</span></h3>
         <el-row v-if="options.top">
           <template v-for="(item, key) in options.top">
             <el-col v-if="key < 3" :key="item.key || key" :span="8">
@@ -47,6 +47,10 @@ import { getUrl } from '@/utils'
     if (this.auth?.avatar) {
       this.avatar = getUrl(this.auth.avatar)
     }
+    if (this.auth) {
+      let { username, nickname } = this.auth
+      this.username = nickname ?? username
+    }
   }
 })
 export default class AuthPanel extends mixins(BaseMixin) {
@@ -60,6 +64,9 @@ export default class AuthPanel extends mixins(BaseMixin) {
   @Provide()
   avatar: string = this.options.avatar!
 
+  @Provide()
+  username: string = ''
+
   @Watch('timestamp')
   onTimestamp (val: number, oldVal: number) {
     if (val === oldVal) return
@@ -68,6 +75,10 @@ export default class AuthPanel extends mixins(BaseMixin) {
     }
     else {
       this.avatar = this.options.avatar!
+    }
+    if (this.auth) {
+      let { username, nickname } = this.auth
+      this.username = nickname ?? username
     }
   }
 
