@@ -6,6 +6,7 @@
   "typings": "./types",
   "license": "MIT",
   "dependencies": {
+    "@alicloud/pop-core": "^1.7.10",
     "@kenote/config": "latest",
     "@kenote/core": "latest",
     "@kenote/koa": "latest",

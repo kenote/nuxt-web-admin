@@ -1,0 +1,23 @@
+
+# 短信使用SDK
+type: alicloud
+
+# SDK 标签
+sdk: dysms
+
+# 使用密钥 Key
+accessKey: <accessKey>
+
+# 标签名称
+signName: <signName>
+
+# 短信模版
+templates:
+  # 用户注册
+  register: <register>
+  # 身份验证
+  verifyid: <verifyid>
+  # 修改密码
+  password: <password>
+  # 信息变更
+  setinfos: <setinfos>

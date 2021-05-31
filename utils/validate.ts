@@ -12,7 +12,7 @@ export function validateMobile (lang: validator.MobilePhoneLocale = 'zh-CN', uni
       valid = await Iunique(value, path, unique)
     }
     if (!valid) {
-      return callback('该邮箱已绑定其他帐号')
+      return callback('该手机号已绑定其他帐号')
     }
     return callback()
   }

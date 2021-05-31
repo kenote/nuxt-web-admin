@@ -17,6 +17,14 @@ export declare interface ServerConfigure {
    */
   port                 : number
   /**
+   * 站点名称
+   */
+  siteName            ?: string
+  /**
+   * 站点链接
+   */
+  siteUrl             ?: string
+  /**
    * secret
    */
   secretKey            : string

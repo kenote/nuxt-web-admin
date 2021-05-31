@@ -1,4 +1,6 @@
 export { ServerConfigure } from './server'
+export { AccountConfigure } from './account'
+export { AlicloudConfigure } from './alicloud'
 
 export declare interface BaseInfo {
   /**
