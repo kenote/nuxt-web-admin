@@ -1,0 +1,202 @@
+
+# 最多绑定账号数
+# max_binds:
+#   email: 5
+#   mobile: 5
+
+# 验证码发送间隔；单位：秒
+mailphoneStep: 30
+
+# 验证码时效；单位：秒
+mailphoneTime: 900
+
+# 邮箱验证相关
+emailVerify:
+  # 激活邮件时效；单位：秒
+  timeout: 43200
+  # 激活邮件地址
+  url: |-
+    {{siteUrl}}/security/email_verify?token={{verify.token}}&_id={{verify._id}}
+
+# 安全中心
+security:
+  - key: password
+    name: 登录密码
+    status: info
+    description:
+      - 安全性高的密码可以使账号更安全。
+      - 设置一个包含字母，符号或数字中至少两项且长度超过 8 位的密码。
+    disabled: |-
+      auth.binds:
+        $size: 0
+    success: true
+    buttonName: 修改
+    title: 密码设置
+    formOptions:
+      columns:
+        - key: password
+          name: 新密码
+          type: input-password
+          placeholder: 请输入新密码
+          options:
+            showPassword: true
+            clearable: true
+        - key: repassed
+          name: 确认新密码
+          type: input-password
+          placeholder: 请确认新密码
+          options:
+            showPassword: true
+            clearable: true
+      rules:
+        password:
+          - required: true
+            message: 请设置新密码
+            trigger: [ blur, change ]
+          - validator: [ validatePassword ]
+            trigger: [ blur, change ]
+        repassed:
+          - required: true
+            message: 请确认新密码
+            trigger: [ blur, change ]
+          - validator: [ validaterRepassed, password ]
+            trigger: [ blur, change ]
+  - key: email
+    name: 邮箱验证
+    success: |-
+      auth.binds:
+        $_in: [ email ]
+    data:
+      name: 您的邮箱
+      value: '{{auth.email}}'
+      format:
+        type: string
+        regexp: !!js/regexp /\w{4}@/g
+        substr: '****@'
+      link:
+        conditions: 
+          $and:
+            - auth.email:
+                $exists: true
+            - auth.binds:
+                $_nin: email
+        tooltip: 点击发送激活邮件
+        command: command:sendEmailVerify
+    description:
+      title: 您的绑定邮箱可用于
+      content:
+        - 安全管理，密码重置找回
+        - 账号使用，邮箱快捷登录
+        - 服务通知，反馈等
+    disabled: |-
+      auth.binds:
+        $size: 0
+    title: 邮箱设置
+    formOptions:
+      columns:
+        - key: email
+          name: 邮箱地址
+          type: input
+          placeholder: 请输入邮箱地址
+        - key: code
+          name: 验证码
+          type: verify-code
+          placeholder: 请输入验证码
+      rules:
+        email:
+          - required: true
+            message: 请输入邮箱地址
+          - type: email
+            message: 请输入正确的邮箱地址，如 example@163.com
+            trigger: [ blur, change ]
+          - validator: [ validateEmail, email, null ]
+            trigger: [ blur, change ]
+        code:
+          - required: true
+            message: 请输入验证码
+      verifyCode:
+        type: email
+        associate: email
+      action:
+        method: POST
+        url: /api/account/upinfo/email
+      submitOptions:
+        commit: auth.EMAIL
+        commitValue: email
+  - key: mobile
+    name: 手机验证
+    success: |-
+      auth.binds:
+        $_in: [ mobile ]
+    data:
+      name: 您的手机
+      value: '{{auth.mobile}}'
+      format:
+        type: string
+        regexp: !!js/regexp /^(\d{3})\d+(\d{4})$/
+        substr: '$1****$2'
+    description:
+      title: 您的绑定手机可用于
+      content:
+        - 安全管理，密码重置找回
+        - 账号使用，手机快捷登录
+        - 服务通知，反馈等
+    disabled: |-
+      auth.binds:
+        $size: 0
+    title: 手机号设置
+    formOptions:
+      columns:
+        - key: mobile
+          name: 手机号码
+          type: input
+          placeholder: 请输入手机号码
+        - key: code
+          name: 验证码
+          type: verify-code
+          placeholder: 请输入验证码
+      rules:
+        mobile:
+          - required: true
+            message: 请输入mobile
+          - validator: [ validateMobile, zh-CN, mobile, null ]
+            trigger: [ blur, change ]
+        code:
+          - required: true
+            message: 请输入验证码
+      verifyCode:
+        type: mobile
+        associate: mobile
+      action:
+        method: POST
+        url: /api/account/upinfo/mobile
+      submitOptions:
+        commit: auth.MOBILE
+        commitValue: mobile
+  - key: remove
+    name: 注销账号
+    disabled: |-
+      auth.group.level:
+        $gte: 9999
+    description: 
+      - 请先退出或转出加入的团队
+      - 如果您不再使用此账号，可以将其注销。账号成功注销后，其下所有服务、数据及隐私信息将会被删除并将无法恢复
+    buttonName: 注销
+    danger: true
+    title: 注销账号
+    formOptions:
+      columns:
+        - key: username
+          name: 账号名称
+          type: input
+          placeholder: 请输入账号名称，以便确认
+      rules:
+        username:
+          - required: true
+            message: 请输入账号名称
+            trigger: [ blur, change ]
+      action:
+        method: POST
+        url: /api/account/upinfo/remove
+
+

@@ -5,6 +5,10 @@ name: nuxtjs-admin
 host: 0.0.0.0
 # 服务器端口
 port: 4000
+# 站点名称
+siteName: Nuxtjs Admin
+# 站点链接
+siteUrl: http://localhost:4000
 # secret
 secretKey: kenote-nuxtjs-admin
 # Redis

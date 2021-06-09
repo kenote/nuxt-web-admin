@@ -44,6 +44,8 @@
       @submit="submit"
       :unique="unique"
       :times="times"
+      :code-times="codeTimes"
+      :verify-code-options="verifyCodeOptions"
       :env="env"
       />
   </div>
@@ -102,6 +104,8 @@
           :unique="unique"
           :loading="loading"
           :times="times"
+          :code-times="codeTimes"
+          :verify-code-options="verifyCodeOptions"
           :env="env"
           />
       </template>
@@ -159,6 +163,12 @@ export default class WebComponent extends Vue {
 
   @Prop({ default: 0 })
   times!: number
+
+  @Prop({ default: 0 })
+  codeTimes!: number
+
+  @Prop({ default: undefined })
+  verifyCodeOptions!: Channel.verifyCodeOptions
 
   @Prop({ default: undefined })
   env!: Record<string, any>

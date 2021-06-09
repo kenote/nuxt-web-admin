@@ -3,6 +3,7 @@ import { RootState } from '~/store'
 import { NavMenu, Channel, EditorConfig } from '@/types/client'
 import ruleJudgment from 'rule-judgment'
 import { MetaInfo } from 'vue-meta'
+import { AccountConfigure } from '@/types/config/account'
 
 export const name = 'setting'
 
@@ -14,7 +15,8 @@ export const types = {
   LOADING         : 'LOADING',
   METAINFO        : 'METAINFO',
   EDITORCONFIG    : 'EDITORCONFIG',
-  REFRESH         : 'REFRESH'
+  REFRESH         : 'REFRESH',
+  ACCOUNT         : 'ACCOUNT'
 }
 
 export interface State {
@@ -26,6 +28,7 @@ export interface State {
   metaInfo       ?: MetaInfo
   editorConfig   ?: EditorConfig
   refresh        ?: boolean
+  accountOptions  : AccountConfigure | {}
 }
 
 export const namespaced: boolean = true
@@ -42,7 +45,8 @@ export const state: () => State = () => ({
   channels: [],
   loading: { channel: false },
   channelId: '0',
-  refresh: false
+  refresh: false,
+  accountOptions: {}
 })
 
 export const getters: GetterTree<State, RootState> = {
@@ -96,5 +100,8 @@ export const mutations: MutationTree<State> = {
   },
   [types.REFRESH] (state: State, refresh: boolean) {
     state.refresh = refresh
+  },
+  [types.ACCOUNT] (state: State, account: AccountConfigure) {
+    state.accountOptions = account
   }
 }

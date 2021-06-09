@@ -65,7 +65,8 @@ module.exports = {
    */
   components: [
     '~/components',
-    { path: '~/components/account', prefix: 'account' }
+    { path: '~/components/account', prefix: 'account' },
+    { path: '~/components/security', prefix: 'security' }
   ],
   /**
    * 编译配置

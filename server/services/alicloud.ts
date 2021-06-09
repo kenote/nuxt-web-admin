@@ -2,6 +2,7 @@ import RPCClient from '@alicloud/pop-core'
 import { loadConfig } from '@kenote/config'
 import { AlicloudConfigure } from '@/types/config'
 import ruleJudgment from 'rule-judgment'
+import logger from './logger'
 
 /**
  * 请求选项
@@ -29,6 +30,26 @@ export function createClient (options: AlicloudConfigure.Options) {
 }
 
 /**
+ * 封装的请求
+ * @param action 
+ * @param params 
+ * @param options 
+ */
+export function request<T> (action: string, params: Object, options?: Object) {
+  return async (IOptions: AlicloudConfigure.Options) => {
+    let client = createClient(IOptions)
+    try {
+      let result = await client.request<T>(action, params, options)
+      logger.info(action, params)
+      logger.info(result)
+      return result
+    } catch (error) {
+      logger.error(error?.message)
+    }
+  }
+}
+
+/**
  * 发送短信
  * @param phone 
  * @param SignName 
@@ -37,9 +58,7 @@ export function createClient (options: AlicloudConfigure.Options) {
  */
 export function SendSms (PhoneNumbers: string, SignName: string, TemplateCode: string, params?: object) {
   return async (options: AlicloudConfigure.Options) => {
-    let client = createClient(options)
     let TemplateParam = JSON.stringify(params ?? {})
-    return client.request('SendSms', { PhoneNumbers, SignName, TemplateCode, TemplateParam }, requestOption)
+    return await request('SendSms', { PhoneNumbers, SignName, TemplateCode, TemplateParam }, requestOption)(options)
   }
 }
-

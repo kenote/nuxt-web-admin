@@ -4,6 +4,7 @@ import BaseMixin from './base'
 import { Channel, NavMenu, HttpClientOptions } from '@/types/client'
 import { dataNodeProxy } from '@kenote/common'
 import { Store, Types } from '~/store'
+import { AccountConfigure } from '@/types/config'
 
 @Component<PageMixin>({
   name: 'page-mixin',
@@ -18,6 +19,9 @@ export default class PageMixin extends mixins(BaseMixin) {
 
   @Store.Setting.State
   refresh!: boolean
+
+  @Store.Setting.State
+  accountOptions!: AccountConfigure
 
   @Store.Setting.Getter
   avatarOptions!: NavMenu.AvatarOptions

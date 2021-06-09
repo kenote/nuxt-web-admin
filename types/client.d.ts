@@ -4,6 +4,7 @@ import { FilterData, ParseData } from 'parse-string'
 import { Method } from 'axios'
 import { IncomingHttpHeaders } from 'http'
 import { AxiosRequestConfig } from 'axios'
+import { Account } from './account'
 
 export type HttpClientOptions = HeaderOptions<AxiosRequestConfig>
 
@@ -127,7 +128,7 @@ export declare namespace Channel {
     key            : string
     name           : string
     options        : Record<string, any>
-    conditions    ?: FilterQuery<any>
+    conditions    ?: FilterQuery<any> | string
   }
 
   interface Example {
@@ -220,11 +221,23 @@ export declare namespace Channel {
     /**
      * 提交选项
      */
-    submitOptions?: SubmitOptions
+    submitOptions ?: SubmitOptions
     /**
      * 格式化提交值
      */
-    valueFormat  ?: Record<string, ParseData.format | ParseData.format[]>
+    valueFormat   ?: Record<string, ParseData.format | ParseData.format[]>
+    /**
+     * 验证码选项
+     */
+    verifyCode    ?: verifyCodeOptions
+  }
+
+  /**
+   * 验证码选项
+   */
+  interface verifyCodeOptions {
+    type           : Account.verifyUserType
+    associate     ?: string
   }
 
   // 表单单元
@@ -248,7 +261,7 @@ export declare namespace Channel {
     /**
      * 禁用状态
      */
-    disabled      ?: boolean | FilterQuery<any>
+    disabled      ?: boolean | FilterQuery<any> | string
     /**
      * 指定单元宽度
      */
@@ -308,7 +321,7 @@ export declare namespace Channel {
     /**
      * 显示条件
      */
-    conditions    ?: FilterQuery<any>
+    conditions    ?: FilterQuery<any> | string
   }
 
   interface SubmitOptions {
@@ -324,6 +337,10 @@ export declare namespace Channel {
      * 提交成功后本地store存储指令
      */
     commit        ?: string
+    /**
+     * 存储提交值
+     */
+    commitValue   ?: string
     /**
      * 有变化才提交
      */

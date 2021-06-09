@@ -8,6 +8,7 @@
             <template v-for="(item, key) in columns">
               <el-form-item v-if="isFilter(item.conditions)" 
                 :key="key" 
+                :ref="item.key"
                 :prop="item.type === 'avatar-picker' ? undefined : item.key" 
                 :label="item.name" 
                 :rules="Rules && Rules[item.key]" 
@@ -31,6 +32,9 @@
                   :disabled="isDisabled(item.disabled)"
                   :request="item.request"
                   :avatar-options="options && options.avatar"
+                  :code-times="codeTimes"
+                  :is-send-code="isSend"
+                  @send-code="sendCode(values)"
                   @get-data="getData"
                   @upload-file="uploadFile"
                   @change="isChange && $emit('change', parseValues(values))"
@@ -54,10 +58,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Emit } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Provide, Emit, Watch } from 'nuxt-property-decorator'
 import { Verify, Channel } from '@/types/client'
-import { Form as ElForm } from 'element-ui'
-import { zipObject, unset, isEqual, map, pick, isPlainObject, isString, assign, cloneDeep, merge, omit } from 'lodash'
+import { Form as ElForm, FormItem as ElFormItem } from 'element-ui'
+import { zipObject, unset, isEqual, map, pick, isPlainObject, isString, assign, cloneDeep, merge, omit, isArray } from 'lodash'
 import { formatData, ParseData } from 'parse-string'
 import { parseRules, isYaml } from '@/utils'
 import ruleJudgment from 'rule-judgment'
@@ -71,6 +75,18 @@ import jsYaml from 'js-yaml'
     this.values = cloneDeep(this.defaultValues ?? {})
     this.Rules = parseRules(this.rules, this)
     this.DefaultValues = this.defaultValues
+  },
+  mounted () {
+    let { associate } = this.verifyCodeOptions ?? {}
+    if (associate) {
+      this.isSend = false
+      this.$watch(`values.${associate}`, (val, oldVal) => {
+        if (val === oldVal) return
+        let el = this.$refs[associate!] as ElFormItem | ElFormItem[]
+        el = isArray(el) ? el[0] : el
+        this.isSend = el?.$el?.className?.includes('is-validating')
+      })
+    }
   }
 })
 export default class WebForm extends Vue {
@@ -120,6 +136,12 @@ export default class WebForm extends Vue {
   @Prop({ default: 0 })
   times!: number
 
+  @Prop({ default: 0 })
+  codeTimes!: number
+
+  @Prop({ default: undefined })
+  verifyCodeOptions!: Channel.verifyCodeOptions
+
   @Prop({ default: undefined })
   env!: Record<string, any>
 
@@ -132,6 +154,12 @@ export default class WebForm extends Vue {
   @Provide()
   DefaultValues: Record<string, any> = {}
 
+  @Provide()
+  isSendCode: boolean = false
+
+  @Provide()
+  isSend: boolean = true
+
   @Emit('submit')
   submit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {}
 
@@ -140,6 +168,9 @@ export default class WebForm extends Vue {
 
   @Emit('upload-file')
   uploadFile (file: File, options: any, next: (doc: any, err?: Error) => void) {}
+
+  @Emit('send-code')
+  sendCode (data: any) {}
 
   @Emit('change')
   change (values: Record<string, any>) {}
@@ -151,7 +182,7 @@ export default class WebForm extends Vue {
         let keys = map(this.columns.filter( r => this.isFilter(r.conditions!) ), 'key')
         let values = this.parseValues(pick(this.values, keys))
         let original = this.parseValues(pick(this.DefaultValues, keys))
-        let { changeSubmit } = this.submitOptions
+        let { changeSubmit } = this.submitOptions ?? {}
         if (changeSubmit && isEqual(values, original)) {
           this.$message.warning(changeSubmit ?? '数据好像没什么改变，无需提交')
           return

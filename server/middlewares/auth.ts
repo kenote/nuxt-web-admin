@@ -41,7 +41,7 @@ const strategyVerify: VerifyCallbackWithRequest = async (req, payload: Jwtpayloa
     if (!user) {
       return done(null, false)
     }
-    return done(null, user)
+    return done(null, toUser(user))
   } catch (error) {
     return done(error, false)
   }
@@ -68,7 +68,7 @@ export const setJwToken = (payload: Jwtpayload, options?: jwt.SignOptions) => jw
  * @param options 
  * @returns 
  */
-export const verifyJwToken = (token: string, options?: jwt.VerifyOptions) => jwt.verify(token, jwtOptions.secretOrKey as jwt.Secret, options) as Jwtpayload
+export const verifyJwToken = (token: string, options?: jwt.VerifyOptions) => token ? jwt.verify(token, jwtOptions.secretOrKey as jwt.Secret, options) as Jwtpayload : null
 
 /**
  * 过滤用户信息

@@ -44,6 +44,10 @@ export function validaterRepassed (password: string, self?: Record<string, any>)
 
 export function validateEmail (unique: string | null, path: string | null, self?: Record<string, any>) {
   return async (rule: any, value: any, callback: (message?: string) => any) => {
+    let valid = validator.isEmail(value)
+    if (!valid) {
+      return callback('请输入正确的邮箱地址，如 example@163.com')
+    }
     if (unique) {
       let Iunique = get(self, 'unique')
       let valid = await Iunique(value, path, unique)

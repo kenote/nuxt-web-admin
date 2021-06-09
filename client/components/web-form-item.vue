@@ -249,6 +249,15 @@
     :delimiter="options && options.delimiter"
     :style="{ width: `450px`, height: `300px`, ...styles }"
     />
+  <!-- 验证码 -->
+  <verify-code v-else-if="type === 'verify-code'"
+    v-model="values"
+    :placeholder="placeholder"
+    :disabled="disabled"
+    :times="codeTimes"
+    :is-send-code="isSendCode"
+    @send-code="sendCode"
+    />
   <!-- 数字输入框 -->
   <el-input-number v-else-if="type === 'input-number'"
     v-model="values"
@@ -401,6 +410,12 @@ export default class WebFormItem extends Vue {
   @Prop({ default: undefined })
   avatarOptions!: Record<string, any>
 
+  @Prop({ default: 0 })
+  codeTimes!: number
+
+  @Prop({ default: false })
+  isSendCode!: boolean
+
   @Provide()
   styles: Record<string, any> = {}
 
@@ -424,6 +439,9 @@ export default class WebFormItem extends Vue {
 
   @Emit('upload-file')
   uploadFile (file: File | File[] | string, options: any, next: (doc: any, err?: Error) => void) {}
+
+  @Emit('send-code')
+  sendCode (data: any) {}
 
   @Emit('change')
   change (value: any) {}

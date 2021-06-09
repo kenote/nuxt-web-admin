@@ -11,9 +11,9 @@
         :text-color="'#ffffff'"
         :active-text-color="'#ffd04b'"
         :router="true"
-        :unique-opened="false"
+        :unique-opened="true"
         :collapse="false"
-        :default-openeds="defaultOpeneds" >
+         >
         <sidebar-item v-for="(item, key) in data"
           :key="key"
           :name="item.name"

@@ -1,13 +1,14 @@
 import { Middleware, Action, Context, Property } from '@kenote/core'
 import { HttpError } from 'http-errors'
 import * as service from '~/services'
-import { setJwToken } from './auth'
+import { setJwToken, verifyJwToken, toUser } from './auth'
 import { UserDocument } from '@/types/services/db'
 import fs from 'fs'
 import path from 'path'
 import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 import ruleJudgment from 'rule-judgment'
+import { merge } from 'lodash'
 
 @Middleware({
   // HTTP 头信息
@@ -59,31 +60,69 @@ export default class Restful {
     }
   }
 
+  /**
+   * 调用 Services 接口
+   */
   @Property()
   service (ctx: Context) {
     return service
   }
 
+  /**
+   * 调用 DB 接口
+   */
   @Property()
   db (ctx: Context) {
     return service.db
   }
 
+  /**
+   * 获取 JWT Token
+   */
+  @Property()
+  jwToken (ctx: Context) {
+    return ctx.headers.authorization?.replace(/^(Bearer)\s{1}/, '')
+  }
+
+  /**
+   * 获取 JWT 用户
+   */
+  @Action()
+  jwtUser (ctx: Context) {
+    return async () => {
+      let payload = verifyJwToken(ctx.jwToken)
+      if (payload) {
+        let user = await ctx.db.user.Dao.findOne({ _id: payload._id, jw_token: ctx.jwToken })
+        return toUser(user)
+      }
+      return null
+    }
+  }
+
+  /**
+   * 设置 JWT Token
+   */
   @Action()
   setJwToken (ctx: Context) {
     return setJwToken
   }
 
+  /**
+   * JET 登录
+   */
   @Action()
   jwtLogin (ctx: Context) {
     return async (user: UserDocument) => {
       let jwtoken = ctx.setJwToken({ _id: user._id })
       ctx.cookie('jwtoken', jwtoken)
       await service.db.user.Dao.updateOne({ _id: user._id }, { jw_token: jwtoken })
-      return { ...user, jw_token: jwtoken }
+      return toUser(merge(user, { jw_token: jwtoken }))
     }
   }
 
+  /**
+   * 下载文件 
+   */
   @Action()
   downloadFile (ctx: Context) {
     return (filePath: string) => {
@@ -126,6 +165,14 @@ declare module '@kenote/core' {
      */
     db: typeof service.db
     /**
+     * 获取 JWT Token
+     */
+    jwToken: string
+    /**
+     * 获取 JWT 用户
+     */
+    jwtUser (): Promise<UserDocument | null>
+    /**
      * 设置 JWT Token
      */
     setJwToken: typeof setJwToken
@@ -134,7 +181,7 @@ declare module '@kenote/core' {
      */
     jwtLogin (user: UserDocument): Promise<UserDocument>
     /**
-     * Download
+     * 下载文件
      */
      downloadFile (filePath: string): Context
   }

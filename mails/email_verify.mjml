@@ -1,0 +1,25 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{ site_name }}邮箱验证</mj-title>
+    <mj-attributes>
+      <mj-all font-size="15px" color="#646464" line-height="1.4" />
+      <mj-class name="title" font-size="20px" color="#4e9c74" font-weight="bold" />
+    <mj-attributes>
+  </mj-head>
+  <mj-body background-color="#ffffff">
+    <mj-section>
+      <mj-column>
+        <mj-text>亲爱的 {{ username }}:</mj-text>
+        <mj-text>欢迎申请{{ site_name }}服务!</mj-text>
+        <mj-text>你的{{ site_name }}帐号是: {{ username }}<br/>请点击下面的链接完成邮箱验证:</mj-text>
+        <mj-text font-size="14px"><a href="{{ email_verify_url }}" target="_blank">{{ email_verify_url }}</a></mj-text>
+        <mj-text>如果以上链接无法点击，请将该链接复制到浏览器（如 Chrome ）的地址栏中访问，也可以成功完成邮箱验证！</mj-text>
+        <mj-spacer height="30px" />
+        <mj-text>1. 为了保障您账号的安全性, 请在{{ timeout }}小时内完成验证, 此链接将在您激活过一次后失效!</mj-text>
+        <mj-text>2. 如您没有注册过{{ site_name }}账号, 请您忽略此邮件, 由此给您带来的不便敬请谅解。</mj-text>
+        <mj-spacer height="30px" />
+        <mj-text>- {{ site_name }}<br/>(这是一封自动产生的Email，请勿回复)</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

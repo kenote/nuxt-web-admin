@@ -28,3 +28,84 @@ loginSelect:
       - required: true
         message: 缺少登录识别码
         code: 1000
+
+# 设置密码
+password:
+  - key: password
+    type: string
+    rules:
+      - required: true
+        message: 密码不能为空
+        code: 1000
+      - pattern: !!js/regexp /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/
+        message: 密码格式错误
+        code: 1000
+  - key: verify_id
+    type: string
+    rules:
+      - required: true
+        message: 缺少身份验证
+        code: 1000
+
+# 设置电子邮箱
+email:
+  - key: email
+    type: string
+    rules:
+      - required: true
+        message: 电子邮箱不能为空
+        code: 1000
+      - validator: isEmail
+        message: 电子邮箱格式错误
+        code: 1000
+  - key: verify_id
+    type: string
+    rules:
+      - required: true
+        message: 缺少身份验证
+        code: 1000
+  - key: code
+    type: string
+    rules:
+      - required: true
+        message: 缺少验证码
+        code: 1000
+
+# 设置手机号
+mobile:
+  - key: mobile
+    type: string
+    rules:
+      - required: true
+        message: 手机号不能为空
+        code: 1000
+      - validator: isMobilePhone
+        message: 手机号格式错误
+        code: 1000
+  - key: verify_id
+    type: string
+    rules:
+      - required: true
+        message: 缺少身份验证
+        code: 1000
+  - key: code
+    type: string
+    rules:
+      - required: true
+        message: 缺少验证码
+        code: 1000
+
+# 注销账号
+remove:
+  - key: username
+    type: string
+    rules:
+      - required: true
+        message: 账号名称不能为空
+        code: 1000
+  - key: verify_id
+    type: string
+    rules:
+      - required: true
+        message: 缺少身份验证
+        code: 1000

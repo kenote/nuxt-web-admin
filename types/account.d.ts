@@ -1,10 +1,13 @@
 
-
+import { VerifyGenerateOptions } from '@/types/services/db/verify'
 
 export declare namespace Account {
 
   type verifyUserType = 'email' | 'mobile'
 
+  /**
+   * 用户登录
+   */
   interface login {
     username     ?: string
     password     ?: string
@@ -15,35 +18,54 @@ export declare namespace Account {
     result        : T
   }
 
-  interface inputValue {
-    name         ?: string
-  }
+  // interface inputValue {
+  //   name         ?: string
+  // }
 
+  /**
+   * 验证用户选项
+   */
   interface verifyUser {
     type          : verifyUserType
     email         : inputValue
     mobile        : inputValue
   }
 
+  /**
+   * 验证验证码
+   */
+  interface verifyCode {
+    code         ?: string
+    user         ?: string
+  }
+
+  /**
+   * 验证用户真实性
+   */
   interface verifyUserRequest {
     type          : verifyUserType
     name          : string
   }
 
+  /**
+   * 验证票据请求
+   */
   interface ticket {
     cdkey        ?: string
   }
-}
 
-export declare interface AccountConfigure {
   /**
-   * 最多绑定账号数
+   * 发送验证码
    */
-  max_binds: Record<string, number>
-}
+  interface sendCode extends VerifyGenerateOptions {
+    type          : verifyUserType
+  }
 
-
-export declare namespace AccountConfigure {
-
-  
+  /**
+   * 设置安全信息
+   */
+  type upInfo<T>  = {
+    code            ?: string
+    verify_id       ?: string | null
+  } & T
 }

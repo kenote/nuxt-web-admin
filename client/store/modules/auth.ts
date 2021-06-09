@@ -49,5 +49,17 @@ export const mutations: MutationTree<State> = {
     if (!state.auth) return
     state.auth.avatar = avatar
     state.timestamp = Date.now() 
+  },
+  [types.EMAIL] (state: State, email: string) {
+    if (!state.auth) return
+    state.auth.email = email
+    state.auth.binds = Array.from(new Set([ ...state.auth.binds, 'email' ]))
+    state.timestamp = Date.now() 
+  },
+  [types.MOBILE] (state: State, mobile: string) {
+    if (!state.auth) return
+    state.auth.mobile = mobile
+    state.auth.binds = Array.from(new Set([ ...state.auth.binds, 'mobile' ]))
+    state.timestamp = Date.now() 
   }
 }

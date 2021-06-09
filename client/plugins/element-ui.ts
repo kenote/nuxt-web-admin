@@ -43,6 +43,8 @@ import {
   Row,
   Select,
   Slider,
+  Step,
+  Steps,
   Submenu,
   Switch,
   Table,
@@ -99,6 +101,8 @@ export default () => {
   Vue.use(Row)
   Vue.use(Select)
   Vue.use(Slider)
+  Vue.use(Step)
+  Vue.use(Steps)
   Vue.use(Submenu)
   Vue.use(Switch)
   Vue.use(Table)

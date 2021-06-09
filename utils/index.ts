@@ -2,11 +2,12 @@
 import nunjucks from 'nunjucks'
 import { Command, Channel, Verify } from '@/types/client'
 import { dataNodeProxy, FilterQuery } from '@kenote/common'
-import { map, get, template, isDate, isString, isArray, merge } from 'lodash'
+import { map, get, template, isDate, isString, isArray, merge, isFunction } from 'lodash'
 import jsYaml from 'js-yaml'
 import urlParse from 'url-parse'
 import qs from 'query-string'
 import * as validate from './validate'
+import Vue from 'vue'
 
 /**
  * 解析命令指向
@@ -135,7 +136,7 @@ export function getUrl (url: string, params?: Record<string, string>) {
 /**
  * 解析验证规则
  */
-export function  parseRules (rules: Record<string, Verify.Rule[]>, self?: Record<string, any>) {
+export function parseRules (rules: Record<string, Verify.Rule[]>, self?: Record<string, any>) {
   if (!rules) return rules
   for (let [key, rule] of Object.entries(rules)) {
     rules[key] = rule.map( item => {
@@ -150,4 +151,36 @@ export function  parseRules (rules: Record<string, Verify.Rule[]>, self?: Record
     })
   }
   return rules
+}
+
+/**
+ * 运行指令
+ * @param value 
+ */
+export function runCommand (self: Vue, commands?: Record<string, Function>) {
+  return (value: string) => {
+    let command = parseCommand(value)
+    if (!command) return
+    if (command.type === 'command') {
+      let [ name, ...props ] = command.path.split('|')
+      let runScript = get(commands ?? self, name)
+      if (isFunction(runScript)) {
+        runScript(...props)
+      }
+    }
+    else if (command.type === 'router') {
+      if (!self?.$router) return
+      self.$router.push(command.path)
+    }
+    else if (command.type === 'http') {
+      if (!document) return
+      let link = document.createElement('a')
+      let [ href, target ] = command.path.split('|')
+      link.href = href
+      if (target) {
+        link.target = target
+      }
+      link.click()
+    }
+  }
 }
