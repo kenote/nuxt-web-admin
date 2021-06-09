@@ -1,5 +1,5 @@
 <template>
-  <dashboard v-loading="initinal">
+  <dashboard v-loading="initinal || refresh">
     
     <!-- 创建视图容器 -->
     <template v-for="component in components">
@@ -138,7 +138,7 @@ export default class AutoPage extends mixins(PageMixin) {
   @Watch('pageSetting')
   async onPageSetting (val: Partial<Channel.DataNode>, oldVal: Partial<Channel.DataNode>) {
     if (val === oldVal) return
-    this.initinalPage(val)
+    await this.initinalPage(val)
   }
 
   @Watch('drawerOptions')
@@ -150,6 +150,18 @@ export default class AutoPage extends mixins(PageMixin) {
         this.drawerContaunerHeight = drawerContauner.clientHeight
       }
     }
+  }
+
+  @Watch('auth')
+  onAuthChange (val: UserDocument, oldVal: UserDocument) {
+    if (val === oldVal) return
+    this.env.auth = val
+  }
+
+  @Watch('selected')
+  onSelectedChange (val: UserDocument, oldVal: UserDocument) {
+    if (val === oldVal) return
+    this.env.selected = val
   }
 
   merge = merge

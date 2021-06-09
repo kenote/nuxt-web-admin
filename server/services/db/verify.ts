@@ -51,7 +51,6 @@ export async function update (conditions: FilterQuery<VerifyDocument>, doc: Edit
  * @param options 
  */
 export async function generate (conditions: EditVerifyDocument | null, step: number, options?: VerifyGenerateOptions) {
-  console.log(conditions, step, options)
   let { verify_id, name } = options ?? {}
   if (conditions) {
     if (verify_id) {
@@ -127,7 +126,6 @@ export async function check (doc: Partial<Record<'code' | 'user' | 'verify_id', 
   }
   let difftime = Date.now() - verify.create_at.getTime()
   let timeout = step * 1000
-  console.log(difftime, timeout)
   if (difftime > timeout) {
     throw httpError(verify_id ? ErrorCode.ERROR_VERIFY_ID_TIMEOUT : ErrorCode.ERROR_VERIFY_CODE_TIMEOUT)
   }

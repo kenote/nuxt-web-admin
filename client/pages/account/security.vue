@@ -1,12 +1,12 @@
 <template>
-  <dashboard v-loading="initinal">
+  <dashboard v-loading="initinal || refresh">
     
     <transition-group name="el-zoom-in-top">
       <!-- 表单视图 -->
       <template v-for="(security) in accountOptions.security">
-        <security-form v-if="viewtype === security.key"
-          :key="security.key"
-          :type="security.key"
+        <security-form v-if="viewtype === security.key" 
+          :key="security.key" 
+          :form-options="security.formOptions"
           :name="security.title"
           :auth="auth"
           :options="accountOptions"
@@ -16,8 +16,7 @@
           @close="handleView('overview')"
           @send-code="handleSendCode"
           @verify-code="handleVerifyCode"
-          @submit="handleSubmit"
-          >
+          @submit="handleSubmit" >
           <i class="el-icon-success" />
           <h2>{{ security.title }}成功</h2>
           <p>结果已经提交到服务器，并且已经生效。</p>
@@ -49,9 +48,8 @@ import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { HttpResult, Channel, Verify, HttpClientOptions } from '@/types/client'
 import { UserDocument } from '@/types/services/db'
-import { isEqual, map, pick, merge, get } from 'lodash'
+import { isEqual, pick, merge, get } from 'lodash'
 import nunjucks from 'nunjucks'
-import { SecurityConfigure } from '@/types/config/account'
 import { Account } from '@/types/account'
 import { runCommand } from '@/utils'
 
@@ -71,7 +69,7 @@ export default class SecurityPage extends mixins(PageMixin) {
   env: Record<string, any> = {}
 
   @Provide()
-  viewtype: SecurityConfigure.viewType = 'overview'
+  viewtype: string = 'overview'
 
   @Provide()
   verify_id: string | null = null
@@ -79,49 +77,30 @@ export default class SecurityPage extends mixins(PageMixin) {
   @Provide() 
   active: number = 0
 
-  @Provide()
-  refreshAuth: boolean = false
-
-  @Provide()
-  newColumns: Channel.FormItem[] = [
-    {
-      key: 'email',
-      name: '电子邮箱',
-      type: 'input',
-      placeholder: '请输入电子邮箱'
-    },
-    {
-      key: 'mobile',
-      name: '手机号',
-      type: 'input',
-      placeholder: '请输入手机号码'
-    }
-  ]
-
-  @Provide()
-  newRules: Record<string, Array<Verify.Rule>> = {
-    email: [
-      { required: true, message: '电子邮箱不能为空' },
-      { type: 'email', message: '请输入正确的邮箱地址，如 example@163.com' }
-    ]
-  }
-
   @Watch('auth')
   onAuthChange (val: UserDocument, oldVal: UserDocument) {
     if (val === oldVal) return
-    this.env = {
-      auth: val
+    this.env.auth = val
+  }
+
+  @Watch('refresh')
+  onrefreshChange (val: boolean, oldVal: boolean) {
+    if (val === oldVal) return
+    if (val) {
+      setTimeout(async () => {
+        await this.handleRefreshAuth()
+        this.completeRefresh()
+      }, 800)
     }
   }
 
   /**
    * 切换视图
    */
-  handleView (key: SecurityConfigure.viewType) {
-    let keys = map(this.accountOptions.security, 'key')
-    this.viewtype = keys.includes(key) ? key : 'overview'
+  handleView (value: string) {
+    this.viewtype = value
     this.active = 0
-    if (this.$parent.$parent) {
+    if (get(this, '$parent.$parent.ps')) {
       this.$parent.$parent.$el.scrollTop = 0
     }
   }
@@ -194,24 +173,23 @@ export default class SecurityPage extends mixins(PageMixin) {
     }, 300)
   }
 
-  handleRefreshAuth () {
-    this.refreshAuth = true
-    setTimeout(async () => {
-      try {
-        let result = await this.$httpClient(this.httpOptions).GET<HttpResult<UserDocument>>('/api/account/accesstoken')
-        if (result?.error) {
-          this.$message.error(result.error)
-        }
-        else {
-          if (!isEqual(this.auth, result?.data)) {
-            this.$store.commit(this.types.auth.AUTH, result?.data)
-          }
-        }
-      } catch (error) {
-        this.$message.error(error.message)
+  /**
+   * 刷新用户信息
+   */
+  async handleRefreshAuth () {
+    try {
+      let result = await this.$httpClient(this.httpOptions).GET<HttpResult<UserDocument>>('/api/account/accesstoken')
+      if (result?.error) {
+        this.$message.error(result.error)
       }
-      this.refreshAuth = false
-    }, 300)
+      else {
+        if (!isEqual(this.auth, result?.data)) {
+          this.$store.commit(this.types.auth.AUTH, result?.data)
+        }
+      }
+    } catch (error) {
+      this.$message.error(error.message)
+    }
   }
 
   /**

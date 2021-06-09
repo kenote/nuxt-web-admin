@@ -7,17 +7,17 @@
     </el-steps>
     <!-- 变更表单 -->
     <div v-if="stepActive === 1" class="main-content">
-      <web-form 
-        :columns="Columns"
-        :rules="Rules"
+      <web-form v-if="formOptions"
+        :columns="formOptions.columns"
+        :rules="formOptions.rules"
         :default-values="values"
         :unique="unique"
         :code-times="times"
-        :verify-code-options="verifyCodeOptions"
+        :verify-code-options="formOptions.verifyCodeOptions"
         @send-code="handleSendCode"
         submit-name="确 定"
-        :action="action"
-        :submit-options="submitOptions"
+        :action="formOptions.action"
+        :submit-options="formOptions.submitOptions"
         @submit="submit"
         :loading="loading"
         />
@@ -47,28 +47,15 @@ import { UserDocument } from '@/types/services/db'
 import { AccountConfigure } from '@/types/config/account'
 import { Verify, Channel } from '@/types/client'
 import { Account } from '@/types/account'
-import ruleJudgment from 'rule-judgment'
-import { cloneDeep, get } from 'lodash'
+import { get } from 'lodash'
 
 @Component<SecurityForm>({
   name: 'security-form',
   created () {
     this.stepActive = this.active
-    let options = this.options.security.find( ruleJudgment({ key: this.type } ))
-    if (options) {
-      let { columns, rules, verifyCode, submitOptions, action } = options.formOptions ?? {}
-      this.Columns = columns ?? []
-      this.Rules = cloneDeep(rules) ?? {}
-      this.verifyCodeOptions = verifyCode ?? { type: 'email' }
-      this.action = action ?? {}
-      this.submitOptions = submitOptions ?? {}
-    }
   }
 })
 export default class SecurityForm extends Vue {
-
-  @Prop({ default: '' })
-  type!: string
 
   @Prop({ default: '' })
   name!: string
@@ -100,21 +87,6 @@ export default class SecurityForm extends Vue {
   @Provide()
   values: Record<string, any> = {}
 
-  @Provide()
-  Columns: Channel.FormItem[] = []
-
-  @Provide()
-  Rules: Record<string, Array<Verify.Rule>> = {}
-
-  @Provide()
-  verifyCodeOptions: Channel.verifyCodeOptions = { type: 'email' }
-
-  @Provide()
-  action: Channel.RequestConfig = {}
-
-  @Provide()
-  submitOptions: Channel.SubmitOptions = {}
-
   @Emit('close')
   close () {}
 
@@ -134,9 +106,9 @@ export default class SecurityForm extends Vue {
   }
 
   handleSendCode (values: Record<string, any>) {
-    let { type, associate } = this.verifyCodeOptions
+    let { type, associate } = this.formOptions.verifyCode ?? {}
     this.sendCode({
-      type,
+      type: type ?? 'email',
       name: get(values, associate!)
     })
   }

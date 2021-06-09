@@ -18,9 +18,9 @@ export declare namespace Account {
     result        : T
   }
 
-  // interface inputValue {
-  //   name         ?: string
-  // }
+  interface inputValue {
+    name         ?: string
+  }
 
   /**
    * 验证用户选项
