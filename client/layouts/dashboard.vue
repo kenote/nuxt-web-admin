@@ -78,6 +78,7 @@
           <div class="main">
             <web-list 
               :data="(channels || []).map(parseProps({ key: 'key', name: 'name', icon: 'icon', link: 'route' }))" 
+              :env="env"
               @command="path => path && handleCommand('router:' + path)" 
               />
           </div>

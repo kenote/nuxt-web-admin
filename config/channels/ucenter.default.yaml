@@ -14,6 +14,10 @@ route: /ucenter
 icon: iconfont icon-team
 # 选项
 options: {}
+# 展现条件
+conditions: |-
+  auth.group.level:
+    $gte: 9000
 # 分栏页面
 children:
   # 帐户管理
@@ -25,8 +29,16 @@ children:
         description: 管理用户组/角色配置
         keywords: [ 用户中心, 用户管理, 角色, yonghu, yh, jiaose, juese, js ]
         route: /ucenter/group
+        configuration: /data/pages/ucenter/group.yml
+        refresh: true
+        disabled: |-
+          auth.group.level:
+            $lt: 9998
       - key: 2-1-2
         name: 查询用户
         description: 查询/管理用户信息
         keywords: [ 用户中心, 用户管理, yonghu, yh ]
         route: /ucenter/user
+        disabled: |-
+          auth.group.level:
+            $lt: 9998

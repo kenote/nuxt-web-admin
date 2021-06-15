@@ -29,10 +29,11 @@
 import { Component, Prop, Provide, Emit, Watch, Model, mixins } from 'nuxt-property-decorator'
 import { Autocomplete } from 'element-ui'
 import { filterDataNode, parseProps } from '@/utils'
-import { CommonDataNode, initMaps } from '@kenote/common'
+import { CommonDataNode, initMaps, getChannelKey } from '@kenote/common'
 import { trim } from 'lodash'
 import ruleJudgment from 'rule-judgment'
 import EnvironmentMixin from '~/mixins/environment'
+import { Channel } from '@/types/client'
 
 @Component<SearchBar>({
   name: 'search-bar',
@@ -93,9 +94,19 @@ export default class SearchBar extends mixins(EnvironmentMixin) {
     let filter = ruleJudgment({ 
       conditions: {
         $where: vulue => this.isFilter(vulue)
-      } 
+      },
+      route: {
+        $where: value => this.isConditions(this.restaurants, value)
+      }
     })
+
     cb(list.filter(filter).map(parseProps(this.props ?? { value: 'name', key: 'key', description: 'description', maps: 'maps' })))
+  }
+
+  isConditions (channels: Channel.DataNode[], routePath: string) {
+    let channelId = getChannelKey(channels, routePath)
+    let channel = channels.find( ruleJudgment({ key: channelId }) )
+    return this.isFilter(channel?.conditions ?? {})
   }
 
   handleClear () {
