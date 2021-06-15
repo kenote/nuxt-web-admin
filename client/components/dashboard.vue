@@ -47,6 +47,10 @@ export default class Dashboard extends mixins(BaseMixin) {
     margin: 0;
     margin-top: 8px;
     font-size: 16px;
+
+    &+.el-button {
+      margin-left: 0;
+    }
   }
 }
 </style>

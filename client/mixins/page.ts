@@ -1,10 +1,14 @@
 import { Component, mixins, Provide } from 'nuxt-property-decorator'
 import BaseMixin from './base'
-// import { HttpClientOptions } from '@/utils/http-client'
 import { Channel, NavMenu, HttpClientOptions } from '@/types/client'
-import { dataNodeProxy } from '@kenote/common'
+import { dataNodeProxy, FilterQuery } from '@kenote/common'
 import { Store, Types } from '~/store'
 import { AccountConfigure } from '@/types/config'
+import { isString, isPlainObject } from 'lodash'
+import { isYaml } from '@/utils'
+import jsYaml from 'js-yaml'
+import nunjucks from 'nunjucks'
+import ruleJudgment from 'rule-judgment'
 
 @Component<PageMixin>({
   name: 'page-mixin',
@@ -40,6 +44,20 @@ export default class PageMixin extends mixins(BaseMixin) {
 
   @Provide()
   pageSetting: Partial<Channel.DataNode> = {}
+
+  @Provide()
+  env: Record<string, any> = {}
+
+  isFilter (conditions: FilterQuery<any> | string) {
+    if (!conditions) return true
+    let query = conditions
+    if (isString(conditions) && isYaml(conditions)) {
+      query = jsYaml.safeLoad(nunjucks.renderString(conditions, this.env)) as FilterQuery<any>
+      if (!isPlainObject(query)) return true
+    } 
+    let filter = ruleJudgment(query as FilterQuery<any>)
+    return filter(this.env)
+  }
 
   sendWait (step: number) {
     this.times = step

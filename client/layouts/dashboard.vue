@@ -30,6 +30,7 @@
               placeholder="搜索控制台" 
               :data="channels" 
               :props="{ value: 'name', key: 'key', route: 'route', description: 'description', maps: 'maps' }"
+              :env="env"
               @command="handleRouteTo" 
               class="header-link-box" 
               slot="prefix" />
@@ -47,6 +48,7 @@
               :icon="selectedChannel.icon"
               :data="getChannelData()"
               :default-active="$route.path"
+              :env="env"
               />
           </div>
         </div>
@@ -61,7 +63,12 @@
             </el-button>
           </div>
           <perfect-scrollbar :options="{ suppressScrollX: true }" ref="mainScroll">
-            <nuxt :style="selectedChannel.name ? '' : 'padding-top:20px;'"></nuxt>
+            <dashboard v-if="isDisabled(pageSetting.disabled, env)" v-loading="refresh">
+              <client-only placeholder="Page Loading...">
+                403 Forbidden
+              </client-only>
+            </dashboard>
+            <nuxt v-else :style="selectedChannel.name ? '' : 'padding-top:20px;'"></nuxt>
           </perfect-scrollbar>
         </div>
       </div>
@@ -88,13 +95,13 @@
 import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import BaseMixin from '~/mixins/base'
 import '~/assets/scss/dashboard/warpper.scss'
-import { parseCommand } from '@/utils'
+import { parseCommand, isDisabled, runCommand } from '@/utils'
 import { Store, Types } from '~/store'
 import { NavMenu, Channel, HttpResult } from '@/types/client'
-// import { HttpResult } from '@/utils/http-client'
 import { Route } from 'vue-router'
 import { getChannelKey, dataNodeProxy } from '@kenote/common'
 import { MetaInfo } from 'vue-meta'
+import { UserDocument } from '@/types/services/db'
 
 @Component<DashboardLayout>({
   name: 'dashboard-layout',
@@ -102,7 +109,9 @@ import { MetaInfo } from 'vue-meta'
     return { ...this.metaInfo }
   },
   created () {
-
+    this.env = {
+      auth: this.auth
+    }
   },
   async mounted () {
     document.body.className = 'dashboard-body'
@@ -122,6 +131,9 @@ export default class DashboardLayout extends mixins(BaseMixin) {
 
   @Store.Setting.State
   refresh!: boolean
+
+  @Provide()
+  env: Record<string, any> = {}
 
   @Provide()
   collapse: boolean = false
@@ -144,6 +156,8 @@ export default class DashboardLayout extends mixins(BaseMixin) {
   @Provide()
   pageSetting: Partial<Channel.DataNode> = {}
 
+  isDisabled = isDisabled
+
   @Watch('$route')
   async onRouteChange (val: Route, oldVal: Route) {
     if (val === oldVal) return
@@ -160,6 +174,12 @@ export default class DashboardLayout extends mixins(BaseMixin) {
     if (val === oldVal) return
     let pageSetting = dataNodeProxy(val.children ?? []).find({ route: this.$route.path })
     this.pageSetting = pageSetting ?? {}
+  }
+
+  @Watch('auth')
+  onAuthChange (val: UserDocument, oldVal: UserDocument) {
+    if (val === oldVal) return
+    this.env.auth = val
   }
 
   handleVisible (visible: boolean) {
@@ -216,43 +236,24 @@ export default class DashboardLayout extends mixins(BaseMixin) {
   }
 
   /**
-   * 指令操作
+   * 运行指令集
    */
-  handleCommand (value: string) {
-    let command = parseCommand(value)
-    if (!command) return
-    // 处理自定义指令
-    if (command.type === 'command') {
-      switch (command.path) {
-        case 'fullscreen':
-          this.toggleFullScreen()
-          break
-        case 'channels':
-          this.drawerVisible = true
-          this.drawerType = 'channels'
-          break
-        case 'refresh':
-          this.$store.commit(Types.setting.REFRESH, true)
-          break
-        case 'logout':
-          this.logout()
-          break
-        default:
-          break
+  handleCommand (value: string, row?: Record<string, any>) {
+    return runCommand(this, {
+      fullscreen: () => {
+        this.toggleFullScreen()
+      },
+      channels: () => {
+        this.drawerVisible = true
+        this.drawerType = 'channels'
+      },
+      refresh: () => {
+        this.$store.commit(Types.setting.REFRESH, true)
+      },
+      logout: () => {
+        this.logout()
       }
-    }
-    // 处理内部路由
-    else if (command.type === 'router') {
-      this.$router.push(command.path)
-      this.handleCloseDrawer()
-    }
-    // 处理外部链接
-    else if (command.type === 'http') {
-      let link = document.createElement('a')
-      link.href = command.path
-      link.target = '_blank'
-      link.click()
-    }
+    })(value, row)
   }
 
   /**

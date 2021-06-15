@@ -23,21 +23,27 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Store } from '~/store'
+import { MetaInfo } from 'vue-meta'
+import { assign } from 'lodash'
+import ruleJudgment from 'rule-judgment'
 
 @Component<ErrorPage>({
   name: 'error-page',
   head () {
-    return {
-      meta: [
-        {
-          name: 'viewport',
-          content: 'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no'
-        }
-      ]
-    }
+    let meta = this.metaInfo?.meta ?? []
+    meta = meta.filter( ruleJudgment({ name: { $ne: 'viewport' } }) )
+    meta.push({
+      name: 'viewport',
+      content: 'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no'
+    })
+    return assign(this.metaInfo, { meta })
   }
 })
 export default class ErrorPage extends Vue {
+
+  @Store.Setting.State
+  metaInfo!: MetaInfo
 
   @Prop({ default: 404 }) statusCode!: number
   @Prop({ default: 'This page could not be found' }) message!: string

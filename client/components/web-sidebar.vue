@@ -13,23 +13,28 @@
         :router="true"
         :unique-opened="true"
         :collapse="false"
-         >
-        <sidebar-item v-for="(item, key) in data"
-          :key="key"
-          :name="item.name"
-          :icon="item.icon"
-          :index="item.route || item.key"
-          :children="item.children"
-          />
+        >
+        <template v-for="(item, key) in data">
+          <sidebar-item v-if="isFilter(item.conditions)"
+            :key="key"
+            :name="item.name"
+            :icon="item.icon"
+            :index="item.route || item.key"
+            :disabled="item.disabled"
+            :children="item.children"
+            :env="env"
+            />
+        </template>
       </el-menu>
     </perfect-scrollbar>
   </fragment>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Provide, Watch, mixins } from 'nuxt-property-decorator'
 import { map } from 'lodash'
 import { Channel } from '@/types/client'
+import EnvironmentMixin from '~/mixins/environment'
 
 @Component<Sidebar>({
   name: 'sidebar',
@@ -37,7 +42,7 @@ import { Channel } from '@/types/client'
     this.defaultOpeneds = map(this.data, 'key')
   }
 })
-export default class Sidebar extends Vue {
+export default class Sidebar extends mixins(EnvironmentMixin) {
 
   @Prop({ default: '' })
   title!: string
@@ -60,7 +65,6 @@ export default class Sidebar extends Vue {
     this.defaultOpeneds = map(val, 'key')
   }
 }
-
 </script>
 
 <style lang="scss" >

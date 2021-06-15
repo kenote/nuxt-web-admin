@@ -174,11 +174,34 @@
       }
     }
 
+    // li:has( > .is-disabled) {
+
+    // }
+    // li:has( > p){ border:1px solid #CCC; }
+
+    
+
     li {
       color: #ededed;
       border-bottom: 1px solid #545454;
       line-height: normal;
-      padding: 5px 20px 10px;
+      padding: 0;
+      pointer-events: none;
+
+      &>div {
+        padding: 5px 20px 10px;
+        pointer-events: visible;
+
+        &.is-disabled {
+          pointer-events: none;
+          cursor: not-allowed;
+          opacity: .4;
+
+          &::after {
+            content: '';
+          }
+        }
+      }
 
       .name {
         line-height: 2.4;
@@ -188,10 +211,13 @@
       }
 
       .description {
+        display: block;
         font-size: 12px;
         color: #949494;
         line-height: 1.8;
-
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
 
       .keywords {
@@ -249,7 +275,9 @@
     padding: 0 0 0 15px;
   }
 
-
+  .el-button {
+    width: fit-content;
+  }
 
   .el-dialog {
 

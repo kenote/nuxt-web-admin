@@ -320,7 +320,7 @@ import jsYaml from 'js-yaml'
   created () {
     this.propData = this.data ?? []
     if (this.request) {
-      this.getData(this.request, data => {
+      this.getData(this.request, null, data => {
         this.propData = data ?? []
       })
     }
@@ -435,7 +435,7 @@ export default class WebFormItem extends Vue {
   update (value: any) {}
 
   @Emit('get-data')
-  getData (options: Channel.RequestConfig, next: (data: { key: number | string, name: string }[]) => void) {}
+  getData (request: Channel.RequestConfig, options: any, next: (data: { key: number | string, name: string }[]) => void) {}
 
   @Emit('upload-file')
   uploadFile (file: File | File[] | string, options: any, next: (doc: any, err?: Error) => void) {}
@@ -483,7 +483,6 @@ export default class WebFormItem extends Vue {
   }
 
   parseProps = parseProps
-  console = console
 
   toFormatString (data: Record<string, any>, format: string = '{label}') {
     if (this.props) {

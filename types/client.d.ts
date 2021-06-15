@@ -15,7 +15,7 @@ export interface HttpResult<T = any> {
 
 export declare namespace Command {
 
-  type type = 'command' | 'router' | 'http'
+  type type = 'action' | 'command' | 'router' | 'http'
 
   interface value {
     type     : type
@@ -97,15 +97,18 @@ export declare namespace Channel {
     type          ?: string
     keywords      ?: string[]
     queryer       ?: RequestConfig
-    example       ?: Example | string
+    example       ?: Example | string  // 此项可能会去掉
     refresh       ?: boolean
     configuration ?: Configuration | string
+    conditions    ?: FilterQuery<any> | string
+    disabled      ?: boolean | FilterQuery<any> | string
   }
 
   interface Configuration {
     tools         ?: Tool[]
     components    ?: Component[]
     uniqueOptions ?: RequestConfig
+    env           ?: Record<string, any>
   }
 
   interface Container {
@@ -186,6 +189,7 @@ export declare namespace Channel {
     url           ?: string
     headers       ?: IncomingHttpHeaders
     params        ?: any
+    loading       ?: boolean
   }
 
   // 表单器
@@ -330,6 +334,10 @@ export declare namespace Channel {
      */
     reset         ?: string
     /**
+     * 开启返回按钮
+     */
+    goback        ?: string
+    /**
      * 提交成功信息
      */
     success       ?: string
@@ -353,6 +361,10 @@ export declare namespace Channel {
      * 回调更新
      */
     next          ?: (values: Record<string, any>) => void
+    /**
+     * 完成后调用指令
+     */
+    afterCommand  ?: string
   }
 
   // 表格单元
@@ -389,6 +401,58 @@ export declare namespace Channel {
      * 默认值
      */
     defaultValue  ?: string | number
+    /**
+     * 操作选项
+     */
+    emit          ?: any
+  }
+
+  /**
+   * 操作选项
+   */
+  interface EmitOptions {
+    /**
+     * 字段名称
+     */
+    key            : string
+    /**
+     * 字段 Label
+     */
+    name           : string
+    /**
+     * 字段类型
+     */
+    type           : 'link-text' | 'button' | 'dropdown'
+    /**
+     * 样式风格
+     */
+    style         ?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'text'
+    /**
+     * 禁用状态
+     */
+    disabled      ?: boolean | FilterQuery<any> | string
+    /**
+     * 选择下拉时的选项
+     */
+    options       ?: EmitDropdownOption[]
+  }
+
+  /**
+   * 选择下拉时的选项
+   */
+  interface EmitDropdownOption {
+    /**
+     * 字段名称
+     */
+    key            : string
+    /**
+    * 字段 Label
+    */
+    name           : string
+    /**
+     * 禁用状态
+     */
+    disabled      ?: boolean | FilterQuery<any> | string
   }
 
 }

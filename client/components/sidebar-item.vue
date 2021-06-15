@@ -5,16 +5,18 @@
       <span>{{ name }}</span>
     </template>
     <template v-for="(item, key) in children">
-      <sidebar-item
+      <sidebar-item v-if="isFilter(item.conditions)"
         :key="key"
         :name="item.name"
         :icon="item.icon"
         :index="item.route || item.key"
+        :disabled="item.disabled"
         :children="item.children"
+        :env="env"
         />
     </template>
   </el-submenu>
-  <el-menu-item v-else :index="index">
+  <el-menu-item v-else :index="index" :disabled="isDisabled(disabled)">
     <i v-if="icon" v-bind:class="icon"></i>
     <div slot="title">
       <span>{{ name }}</span>
@@ -23,18 +25,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Watch, Emit } from 'nuxt-property-decorator'
-import { get } from 'lodash'
+import { Component, Prop, mixins } from 'nuxt-property-decorator'
 import { Channel } from '@/types/client'
-
+import { FilterQuery } from '@kenote/common'
+import EnvironmentMixin from '~/mixins/environment'
 
 @Component<SidebarItem>({
-  name: 'sidebar-item',
-  created () {
-    
-  }
+  name: 'sidebar-item'
 })
-export default class SidebarItem extends Vue {
+export default class SidebarItem extends mixins(EnvironmentMixin) {
 
   @Prop({ default: '' })
   name!: string
@@ -44,6 +43,9 @@ export default class SidebarItem extends Vue {
 
   @Prop({ default: '' })
   index!: string 
+
+  @Prop({ default: false })
+  disabled!: boolean | FilterQuery<any> | string
 
   @Prop({ default: undefined })
   children!: Channel.DataNode[]

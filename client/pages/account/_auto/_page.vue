@@ -13,6 +13,7 @@
         @get-data="handleGetData"
         @upload-file="uploadFile"
         @submit="handleSubmit"
+        @command="handleCommand"
         :unique="handleUnique"
         :loading="loading"
         :times="times"
@@ -61,14 +62,12 @@
 import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Channel, HttpResult, HttpClientOptions } from '@/types/client'
-import { isString, merge, get, isPlainObject } from 'lodash'
-import { isYaml, parseParams, parseCommand, } from '@/utils'
+import { isString, merge, get } from 'lodash'
+import { isYaml, parseParams, runCommand } from '@/utils'
 import jsYaml from 'js-yaml'
 import { PutResult } from '@kenote/upload'
 import nunjucks from 'nunjucks'
 import { UserDocument } from '@/types/services/db'
-import ruleJudgment from 'rule-judgment'
-import { FilterQuery } from '@kenote/common'
 
 interface DrawerOptions {
   key         : string
@@ -120,9 +119,6 @@ export default class AutoPage extends mixins(PageMixin) {
   @Provide()
   selected: Record<string, any> | null = null
 
-  @Provide()
-  env: Record<string, any> = {}
-
   @Watch('refresh')
   onrefreshChange (val: boolean, oldVal: boolean) {
     if (val === oldVal) return
@@ -164,24 +160,10 @@ export default class AutoPage extends mixins(PageMixin) {
     this.env.selected = val
   }
 
-  merge = merge
-  parseParams = parseParams
-
-  isFilter (conditions: FilterQuery<any> | string) {
-    if (!conditions) return true
-    let query = conditions
-    if (isString(conditions) && isYaml(conditions)) {
-      query = jsYaml.safeLoad(nunjucks.renderString(conditions, this.env)) as FilterQuery<any>
-      if (!isPlainObject(query)) return true
-    } 
-    let filter = ruleJudgment(query as FilterQuery<any>)
-    return filter(this.env)
-  }
-
   getComponentOptions (component: Channel.Component) {
     return merge(component.options, { 
       options: { avatar: this.avatarOptions },
-      defaultValues: parseParams(component.options.defaultValues || '')(this.env)
+      // defaultValues: parseParams(component.options.defaultValues || '')(this.env)
     })
   }
   
@@ -195,34 +177,42 @@ export default class AutoPage extends mixins(PageMixin) {
       try {
         let result = await this.$httpClient().GET(configuration)
         if (!isString(result) && !isYaml(result)) return
-        let { tools, components, uniqueOptions } = jsYaml.load(result) as Channel.Configuration
+        let { tools, components, uniqueOptions, env } = jsYaml.load(result) as Channel.Configuration
         this.tools = tools ?? []
         this.configuration = result
         this.components = components ?? []
         this.uniqueOptions = uniqueOptions ?? {}
+        this.env = merge(this.env, env)
       } catch (error) {
         
       }
     }
     else {
-      let { tools, components, uniqueOptions } = configuration as Channel.Configuration
+      let { tools, components, uniqueOptions, env } = configuration as Channel.Configuration
       this.tools = tools ?? []
       this.configuration = jsYaml.dump(configuration)
       this.components = components ?? []
       this.uniqueOptions = uniqueOptions ?? {}
+      this.env = merge(this.env, env)
     }
   }
 
   /**
    * 获取单项数据
    */
-  handleGetData (options: Channel.RequestConfig, next: (data: Channel.FormItemData[]) => void) {
-    let { method, url } = options
+  handleGetData (request: Channel.RequestConfig, options: Record<string, any> | null, next: (data: Channel.FormItemData[]) => void) {
+    let { method, url } = request
     let httpClient = this.$httpClient(this.httpOptions)
+    if (request.loading) {
+      this.loading = true
+    }
     setTimeout(async () => {
       let result = await httpClient[method!](url!) as HttpResult
       next(result.data ?? [])
-    }, 500);
+      if (request.loading) {
+        this.loading = false
+      }
+    }, 500)
     
   }
 
@@ -231,7 +221,7 @@ export default class AutoPage extends mixins(PageMixin) {
    */
   handleSubmit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {
     let { method, url, headers } = action
-    let { success, commit } = options
+    let { success, commit, afterCommand } = options
     let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
     this.loading = true
     setTimeout(async () => {
@@ -250,6 +240,9 @@ export default class AutoPage extends mixins(PageMixin) {
             commitType && this.$store.commit(commitType, result.data)
           }
           this.$message.success(success ?? '信息已更新')
+          if (afterCommand) {
+            this.handleCommand(afterCommand, {})
+          }
           options.next && options.next(values)
         }
       } catch (error) {
@@ -303,37 +296,15 @@ export default class AutoPage extends mixins(PageMixin) {
   }
 
   /**
-   * 指令操作
+   * 运行指令集
    */
-  handleCommand (value: string) {
-    let command = parseCommand(value)
-    if (!command) return
-    // 处理自定义指令
-    if (command.type === 'command') {
-      switch (command.path) {
-        case 'view':
-          this.drawerOptions = {
-            key: 'view',
-            name: '页面配置',
-            placement: 'right',
-            width: 960
-          }
-          break
-        default:
-          break
+  handleCommand (value: string, row?: Record<string, any>) {
+    return runCommand(this, {
+      action: (type: string, row: Record<string, any> | null) => {
+        this.env.display = type === 'goback' ? 'list' : type
+        this.selected = row ?? null
       }
-    }
-    // 处理内部路由
-    else if (command.type === 'router') {
-      this.$router.push(command.path)
-    }
-    // 处理外部链接
-    else if (command.type === 'http') {
-      let link = document.createElement('a')
-      link.href = command.path
-      link.target = '_blank'
-      link.click()
-    }
+    })(value, row)
   }
 
   handleCloseDrawer () {

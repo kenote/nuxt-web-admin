@@ -6,7 +6,7 @@
         <el-form ref="theForm" :model="values" :rules="Rules" @submit.native.prevent="handleSubmit" label-width="150px" v-loading="loading">
           <template v-if="columns">
             <template v-for="(item, key) in columns">
-              <el-form-item v-if="isFilter(item.conditions)" 
+              <el-form-item v-if="isFilter(item.conditions, { values })" 
                 :key="key" 
                 :ref="item.key"
                 :prop="item.type === 'avatar-picker' ? undefined : item.key" 
@@ -29,7 +29,7 @@
                   :value-format="item.valueFormat"
                   :options="item.options"
                   :multiple="item.multiple"
-                  :disabled="isDisabled(item.disabled)"
+                  :disabled="isDisabled(item.disabled, { values })"
                   :request="item.request"
                   :avatar-options="options && options.avatar"
                   :code-times="codeTimes"
@@ -46,6 +46,7 @@
             <el-button v-if="times === 0" type="primary" native-type="submit" :loading="loading">{{ submitName }}</el-button>
             <el-button v-else type="info" :loading="loading" disabled>(等待 {{ times }} 秒后) {{ submitName }}</el-button>
             <el-button v-if="submitOptions && submitOptions.reset" plain @click="handleRest">{{ submitOptions.reset }}</el-button>
+            <el-button v-if="submitOptions && submitOptions.goback" plain @click="command('action:goback')">{{ submitOptions.goback }}</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -58,23 +59,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Emit, Watch } from 'nuxt-property-decorator'
+import { Component, Prop, Provide, Emit, mixins } from 'nuxt-property-decorator'
 import { Verify, Channel } from '@/types/client'
 import { Form as ElForm, FormItem as ElFormItem } from 'element-ui'
-import { zipObject, unset, isEqual, map, pick, isPlainObject, isString, assign, cloneDeep, merge, omit, isArray } from 'lodash'
+import { zipObject, unset, isEqual, map, pick, assign, cloneDeep, merge, omit, isArray } from 'lodash'
 import { formatData, ParseData } from 'parse-string'
-import { parseRules, isYaml } from '@/utils'
-import ruleJudgment from 'rule-judgment'
-import { FilterQuery } from '@kenote/common'
-import nunjucks from 'nunjucks'
-import jsYaml from 'js-yaml'
+import { parseRules, parseParams } from '@/utils'
+import EnvironmentMixin from '~/mixins/environment'
 
 @Component<WebForm>({
   name: 'web-form',
   created () {
-    this.values = cloneDeep(this.defaultValues ?? {})
+    this.DefaultValues = parseParams(this.defaultValues || '')(this.env)
+    this.values = cloneDeep(this.DefaultValues)
     this.Rules = parseRules(this.rules, this)
-    this.DefaultValues = this.defaultValues
   },
   mounted () {
     let { associate } = this.verifyCodeOptions ?? {}
@@ -89,7 +87,7 @@ import jsYaml from 'js-yaml'
     }
   }
 })
-export default class WebForm extends Vue {
+export default class WebForm extends mixins(EnvironmentMixin) {
 
   @Prop({ default: '' })
   name!: string
@@ -142,9 +140,6 @@ export default class WebForm extends Vue {
   @Prop({ default: undefined })
   verifyCodeOptions!: Channel.verifyCodeOptions
 
-  @Prop({ default: undefined })
-  env!: Record<string, any>
-
   @Provide()
   values: Record<string, any> = {}
 
@@ -174,6 +169,9 @@ export default class WebForm extends Vue {
 
   @Emit('change')
   change (values: Record<string, any>) {}
+
+  @Emit('command')
+  command (type: string, row: Record<string, any>) {}
 
   handleSubmit () {
     let theForm = this.$refs['theForm'] as ElForm
@@ -221,31 +219,6 @@ export default class WebForm extends Vue {
     let theForm = this.$refs['theForm'] as ElForm
     theForm.resetFields()
     this.values = cloneDeep(this.DefaultValues)
-  }
-
-  isFilter (conditions: FilterQuery<any> | string) {
-    if (!conditions) return true
-    let query = conditions
-    if (isString(conditions) && isYaml(conditions)) {
-      query = jsYaml.safeLoad(nunjucks.renderString(conditions, this.env)) as FilterQuery<any>
-      if (!isPlainObject(query)) return true
-    } 
-    let filter = ruleJudgment(query as FilterQuery<any>)
-    return filter({ ...this.env, values: this.values })
-  }
-
-  isDisabled (disabled: boolean | FilterQuery<any> | string) {
-    if (!disabled) return false
-    let query = disabled
-    if (isString(disabled) && isYaml(disabled)) {
-      query = jsYaml.safeLoad(nunjucks.renderString(disabled, { ...this.env, values: this.values })) as FilterQuery<any>
-      if (!isPlainObject(query)) return false
-    } 
-    if (isPlainObject(query)) {
-      let filter = ruleJudgment(query as FilterQuery<any>)
-      return filter({ ...this.env, values: this.values })
-    }
-    return disabled
   }
   
 }

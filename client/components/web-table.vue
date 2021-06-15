@@ -8,10 +8,37 @@
         :width="column.width"
         :min-width="column.minWidth || 100"
         :align="column.align || 'center'">
-
         <template slot-scope="scope">
-
-          <span>{{ getValues(scope.row, column.key) }}</span>
+          <template v-if="column.emit">
+            <template v-for="item in column.emit">
+              <el-dropdown v-if="item.type === 'dropdown'"
+                :key="item.key"
+                size="small"
+                :class="isDisabled(item.disabled, { row: scope.row }) ? 'el-dropdown-disabled' : ''"
+                :trigger="isDisabled(item.disabled, { row: scope.row }) ? '--' : 'hover'"
+                @click="command(item.command, scope.row)"
+                split-button >
+                <span>{{ item.name }}</span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item v-for="opt in item.options"
+                    :key="opt.key"
+                    :disabled="isDisabled(opt.disabled, { row: scope.row })"
+                    >
+                    {{ opt.name }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+              <el-button v-if="item.type === 'button'" 
+                :key="item.key"
+                :type="item.style"
+                size="small"
+                :disabled="isDisabled(item.disabled, { row: scope.row })"
+                >
+                {{ item.name }}
+              </el-button>
+            </template>
+          </template>
+          <span v-else>{{ getValues(scope.row, column.key) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -26,12 +53,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Emit, Watch } from 'nuxt-property-decorator'
+import { Component, Prop, Provide, Emit, Watch, mixins } from 'nuxt-property-decorator'
 import { Table as ElTable } from 'element-ui'
 import { DefaultSortOptions } from 'element-ui/types/table'
 import { cloneDeep, orderBy, chunk, get } from 'lodash'
 import { Channel } from '@/types/client'
 import ruleJudgment from 'rule-judgment'
+import EnvironmentMixin from '~/mixins/environment'
 
 interface Conditions {
   size     ?: number
@@ -42,7 +70,11 @@ interface Conditions {
 @Component<WebTable>({
   name: 'web-table',
   created () {
-
+    if (this.request) {
+      this.getData(this.request, null, data => {
+        this.initialData(data)
+      })
+    }
   },
   mounted () {
     if (this.data) {
@@ -50,10 +82,13 @@ interface Conditions {
     }
   }
 })
-export default class WebTable extends Vue {
+export default class WebTable extends mixins(EnvironmentMixin) {
   
   @Prop({ default: undefined })
   data!: Record<string, any>[]
+
+  @Prop({ default: undefined })
+  request!: Channel.RequestConfig
 
   @Prop({ default: false })
   loading!: boolean
@@ -89,10 +124,13 @@ export default class WebTable extends Vue {
   keywords: string = ''
 
   @Emit('get-data')
-  getData (conditions: Conditions) {}
+  getData (request: Channel.RequestConfig, options: Conditions | null, next?: (data: Record<string, any>[]) => void) {}
 
   @Emit('to-page')
   toPage (page: number) {}
+
+  @Emit('command')
+  command (type: string, row: Record<string, any>) {}
 
   @Watch('data')
   onDataChange (val: Record<string, any>[], oldVal: Record<string, any>[]) {
@@ -114,11 +152,11 @@ export default class WebTable extends Vue {
       let pagesize = this.pagination || 10
       let pageno = parseInt(String((this.total + pagesize - 1) / pagesize))
       pageno = pageno || 1
-      this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno)
+      this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno, val)
     }
   }
 
-  handleCurrentChange (page: number) {
+  handleCurrentChange (page: number, data: Record<string, any>[]) {
     let pagesize = this.pagination || 10
     if (this.counts > -1) {
       if (this.current === page) return
@@ -128,14 +166,14 @@ export default class WebTable extends Vue {
         let { prop, order } = this.sortOptions
         conditions.sort = [ prop, order ]
       }
-      this.getData(conditions)
+      this.getData(this.request, conditions)
       return
     }
     this.current = page
     if (this.pageno !== page) {
       this.toPage(page)
     }
-    let tmpData = cloneDeep(this.data)
+    let tmpData = cloneDeep(data)
     if (this.sortOptions?.order) {
       let { prop, order } = this.sortOptions
       tmpData = orderBy(tmpData, [ prop ], [ order.replace(/(ending)$/, '') as 'asc' | 'desc' ])

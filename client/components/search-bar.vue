@@ -9,7 +9,7 @@
       @select="handleCommand"
       :placeholder="placeholder" >
       <i v-show="search" class="el-icon-error el-input__icon" slot="suffix" @click="handleClear"></i>
-      <template slot-scope="{ item }">
+      <div slot-scope="{ item }">
         <div v-if="item.maps" class="name">
           <template v-for="(ret, key) in item.maps">
             <fragment :key="key">
@@ -20,17 +20,19 @@
         </div>
         <div v-else class="name">{{ item.value }}</div>
         <span v-if="item.description" class="description">{{ item.description }}</span>
-      </template>
+      </div>
     </el-autocomplete>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Emit, Watch, Model, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Provide, Emit, Watch, Model, mixins } from 'nuxt-property-decorator'
 import { Autocomplete } from 'element-ui'
 import { filterDataNode, parseProps } from '@/utils'
 import { CommonDataNode, initMaps } from '@kenote/common'
 import { trim } from 'lodash'
+import ruleJudgment from 'rule-judgment'
+import EnvironmentMixin from '~/mixins/environment'
 
 @Component<SearchBar>({
   name: 'search-bar',
@@ -39,7 +41,7 @@ import { trim } from 'lodash'
     this.restaurants = initMaps(this.data)
   }
 })
-export default class SearchBar extends Vue {
+export default class SearchBar extends mixins(EnvironmentMixin) {
 
   @Prop({ default: '搜索内容' })
   placeholder!: string
@@ -88,7 +90,12 @@ export default class SearchBar extends Vue {
   querySearch (queryString: string, cb: (info: Record<string, any>[]) => void) {
     let list: CommonDataNode[] = []
     filterDataNode(this.restaurants, trim(queryString), list)
-    cb(list.map(parseProps(this.props ?? { value: 'name', key: 'key', description: 'description', maps: 'maps' })))
+    let filter = ruleJudgment({ 
+      conditions: {
+        $where: vulue => this.isFilter(vulue)
+      } 
+    })
+    cb(list.filter(filter).map(parseProps(this.props ?? { value: 'name', key: 'key', description: 'description', maps: 'maps' })))
   }
 
   handleClear () {

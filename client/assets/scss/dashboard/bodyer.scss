@@ -176,6 +176,11 @@
         .el-textarea__inner {
           border-radius: 0;
         }
+        
+        .el-textarea .el-input__count {
+          right: 20px;
+          line-height: 1.2;
+        }
   
         .el-button {
           border-radius: 0;
@@ -244,6 +249,16 @@
           margin-left: 0;
           display: block!important;
         }
+      }
+    }
+
+    .el-dropdown-disabled {
+      .el-button {
+        color: #C0C4CC;
+        cursor: not-allowed;
+        background-image: none;
+        background-color: #FFF;
+        border-color: #EBEEF5;
       }
     }
 

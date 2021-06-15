@@ -42,6 +42,7 @@
       @upload-file="uploadFile"
       @change="change"
       @submit="submit"
+      @command="command"
       :unique="unique"
       :times="times"
       :code-times="codeTimes"
@@ -66,11 +67,30 @@
   <web-markdown v-else-if="type === 'web-markdown'" 
     :content="options && options.content" 
     />
-  <!-- HTML -->
+  <!-- 表格 -->
   <web-table v-else-if="type === 'web-table'"
     :columns="options && options.columns"
     :data="options && options.data"
+    :request="options && options.request"
+    :border="options && options.border"
+    :loading="loading"
+    @get-data="getData"
+    @command="command"
+    :env="env"
     />
+  <!-- 按钮 -->
+  <el-button v-else-if="type === 'web-button'"
+    :size="options && options.size"
+    :type="options && options.type"
+    :plain="options && options.plain"
+    :round="options && options.round"
+    :circle="options && options.circle"
+    :disabled="options && options.disabled"
+    :icon="options && options.icon"
+    @click="command(options && options.command, {})"
+    >
+    {{ options && options.name }}
+  </el-button>
   <!-- 视图容器 -->
   <web-container v-else-if="type === 'web-container'"
     :layout="options && options.layout"
@@ -101,6 +121,7 @@
           @get-data="getData"
           @upload-file="uploadFile"
           @submit="submit"
+          @command="command"
           :unique="unique"
           :loading="loading"
           :times="times"
@@ -114,17 +135,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Model, Provide, Emit, Watch } from 'nuxt-property-decorator'
+import { Component, Prop, Model, Provide, Emit, Watch, mixins } from 'nuxt-property-decorator'
 import { EditorConfig, HttpClientOptions } from '@/types/client'
 import { Channel, NavMenu } from '@/types/client'
-import { merge, isString, isPlainObject } from 'lodash'
-import { parseParams, isYaml } from '@/utils'
+import { merge } from 'lodash'
 import { Store } from '~/store'
 import { UserDocument } from '@/types/services/db'
-import ruleJudgment from 'rule-judgment'
-import { FilterQuery } from '@kenote/common'
-import nunjucks from 'nunjucks'
-import jsYaml from 'js-yaml'
+import EnvironmentMixin from '~/mixins/environment'
 
 @Component<WebComponent>({
   name: 'web-component',
@@ -132,7 +149,7 @@ import jsYaml from 'js-yaml'
     this.values = this.value
   }
 })
-export default class WebComponent extends Vue {
+export default class WebComponent extends mixins(EnvironmentMixin) {
 
   @Store.Setting.Getter
   avatarOptions!: NavMenu.AvatarOptions
@@ -170,9 +187,6 @@ export default class WebComponent extends Vue {
   @Prop({ default: undefined })
   verifyCodeOptions!: Channel.verifyCodeOptions
 
-  @Prop({ default: undefined })
-  env!: Record<string, any>
-
   @Model('update')
   value!: any
 
@@ -183,13 +197,16 @@ export default class WebComponent extends Vue {
   submit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {}
 
   @Emit('get-data')
-  getData (options: Channel.RequestConfig, next: (data: { key: number | string, name: string }[]) => void) {}
+  getData (request: Channel.RequestConfig, options: Record<string,any> | null, next: (data: { key: number | string, name: string }[]) => void) {}
 
   @Emit('upload-file')
   uploadFile (file: File, options: any, next: (doc: any, err?: Error) => void) {}
 
   @Emit('change')
   change (values: Record<string, any>) {}
+
+  @Emit('command')
+  command (type: string, row?: Record<string, any>) {}
 
   @Provide()
   values: any = ''
@@ -211,24 +228,10 @@ export default class WebComponent extends Vue {
     console.log('options', val)
   }
 
-  merge = merge
-  parseParams = parseParams
-
-  isFilter (conditions: FilterQuery<any> | string) {
-    if (!conditions) return true
-    let query = conditions
-    if (isString(conditions) && isYaml(conditions)) {
-      query = jsYaml.safeLoad(nunjucks.renderString(conditions, this.env)) as FilterQuery<any>
-      if (!isPlainObject(query)) return true
-    } 
-    let filter = ruleJudgment(query as FilterQuery<any>)
-    return filter(this.env)
-  }
-
   getComponentOptions (component: Channel.Component) {
     return merge(component.options, { 
       options: { avatar: this.avatarOptions },
-      defaultValues: parseParams(component.options.defaultValues || '')(this.env)
+      // defaultValues: parseParams(component.options.defaultValues || '')(this.env)
     })
   }
 

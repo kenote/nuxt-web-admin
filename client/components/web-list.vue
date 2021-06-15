@@ -1,25 +1,23 @@
 <template>
   <ul v-if="data" class="web-list">
-    <li v-for="(item, key) in data" :key="item.key || key" @click="handleCommand(item.link)">
-      <i v-bind:class="item.icon || 'el-icon-menu'"></i>
-      <span>{{ item.name }}</span>
-    </li>
+    <template v-for="(item, key) in data">
+      <li :key="item.key || key" v-if="isFilter(item.conditions)" @click="handleCommand(item.link)">
+        <i v-bind:class="item.icon || 'el-icon-menu'"></i>
+        <span>{{ item.name }}</span>
+      </li>
+    </template>
   </ul>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Provide, Watch, Emit } from 'nuxt-property-decorator'
-import { get } from 'lodash'
+import { Component, Prop, Emit, mixins } from 'nuxt-property-decorator'
 import { NavMenu } from '@/types/client'
-
+import EnvironmentMixin from '~/mixins/environment'
 
 @Component<WebList>({
-  name: 'web-list',
-  created () {
-    
-  }
+  name: 'web-list'
 })
-export default class WebList extends Vue {
+export default class WebList extends mixins(EnvironmentMixin) {
 
   @Prop({ default: undefined })
   data!: NavMenu.DataItem[]
@@ -27,7 +25,6 @@ export default class WebList extends Vue {
   @Emit('command')
   handleCommand (value: string) {}
 }
-
 </script>
 
 <style lang="scss" scoped>

@@ -10,6 +10,8 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 interface ModulesStates extends Record<string, any> {}
 
+export const strict = false
+
 export const Store = {
   Auth     : namespace(auth.name),
   Setting  : namespace(setting.name)
