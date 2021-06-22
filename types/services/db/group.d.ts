@@ -79,3 +79,10 @@ interface StoreDocument {
    */
   download_type       ?: string[]
 }
+
+export interface RemoveOptions {
+  /**
+   * 删除用户组后需要转移到的组ID
+   */
+  move                ?: string
+}

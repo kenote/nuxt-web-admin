@@ -20,6 +20,10 @@ export declare interface AccountConfigure {
    * 安全中心
    */
   security             : AccountConfigure.Security[]
+  /**
+   * 默认开启频道
+   */
+  platform             : string[]
 }
 
 export declare namespace AccountConfigure {

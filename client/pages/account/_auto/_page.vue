@@ -59,15 +59,16 @@
 </template>
 
 <script lang="ts">
-import { Component, mixins, Provide, Watch } from 'nuxt-property-decorator'
+import { Component, mixins, Provide, Watch, Vue } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Channel, HttpResult, HttpClientOptions } from '@/types/client'
 import { isString, merge, get } from 'lodash'
-import { isYaml, parseParams, runCommand } from '@/utils'
+import { isYaml, parseParams, runCommand, getFilter } from '@/utils'
 import jsYaml from 'js-yaml'
 import { PutResult } from '@kenote/upload'
 import nunjucks from 'nunjucks'
 import { UserDocument } from '@/types/services/db'
+import { ElMessageBoxOptions, MessageBoxInputData } from 'element-ui/types/message-box'
 
 interface DrawerOptions {
   key         : string
@@ -118,6 +119,12 @@ export default class AutoPage extends mixins(PageMixin) {
 
   @Provide()
   selected: Record<string, any> | null = null
+
+  @Provide()
+  parent: Vue | null = null
+
+  @Provide()
+  actionOptions: Record<string, Channel.ActionOptions> = {}
 
   @Watch('refresh')
   onrefreshChange (val: boolean, oldVal: boolean) {
@@ -177,23 +184,25 @@ export default class AutoPage extends mixins(PageMixin) {
       try {
         let result = await this.$httpClient().GET(configuration)
         if (!isString(result) && !isYaml(result)) return
-        let { tools, components, uniqueOptions, env } = jsYaml.load(result) as Channel.Configuration
+        let { tools, components, uniqueOptions, env, actions } = jsYaml.load(result) as Channel.Configuration
         this.tools = tools ?? []
         this.configuration = result
         this.components = components ?? []
         this.uniqueOptions = uniqueOptions ?? {}
         this.env = merge(this.env, env)
+        this.actionOptions = actions ?? {}
       } catch (error) {
         
       }
     }
     else {
-      let { tools, components, uniqueOptions, env } = configuration as Channel.Configuration
+      let { tools, components, uniqueOptions, env, actions } = configuration as Channel.Configuration
       this.tools = tools ?? []
       this.configuration = jsYaml.dump(configuration)
       this.components = components ?? []
       this.uniqueOptions = uniqueOptions ?? {}
       this.env = merge(this.env, env)
+      this.actionOptions = actions ?? {}
     }
   }
 
@@ -201,14 +210,18 @@ export default class AutoPage extends mixins(PageMixin) {
    * 获取单项数据
    */
   handleGetData (request: Channel.RequestConfig, options: Record<string, any> | null, next: (data: Channel.FormItemData[]) => void) {
-    let { method, url } = request
+    let { method, url, conditions, params } = request
     let httpClient = this.$httpClient(this.httpOptions)
     if (request.loading) {
       this.loading = true
     }
+    let Iurl = nunjucks.renderString(url ?? '', this.env)
+    let IParams = parseParams(params ?? {})(this.env)
+    console.log(IParams)
     setTimeout(async () => {
-      let result = await httpClient[method!](url!) as HttpResult
-      next(result.data ?? [])
+      let result = await httpClient[method!](Iurl, IParams) as HttpResult<any[]>
+      let filter = getFilter(conditions!, this.env)
+      next(result.data?.filter(filter!) ?? [])
       if (request.loading) {
         this.loading = false
       }
@@ -220,13 +233,14 @@ export default class AutoPage extends mixins(PageMixin) {
    * 提交数据
    */
   handleSubmit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {
-    let { method, url, headers } = action
+    let { method, url, headers } = action ?? {}
     let { success, commit, afterCommand } = options
     let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
+    let Iurl = nunjucks.renderString(url ?? '', this.env)
     this.loading = true
     setTimeout(async () => {
       try {
-        let result = await this.$httpClient(httpOptions)[method ?? 'POST'](url ?? '', values) as HttpResult<any>
+        let result = await this.$httpClient(httpOptions)[method ?? 'POST'](Iurl, values) as HttpResult<any>
         if (options.step) {
           this.sendWait(options.step)
         }
@@ -241,7 +255,9 @@ export default class AutoPage extends mixins(PageMixin) {
           }
           this.$message.success(success ?? '信息已更新')
           if (afterCommand) {
-            this.handleCommand(afterCommand, {})
+            for (let item of afterCommand) {
+              this.handleCommand(item, {}, this.parent ?? undefined)
+            }
           }
           options.next && options.next(values)
         }
@@ -298,13 +314,62 @@ export default class AutoPage extends mixins(PageMixin) {
   /**
    * 运行指令集
    */
-  handleCommand (value: string, row?: Record<string, any>) {
+  handleCommand (value: string, row?: Record<string, any>, component?: Vue) {
     return runCommand(this, {
-      action: (type: string, row: Record<string, any> | null) => {
-        this.env.display = type === 'goback' ? 'list' : type
+      action: async (type: string, row: Record<string, any> | null) => {
+        let action = get(this.actionOptions, type)
+        if (action) {
+          let { request, confirm, method } = action
+          if (confirm) {
+            await this.actionConfirm(action, row!)
+          }
+          else if (method) {
+            if (component) {
+              get(component, method)()
+            }
+          }
+          else {
+            this.handleGetData(request!, null, data => {})
+          }
+        }
+        else {
+          this.env.display = type
+          this.selected = row ?? null
+        }
+      },
+      dialog: async (type: string, row: Record<string, any> | null, component?: Vue) => {
+        this.env.dialog = type
         this.selected = row ?? null
+        this.parent = component ?? null
+      },
+      view: () => {
+        this.drawerOptions = {
+          key: 'view',
+          name: '页面配置',
+          placement: 'right',
+          width: 960
+        }
       }
-    })(value, row)
+    })(value, row, component)
+  }
+
+  async actionConfirm (config: Channel.ActionOptions, row?: Record<string, any>) {
+    if (!row) {
+      return this.$message.warning(`缺少操作对象！`)
+    }
+    let { request, confirm } = config
+    let options: ElMessageBoxOptions = {
+      confirmButtonText    : '确定',
+      cancelButtonText     : '取消',
+      type                 : 'warning'
+    }
+    try {
+      await this.$confirm(confirm?.message!, confirm?.title ?? '提示', options)
+      let { method, url } = request!
+      // let result = await this.$httpClient(this.httpOptions)[method ?? 'POST'](url ?? '', values) as HttpResult<any>
+    } catch (error) {
+      this.$message.info(confirm?.cancel ?? `您已取消操作`)
+    }
   }
 
   handleCloseDrawer () {

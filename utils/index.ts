@@ -2,7 +2,7 @@
 import nunjucks from 'nunjucks'
 import { Command, Channel, Verify } from '@/types/client'
 import { dataNodeProxy, FilterQuery } from '@kenote/common'
-import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject } from 'lodash'
+import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit } from 'lodash'
 import jsYaml from 'js-yaml'
 import urlParse from 'url-parse'
 import qs from 'query-string'
@@ -16,7 +16,7 @@ import ruleJudgment from 'rule-judgment'
  */
 export function parseCommand (value: string): Command.value | null {
   if (!value) return null
-  let command = value.match(/^(action|command|router|https?)\:(\S+)$/)
+  let command = value.match(/^(dialog|action|command|router|https?)\:(\S+)$/)
   if (!command) return null
   let [ , type, path ] = command
   if (/^(https?)/.test(type)) {
@@ -33,10 +33,14 @@ export function parseProps (props?: Record<string, string>) {
   return (data: Record<string, any>) => {
     if (!props) return data
     let result = data
+    let keys: string[] = []
     for (let [key, val] of Object.entries(props)) {
       result[key] = /(\{)/.test(val) ? nunjucks.renderString(val, data) : get(data, val)
+      if (key !== val) {
+        keys.push(val)
+      }
     }
-    return result
+    return omit(result, keys)
   }
 }
 
@@ -96,6 +100,36 @@ export function isFilter (conditions: FilterQuery<any> | string, env: Record<str
   } 
   let filter = ruleJudgment(query as FilterQuery<any>)
   return filter({ ...env })
+}
+
+/**
+ * 获取过滤器
+ * @param conditions 
+ * @param env 
+ */
+export function getFilter (conditions: FilterQuery<any> | string, env: Record<string, any> = {}) {
+  if (!conditions) return (data: any) => true
+  let query: FilterQuery<any> = conditions as FilterQuery<any>
+  if (isString(conditions) && isYaml(conditions)) {
+    query = jsYaml.safeLoad(nunjucks.renderString(conditions, { ...env })) as FilterQuery<any>
+  }
+  if (!isPlainObject(query)) return (data: any) => true
+  return ruleJudgment(query)
+}
+
+/**
+ * 获取过滤条件
+ * @param conditions 
+ * @param env 
+ */
+export function getConditions (conditions: FilterQuery<any> | string, env: Record<string, any> = {}) {
+  if (!conditions) return null
+  let query = conditions
+  if (isString(conditions) && isYaml(conditions)) {
+    query = jsYaml.safeLoad(nunjucks.renderString(conditions, { ...env })) as FilterQuery<any>
+  }
+  if (!isPlainObject(query)) return null
+  return query as FilterQuery<any>
 }
 
 /**
@@ -194,7 +228,7 @@ export function parseRules (rules: Record<string, Verify.Rule[]>, self?: Record<
  * @param value 
  */
 export function runCommand (self: Vue, commands?: Record<string, Function>) {
-  return (value: string, row?: Record<string, any>) => {
+  return (value: string, row?: Record<string, any>, component?: Vue) => {
     let command = parseCommand(value)
     if (!command) return
     if (command.type === 'command') {
@@ -206,7 +240,12 @@ export function runCommand (self: Vue, commands?: Record<string, Function>) {
     }
     else if (command.type === 'action') {
       if (commands?.action) {
-        commands?.action(command.path, row, self)
+        commands?.action(command.path, row, component, self)
+      }
+    }
+    else if (command.type === 'dialog') {
+      if (commands?.dialog) {
+        commands?.dialog(command.path, row, component, self)
       }
     }
     else if (command.type === 'router') {

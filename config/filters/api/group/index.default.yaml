@@ -1,6 +1,24 @@
 
-
+# 创建用户组
 create:
+  - key: name
+    type: string
+    rules:
+      - required: true
+        message: 用户组名称不能为空
+        code: 1000
+  - key: level
+    type: number
+    defaultValue: 0
+  - key: description
+    type: string
+  - key: download_type
+    type: string[]
+  - key: upload_type
+    type: string[]
+
+# 编辑用户组
+edit:
   - key: name
     type: string
     rules:

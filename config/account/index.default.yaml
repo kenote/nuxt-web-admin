@@ -18,6 +18,11 @@ emailVerify:
   url: |-
     {{siteUrl}}/security/email_verify?token={{verify.token}}&_id={{verify._id}}
 
+# 默认开启频道
+platform:
+  - account
+  - ucenter
+
 # 安全中心
 security:
   - key: password

@@ -7,6 +7,7 @@
         :fixed="column.fixed"
         :width="column.width"
         :min-width="column.minWidth || 100"
+        :sortable="column.sortable"
         :align="column.align || 'center'">
         <template slot-scope="scope">
           <template v-if="column.emit">
@@ -17,12 +18,14 @@
                 :class="isDisabled(item.disabled, { row: scope.row }) ? 'el-dropdown-disabled' : ''"
                 :trigger="isDisabled(item.disabled, { row: scope.row }) ? '--' : 'hover'"
                 @click="command(item.command, scope.row)"
+                @command="value => command(value, scope.row, $parent.$children[0])"
                 split-button >
                 <span>{{ item.name }}</span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item v-for="opt in item.options"
                     :key="opt.key"
                     :disabled="isDisabled(opt.disabled, { row: scope.row })"
+                    :command="opt.command"
                     >
                     {{ opt.name }}
                   </el-dropdown-item>
@@ -33,6 +36,7 @@
                 :type="item.style"
                 size="small"
                 :disabled="isDisabled(item.disabled, { row: scope.row })"
+                @click="command(item.command, scope.row)"
                 >
                 {{ item.name }}
               </el-button>
@@ -102,11 +106,14 @@ export default class WebTable extends mixins(EnvironmentMixin) {
   @Prop({ default: 1 })
   pageno!: number
 
-  @Prop({ default: false })
+  @Prop({ default: 15 })
   pagination!: number | false
 
   @Prop({ default: -1 })
   counts!: number
+
+  @Provide()
+  Idata: Record<string, any>[] = []
 
   @Provide()
   pdata: Record<string, any>[] = []
@@ -130,7 +137,7 @@ export default class WebTable extends mixins(EnvironmentMixin) {
   toPage (page: number) {}
 
   @Emit('command')
-  command (type: string, row: Record<string, any>) {}
+  command (type: string, row: Record<string, any>, component?: Vue) {}
 
   @Watch('data')
   onDataChange (val: Record<string, any>[], oldVal: Record<string, any>[]) {
@@ -139,6 +146,34 @@ export default class WebTable extends mixins(EnvironmentMixin) {
   }
 
   initialData (val: Record<string, any>[]) {
+    this.Idata = val ?? []
+    if (this.counts > -1) {
+      this.total = this.counts
+      this.pdata = val ?? []
+      this.current = this.pageno
+    }
+    else {
+      let theTable = this.$refs['filterTable'] as ElTable
+      if (!theTable) return
+      theTable.clearFilter()
+      this.total = val.length
+      let pagesize = this.pagination || 10
+      let pageno = parseInt(String((this.total + pagesize - 1) / pagesize))
+      pageno = pageno || 1
+      this.handleCurrentChange(this.pageno > pageno ? pageno : this.pageno, val)
+    }
+  }
+
+  refreshData () {
+    if (this.request) {
+      this.getData(this.request, null, data => {
+        this.updateData(data)
+      })
+    }
+  }
+
+  updateData (val: Record<string, any>[]) {
+    this.Idata = val ?? []
     if (this.counts > -1) {
       this.total = this.counts
       this.pdata = val ?? []
@@ -183,7 +218,7 @@ export default class WebTable extends mixins(EnvironmentMixin) {
       this.pdata = chunk(tmpData, pagesize)[page-1]
     }
     else {
-      this.pdata = tmpData || []
+      this.pdata = tmpData ?? []
     }
   }
 

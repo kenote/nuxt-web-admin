@@ -7,6 +7,7 @@ start(){
   rsync -av .nuxt/ .deploy/dist/.nuxt/ --delete
   rsync -av ./dist/ .deploy/dist/dist/ --delete
 
+  rsync -av ./mails/ .deploy/dist/mails --delete
   rsync -av ./static/ .deploy/dist/static --delete
   rsync -av ./views/ .deploy/dist/views/ --delete
 

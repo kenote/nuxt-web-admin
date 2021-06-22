@@ -1,6 +1,6 @@
 <template>
   <!-- 单选框 -->
-  <el-radio-group v-if="/^(radio)/.test(type)" v-model="values" :disabled="disabled">
+  <el-radio-group v-if="/^(radio)/.test(type)" v-model="values" :disabled="disabled" :size="size">
     <template v-if="/(button)$/.test(type)">
       <el-radio-button v-for="(item, key) in propData.map(parseProps(props))" 
         :key="key" 
@@ -20,7 +20,7 @@
     </template>
   </el-radio-group>
   <!-- 多选框 -->
-  <el-checkbox-group v-else-if="/^(checkbox)/.test(type)" v-model="values" :disabled="disabled">
+  <el-checkbox-group v-else-if="/^(checkbox)/.test(type)" v-model="values" :disabled="disabled" :size="size">
     <template v-if="/(button)$/.test(type)">
       <el-checkbox-button v-for="(item, key) in propData.map(parseProps(props))" 
         :key="key" 
@@ -46,6 +46,7 @@
     :disabled="disabled"
     :style="{ width: `300px`, ...styles }" 
     :multiple="multiple"
+    :size="size"
     :clearable="options && options.clearable"
     collapse-tags
     filterable >
@@ -70,6 +71,16 @@
     :title="options && options.title"
     :disabled="disabled"
     />
+  <!-- 节点选择器 -->
+  <datanode-picker v-else-if="type === 'datanode-picker'"
+    v-model="values"
+    :data="propData"
+    :props="props"
+    :width="width"
+    :title="options && options.title"
+    :node-key="options && options.nodeKey"
+    :disabled="disabled"
+    />
   <!-- 头像选择器 -->
   <avatar-picker v-else-if="type === 'avatar-picker'"
     v-model="values"
@@ -90,6 +101,7 @@
     :value-format="valueFormat"
     :placeholder="placeholder"
     :disabled="disabled"
+    :size="size"
     :align="options && options.align"
     :clearable="options && options.clearable"
     :editable="options && options.editable"
@@ -107,6 +119,7 @@
     :start-placeholder="placeholder && placeholder[0]"
     :end-placeholder="placeholder && placeholder[1]"
     :disabled="disabled"
+    :size="size"
     :align="options && options.align"
     :clearable="options && options.clearable"
     :editable="options && options.editable"
@@ -122,6 +135,7 @@
     :value-format="valueFormat || 'HH:mm:ss'"
     :placeholder="placeholder"
     :disabled="disabled"
+    :size="size"
     :align="options && options.align"
     :clearable="options && options.clearable"
     :editable="options && options.editable"
@@ -139,6 +153,7 @@
     :end-placeholder="placeholder && placeholder[1]"
     :picker-options="props"
     :disabled="disabled"
+    :size="size"
     :align="options && options.align"
     :clearable="options && options.clearable"
     :editable="options && options.editable"
@@ -175,6 +190,7 @@
   <el-color-picker v-else-if="type === 'color-picker'"
     v-model="values"
     :color-format="format"
+    :size="size"
     :predefine="options && options.predefine"
     :disabled="disabled"
     :show-alpha="options && options.showAlpha"
@@ -186,6 +202,7 @@
     :props="{ ...props, multiple }"
     collapse-tags
     filterable
+    :size="size"
     :filter-method="filterMethod"
     :placeholder="placeholder"
     :disabled="disabled"
@@ -198,6 +215,7 @@
     :props="{ ...props, multiple }"
     collapse-tags
     filterable
+    :size="size"
     :filter-method="filterMethod"
     :placeholder="placeholder"
     :disabled="disabled"
@@ -264,6 +282,7 @@
     :min="min"
     :max="max"
     :step="step"
+    :size="size"
     :precision="options && options.precision"
     :step-strictly="options && options.stepStrictly"
     :controls-position="options && options.controlsPosition"
@@ -291,6 +310,7 @@
     type="password"
     :placeholder="placeholder" 
     :disabled="disabled"
+    :size="size"
     :show-password="options && options.showPassword"
     :clearable="options && options.clearable"
     :style="{ width: `300px`, ...styles }" 
@@ -302,6 +322,7 @@
     :disabled="disabled" 
     :minlength="min"
     :maxlength="max"
+    :size="size"
     :show-word-limit="options && options.showWordLimit"
     :clearable="options && options.clearable"
     :style="{ width: `300px`, ...styles }" 
@@ -314,6 +335,7 @@ import { Channel } from '@/types/client'
 import { parseProps, parseDate } from '@/utils'
 import { template, unset, isString, isFunction, isArray } from 'lodash'
 import jsYaml from 'js-yaml'
+import ruleJudgment from 'rule-judgment'
 
 @Component<WebFormItem>({
   name: 'web-form-item',
@@ -324,7 +346,7 @@ import jsYaml from 'js-yaml'
         this.propData = data ?? []
       })
     }
-    this.values = this.value
+    this.values = this.value ?? (ruleJudgment({ $regex: /transfer|checkbox|datanode/i })(this.type) ? [] : this.value)
     if (this.width) {
       let _val = ['input'].includes(this.type) && this.width === 'auto' ? '100%' : this.width
       this.styles = { width: this.width === 'auto' ? _val : `${this.width}px` }
@@ -373,6 +395,9 @@ export default class WebFormItem extends Vue {
 
   @Prop({ default: false })
   disabled!: boolean
+
+  @Prop({ default: undefined })
+  size!: string
 
   @Prop({ default: undefined })
   width!: number | 'auto'
@@ -456,7 +481,7 @@ export default class WebFormItem extends Vue {
   @Watch('value')
   onValueChange (val: any, oldVal: any) {
     if (val === oldVal) return
-    this.values = val
+    this.values = val ?? (ruleJudgment({ $regex: /transfer|checkbox|datanode/i })(this.type) ? [] : val)
   }
 
   @Watch('width')

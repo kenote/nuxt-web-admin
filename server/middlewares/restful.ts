@@ -49,7 +49,7 @@ export default class Restful {
   filterUserLevel (ctx: Context) {
     return (level: number, minLevel: number) => {
       let { ErrorCode, httpError } = service
-      let authLevel = ctx.user?.group.level
+      let authLevel = ctx.user?.group.level ?? 0
       if (authLevel === 9999) return
       if (authLevel < minLevel) {
         throw httpError(ErrorCode.ERROR_ONLY_ADVANCED_ADMIN)

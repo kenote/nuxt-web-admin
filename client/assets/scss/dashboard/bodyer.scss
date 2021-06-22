@@ -123,6 +123,39 @@
       }
     }
 
+    .el-table {
+  
+      .cell {
+        text-overflow: unset;
+      }
+  
+      td>.cell {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+  
+        .state-unread {
+          font-size: 24px;
+          color: #428bca;
+          line-height: 16px;
+        }
+      }
+  
+      &.http-keymap td>.cell {
+        text-overflow: unset;
+      }
+    }
+
+    .el-pagination {
+      margin-top: 15px;
+      text-align: right;
+      // font-family: Comic Sans MS;
+    }
+
+    .el-pagination__jump .el-input__inner {
+      border-radius: 0;
+    }
+
     .page-tools {
       position: absolute;
       z-index: 5;
@@ -239,6 +272,7 @@
   
         .el-transfer-panel__body {
           height: 264px;
+          overflow: hidden;
   
           .el-input {
             padding-right: 30px;

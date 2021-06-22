@@ -54,6 +54,7 @@ import {
   TimePicker,
   Tooltip,
   Transfer,
+  Tree,
   Upload
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
@@ -112,6 +113,7 @@ export default () => {
   Vue.use(TimePicker)
   Vue.use(Tooltip)
   Vue.use(Transfer)
+  Vue.use(Tree)
   Vue.use(Upload)
 
   Vue.component(CollapseTransition.name, CollapseTransition)

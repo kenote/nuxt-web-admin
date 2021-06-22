@@ -15,7 +15,7 @@ export interface HttpResult<T = any> {
 
 export declare namespace Command {
 
-  type type = 'action' | 'command' | 'router' | 'http'
+  type type = 'dialog' | 'action' | 'command' | 'router' | 'http'
 
   interface value {
     type     : type
@@ -109,6 +109,19 @@ export declare namespace Channel {
     components    ?: Component[]
     uniqueOptions ?: RequestConfig
     env           ?: Record<string, any>
+    actions       ?: Record<string, ActionOptions>
+  }
+
+  interface ActionOptions {
+    request       ?: RequestConfig
+    confirm       ?: ConfirmOptions
+    method        ?: string
+  }
+
+  interface ConfirmOptions {
+    title         ?: string
+    message        : string
+    cancel        ?: string
   }
 
   interface Container {
@@ -190,6 +203,7 @@ export declare namespace Channel {
     headers       ?: IncomingHttpHeaders
     params        ?: any
     loading       ?: boolean
+    conditions    ?: FilterQuery<any> | string
   }
 
   // 表单器
@@ -364,7 +378,11 @@ export declare namespace Channel {
     /**
      * 完成后调用指令
      */
-    afterCommand  ?: string
+    afterCommand  ?: string[]
+    /**
+     * 操作选项
+     */
+    emit          ?: EmitOptions[]
   }
 
   // 表格单元
@@ -404,7 +422,11 @@ export declare namespace Channel {
     /**
      * 操作选项
      */
-    emit          ?: any
+    emit          ?: EmitOptions[]
+    /**
+     * 列排序
+     */
+    sortable      ?: boolean | 'custem'
   }
 
   /**

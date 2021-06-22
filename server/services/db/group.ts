@@ -4,6 +4,8 @@ import { models } from '~/models'
 import { GroupDocument, CreateGroupDocument } from '@/types/services/db'
 import { isArray, merge, cloneDeep } from 'lodash'
 import Group from '~/models/group'
+import { RemoveOptions } from '@/types/services/db/group'
+import * as userDB from './user'
 
 export const Dao = modelDao<GroupDocument>(models.Group, {
 
@@ -44,7 +46,15 @@ export function update (conditions: FilterQuery<Group>, doc: UpdateQuery<Group>)
  * 删除用户组
  * @param conditions 
  */
-export function remove (conditions: FilterQuery<Group>) {
-  // 
+export async function remove (conditions: FilterQuery<Group>, options?: RemoveOptions) {
+  let group = await Dao.findOne(conditions)
+  if (group) {
+    if (options?.move) {
+      await userDB.Dao.updateMany({ group: group._id }, { group: options.move })
+    }
+    else {
+      await userDB.remove({ group: group._id })
+    }
+  }
   return Dao.remove(conditions)
 }

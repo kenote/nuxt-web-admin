@@ -267,6 +267,10 @@
     overflow: inherit;
   }
 
+  .el-transfer-panel__header {
+    margin: 0 !important;
+  }
+
   .el-transfer-panel__header .el-checkbox {
     padding: 0;
   }

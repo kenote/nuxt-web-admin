@@ -72,7 +72,7 @@ components:
             submitName: 保 存
             # 提交选项
             submitOptions:
-              reset: 重置
+              # reset: 重置
               success: 信息已更新
               commit: auth.AUTH
               changeSubmit: 数据好像没什么改变，无需提交!

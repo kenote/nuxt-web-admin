@@ -12,6 +12,7 @@
     :min="options && options.min"
     :max="options && options.max"
     :step="options && options.step"
+    :size="options && options.size"
     :format="options && options.format"
     :value-format="options && options.valueFormat"
     :default-time="options && options.defaultTime"
@@ -91,6 +92,57 @@
     >
     {{ options && options.name }}
   </el-button>
+  <!-- 对话框 -->
+  <web-dialog v-else-if="type === 'web-dialog'"
+    :title="options && options.title"
+    :env="env"
+    @close="command('dialog:none')"
+    @submit="handleSubmit(options.key)"
+    :loading="loading"
+    >
+    <template v-if="options && options.content">
+      <web-form v-if="options.content.type === 'web-form'"
+        :ref="options.key"
+        :name="options.content && options.content.name" 
+        :action="options.content && options.content.action"
+        :columns="options.content && options.content.columns" 
+        :default-values="options.content && options.content.defaultValues"
+        :rules="options.content && options.content.rules"
+        :options="options.content && options.content.options"
+        :loading="loading"
+        :exclude="options.content && options.content.exclude"
+        :submit-name="options.content && options.content.submitName"
+        :submit-options="options.content && options.content.submitOptions"
+        :value-format="options.content && options.content.valueFormat"
+        @get-data="getData"
+        @upload-file="uploadFile"
+        @change="handleChange"
+        @submit="submit"
+        @command="command"
+        :unique="unique"
+        :times="times"
+        :code-times="codeTimes"
+        :verify-code-options="verifyCodeOptions"
+        :env="env"
+        :is-change="true"
+        />
+      <datanode-select v-else-if="options.content.type === 'datanode-select'"
+        :ref="options.key"
+        :default-values="options.content && options.content.defaultValues"
+        :data="options.content && options.content.data"
+        :props="options.content && options.content.props"
+        :request="options.content && options.content.request"
+        :node-key="options.content && options.content.nodeKey"
+        :action="options.content && options.content.action"
+        :post-key="options.content && options.content.postKey"
+        :submit-options="options.content && options.content.submitOptions"
+        @get-data="getData"
+        @submit="submit"
+        :env="env"
+        :loading="loading"
+        />
+    </template>
+  </web-dialog>
   <!-- 视图容器 -->
   <web-container v-else-if="type === 'web-container'"
     :layout="options && options.layout"
@@ -138,7 +190,7 @@
 import { Component, Prop, Model, Provide, Emit, Watch, mixins } from 'nuxt-property-decorator'
 import { EditorConfig, HttpClientOptions } from '@/types/client'
 import { Channel, NavMenu } from '@/types/client'
-import { merge } from 'lodash'
+import { merge, get } from 'lodash'
 import { Store } from '~/store'
 import { UserDocument } from '@/types/services/db'
 import EnvironmentMixin from '~/mixins/environment'
@@ -206,7 +258,10 @@ export default class WebComponent extends mixins(EnvironmentMixin) {
   change (values: Record<string, any>) {}
 
   @Emit('command')
-  command (type: string, row?: Record<string, any>) {}
+  command (type: string, row?: Record<string, any>, component?: Vue) {}
+
+  @Emit('close')
+  close () {}
 
   @Provide()
   values: any = ''
@@ -233,6 +288,17 @@ export default class WebComponent extends mixins(EnvironmentMixin) {
       options: { avatar: this.avatarOptions },
       // defaultValues: parseParams(component.options.defaultValues || '')(this.env)
     })
+  }
+
+  handleChange (value: any) {
+    this.values = value
+  }
+
+  handleSubmit (key: string) {
+    let theForm = this.$refs[key]
+    if (get(theForm, 'handleSubmit')) {
+      get(theForm, 'handleSubmit')()
+    }
   }
 
 }

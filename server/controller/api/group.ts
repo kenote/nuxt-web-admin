@@ -9,11 +9,15 @@ import { QueryOptions } from '@kenote/mongoose'
 @Controller('/group')
 export default class GroupController {
 
-  @Post('/create', { filters: [ filter.group.createGroup ] })
+  /**
+   * 创建用户组
+   */
+  @Post('/create', { filters: [ ...authenticate, filter.group.create ] })
   async create (ctx: Context, next: NextHandler) {
-    let { ErrorCode, httpError, nextError } = ctx.service
+    let { ErrorCode, httpError, nextError, db } = ctx.service
     try {
-      return ctx.api(ctx.payload)
+      let result = await db.group.create(ctx.payload)
+      return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)
     }
@@ -43,6 +47,51 @@ export default class GroupController {
     try {
       let list = await db.group.Dao.find(conditions, options)
       return ctx.api(list)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 编辑用户组
+   */
+  @Post('/edit/:_id', { filters: [ ...authenticate, filter.group.edit ]})
+  async edit (ctx: Context, next: NextHandler) {
+    let { ErrorCode, httpError, nextError, db } = ctx.service
+    let { _id } = ctx.params
+    try {
+      let result = await db.group.update({ _id }, ctx.payload)
+      return ctx.api(result)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 删除用户组 
+   */
+  @Delete('/:_id', { filters: [ ...authenticate, filter.group.remove ]})
+  async remove (ctx: Context, next: NextHandler) {
+    let { ErrorCode, httpError, nextError, db } = ctx.service
+    let { _id, options } = ctx.payload
+    try {
+      let result = await db.group.remove({ _id }, options)
+      return ctx.api(result)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 编辑用户组权限 
+   */
+  @Post('/:authority(platform|access)/:_id', { filters: [ ...authenticate, filter.group.authority ]})
+  async authority (ctx: Context, next: NextHandler) {
+    let { ErrorCode, httpError, nextError, db } = ctx.service
+    let { _id } = ctx.params
+    try {
+      let result = await db.group.update({ _id }, ctx.payload)
+      return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)
     }

@@ -1,0 +1,479 @@
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    conditions: |-
+      display: list
+    options:
+      layout: vertical
+      alignItems: flex-start
+      children:
+        - key: 1-1-1
+          name: web-container
+          options:
+            width: 100%
+            margin: 0 0 20px
+            children:
+              - key: 1-1-1-1
+                name: web-button
+                options:
+                  name: 创建用户组
+                  type: primary
+                  size: medium
+                  command: action:create
+        - key: 1-1-2
+          name: web-table
+          options:
+            columns:
+              - key: id
+                name: ID
+                width: 80
+                fixed: left
+              - key: name
+                name: 角色名称
+                width: 120
+                align: left
+              - key: level
+                name: 权级
+                width: 80
+                sortable: true
+              - key: description
+                name: 描述
+                minWidth: 300
+                align: left
+                defaultValue: --
+              - key: actions
+                name: 操作
+                fixed: right
+                align: left
+                width: 240
+                emit:
+                  - key: edit
+                    name: 编辑
+                    type: dropdown
+                    disabled: |-
+                      $and:
+                        - auth.group.level:
+                            $lte: 9998
+                        - row.level:
+                            $gte: 9998
+                    command: action:edit
+                    options:
+                      - key: platform
+                        name: 频道入口
+                        disabled: |-
+                          row.level:
+                            $gte: 9000
+                        command: action:platform
+                      - key: access
+                        name: 访问权限
+                        disabled: |-
+                          $or:
+                            - row.level:
+                                $gte: 9000
+                            - row.platform:
+                                $size: 0
+                        command: dialog:access
+                  - key: delete
+                    name: 删除
+                    type: button
+                    style: danger
+                    disabled: |-
+                      row.level:
+                        $gte: 9998
+                    command: action:remove
+            request:
+              method: POST
+              url: /api/group/list
+              loading: true 
+  - key: 1-2
+    name: web-container
+    conditions: |-
+      display: create
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-2-1
+          name: web-form
+          options:
+            name: 创建用户组
+            columns:
+              - key: name
+                name: 角色名称
+                type: input
+                placeholder: 请输入角色名称
+              - key: level
+                name: 权 级
+                type: input-number
+                min: 1000
+                max: 9997
+                conditions: |-
+                  auth.group.level:
+                    $lte: 9998
+              - key: level
+                name: 权 级
+                type: input-number
+                min: 1000
+                max: 9998
+                conditions: |-
+                  auth.group.level:
+                    $gte: 9999
+              - key: description
+                name: 描 述
+                type: textarea
+                placeholder: 请输入内容...
+                max: 100
+                options:
+                  showWordLimit: true
+                  resize: none
+                  rows: 4
+                  autosize:
+                    minRows: 4
+                    maxRows: 4
+            # 规则验证
+            rules:
+              name:
+                - required: true
+                  message: 请输入角色名称
+            # 请求地址
+            action:
+              method: POST
+              url: /api/group/create
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 用户组已创建
+              afterCommand: 
+                - action:list
+            # 设置默认值
+            defaultValues: |-
+              level: 1000
+  - key: 1-3
+    name: web-container
+    conditions: |-
+      display: edit
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-3-1
+          name: web-form
+          options:
+            name: 编辑用户组
+            columns:
+              - key: name
+                name: 角色名称
+                type: input
+                placeholder: 请输入角色名称
+              - key: level
+                name: 权 级
+                type: input-number
+                conditions: |-
+                  selected.level:
+                    $gte: 9999
+                disabled: true
+              - key: level
+                name: 权 级
+                type: input-number
+                min: 1000
+                max: 9998
+                conditions: |-
+                  selected.level:
+                    $lte: 9998
+              - key: description
+                name: 描 述
+                type: textarea
+                placeholder: 请输入内容...
+                max: 100
+                options:
+                  showWordLimit: true
+                  resize: none
+                  rows: 4
+                  autosize:
+                    minRows: 4
+                    maxRows: 4
+            # 规则验证
+            rules:
+              name:
+                - required: true
+                  message: 请输入角色名称
+            # 请求地址
+            action:
+              method: POST
+              url: /api/group/edit/{{selected._id}}
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 用户组信息已更新
+              afterCommand: 
+                - action:list
+            # 设置默认值
+            defaultValues: |-
+              name: {{selected.name}}
+              level: {{selected.level}}
+              description: {{selected.description}}
+  - key: 1-4
+    name: web-container
+    conditions: |-
+      display: platform
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-4-1
+          name: web-form
+          options:
+            name: 频道入口
+            columns:
+              - key: name
+                name: 角色名称
+                type: input
+                placeholder: 请输入角色名称
+                disabled: true
+              - key: platform
+                name: 频道选择
+                type: transfer
+                request:
+                  method: POST
+                  url: /api/channel/list
+                props:
+                  label: name
+                  key: key
+                  disabled: disabled
+                options:
+                  filterable: true
+                  titles: [ 待选频道, 已选频道 ]
+            # 请求地址
+            action:
+              method: POST
+              url: /api/group/platform/{{selected._id}}
+            # 排除项
+            exclude:
+              - name
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 频道入口已更新
+              afterCommand: 
+                - action:list
+            # 设置默认值
+            defaultValues: |-
+              name: {{selected.name}}
+              platform: [{% for item in selected.platform %} {{item}}, {% endfor %}]
+  - key: 1-5
+    name: web-container
+    conditions: |-
+      display: access
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-5-1
+          name: web-form
+          options:
+            name: 访问权限
+            columns:
+              - key: name
+                name: 角色名称
+                type: input
+                placeholder: 请输入角色名称
+                disabled: true
+              - key: access
+                name: 页面权限
+                type: datanode-picker
+                props:
+                  id: route
+                  label: name
+                options:
+                  title: 访问权限
+                  nodeKey: route
+                request:
+                  method: POST
+                  url: /api/channel/node
+                  params: |-
+                    platform: [{% for item in selected.platform %} {{item}}, {% endfor %}]
+            # 排除项
+            exclude:
+              - name
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 频道入口已更新
+              afterCommand: 
+                - action:list
+            # 设置默认值
+            defaultValues: |-
+              name: {{selected.name}}
+  - key: 1-6
+    name: web-container
+    conditions: |-
+      display: remove
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-6-1
+          name: web-form
+          options:
+            name: 删除用户组
+            columns:
+              - key: name
+                name: 角色名称
+                type: input
+                placeholder: 请输入角色名称
+                disabled: true
+              - key: type
+                name: 删除策略
+                type: radio
+                border: true
+                data:
+                  - key: '0'
+                    name: 删除所有成员
+                  - key: '1'
+                    name: 将成员移入其他组
+              - key: move
+                name: 移入用户组
+                type: select
+                request:
+                  method: POST
+                  url: /api/group/list
+                  conditions: |-
+                    $and:
+                      - level:
+                          $lt: {{auth.group.level}}
+                      - _id:
+                          $ne: {{selected._id}}
+                props:
+                  key: _id
+                format: '[{id}] {name}'
+                conditions: |-
+                  values.type: '1'
+            # 规则验证
+            rules:
+              move:
+                - required: true
+                  message: 请选择要移入的用户组
+            # 请求地址
+            action:
+              method: DELETE
+              url: /api/group/{{selected._id}}
+            # 排除项
+            exclude:
+              - name
+              - type
+            # 提交按钮名称
+            submitName: 确 定
+            # 提交选项
+            submitOptions:
+              success: 用户组已删除
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              afterCommand: 
+                - action:list
+            # 设置默认值
+            defaultValues: |-
+              name: {{selected.name}}
+              type: '0'
+  - key: 1-7
+    name: web-dialog
+    conditions: |-
+      dialog: access
+    options:
+      key: dialog-access
+      title: 访问权限
+      content:
+        type: datanode-select
+        props:
+          id: route
+          label: name
+        nodeKey: route
+        postKey: access
+        request:
+          method: POST
+          url: /api/channel/node
+          params: |-
+            platform: [{% for item in selected.platform %} {{item}}, {% endfor %}]
+        defaultValues: |-
+          [{% for item in selected.access %} {{item}}, {% endfor %}]
+        # 请求地址
+        action:
+          method: POST
+          url: /api/group/access/{{selected._id}}
+        # 提交选项
+        submitOptions:
+          success: 访问权限已更新
+          afterCommand: 
+            - dialog:none
+            - action:refresh
+
+        #[ /examples/input ]
+
+        # columns:
+        #   - key: name
+        #     name: 角色名称
+        #     type: input
+        #     placeholder: 请输入角色名称
+        #     # disabled: true
+        # # 规则验证
+        # rules:
+        #   name:
+        #     - required: true
+        #       message: 请选择要移入的用户组
+      
+
+# 设置环境变量
+env:
+  display: list
+  dialog: none
+
+# 定义 Action
+actions:
+  # 刷新
+  refresh:
+    method: refreshData
+  # 访问权限
+  # 删除操作
+  # remove:
+  #   request:
+  #     method: POST
+  #     url: |-
+  #       /api/group/remove/{{selected._id}}
+  #   confirm:
+  #     message: 确认要永久删除该角色, 是否继续?
+  #     cancel: 您已取消删除操作！
+
+
+    

@@ -25,6 +25,7 @@
                   :min="item.min"
                   :max="item.max"
                   :step="item.step"
+                  :size="item.size"
                   :format="item.format"
                   :value-format="item.valueFormat"
                   :options="item.options"
@@ -47,6 +48,16 @@
             <el-button v-else type="info" :loading="loading" disabled>(等待 {{ times }} 秒后) {{ submitName }}</el-button>
             <el-button v-if="submitOptions && submitOptions.reset" plain @click="handleRest">{{ submitOptions.reset }}</el-button>
             <el-button v-if="submitOptions && submitOptions.goback" plain @click="command('action:goback')">{{ submitOptions.goback }}</el-button>
+            <template v-for="item in (submitOptions && submitOptions.emit) || []">
+              <!-- <div :key="item.key">{{ item.name }}</div> -->
+              <el-button v-if="item.type === 'button'" 
+                :key="item.key"
+                :type="item.style"
+                :disabled="isDisabled(item.disabled, { values })"
+                @click="command(item.command)">
+                {{ item.name }}
+              </el-button>
+            </template>
           </el-form-item>
         </el-form>
       </el-col>
