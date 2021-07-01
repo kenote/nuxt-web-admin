@@ -27,6 +27,7 @@ import {
   Image,
   Input,
   InputNumber,
+  Link,
   Loading,
   Menu,
   MenuItem,
@@ -51,6 +52,7 @@ import {
   TableColumn,
   Tabs,
   TabPane,
+  Tag,
   TimePicker,
   Tooltip,
   Transfer,
@@ -89,6 +91,7 @@ export default () => {
   Vue.use(Image)
   Vue.use(Input)
   Vue.use(InputNumber)
+  Vue.use(Link)
   Vue.use(Loading.directive)
   Vue.use(Menu)
   Vue.use(MenuItem)
@@ -110,6 +113,7 @@ export default () => {
   Vue.use(TableColumn)
   Vue.use(Tabs)
   Vue.use(TabPane)
+  Vue.use(Tag)
   Vue.use(TimePicker)
   Vue.use(Tooltip)
   Vue.use(Transfer)

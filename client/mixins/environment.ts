@@ -2,9 +2,8 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import { isString, isPlainObject, assign } from 'lodash'
 import { FilterQuery } from '@kenote/common'
 import ruleJudgment from 'rule-judgment'
-import nunjucks from 'nunjucks'
 import jsYaml from 'js-yaml'
-import { isYaml } from '@/utils'
+import { parseTemplate } from '@/utils'
 
 @Component<EnvironmentMixin>({
   name: 'environment-mixin'
@@ -18,8 +17,8 @@ export default class EnvironmentMixin extends Vue {
     if (!conditions) return true
     let query = conditions
     let data = assign(this.env, props)
-    if (isString(conditions) && isYaml(conditions)) {
-      query = jsYaml.safeLoad(nunjucks.renderString(conditions, data)) as FilterQuery<any>
+    if (isString(conditions)) {
+      query = jsYaml.safeLoad(parseTemplate(conditions, data)) as FilterQuery<any>
       if (!isPlainObject(query)) return true
     } 
     let filter = ruleJudgment(query as FilterQuery<any>)
@@ -30,8 +29,8 @@ export default class EnvironmentMixin extends Vue {
     if (!disabled) return false
     let query = disabled
     let data = assign(this.env, props)
-    if (isString(disabled) && isYaml(disabled)) {
-      query = jsYaml.safeLoad(nunjucks.renderString(disabled, data)) as FilterQuery<any>
+    if (isString(disabled)) {
+      query = jsYaml.safeLoad(parseTemplate(disabled, data)) as FilterQuery<any>
       if (!isPlainObject(query)) return false
     } 
     if (isPlainObject(query)) {

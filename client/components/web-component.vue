@@ -26,9 +26,11 @@
     @change="change"
     />
   <!-- 表单 -->
-  <div v-else-if="type === 'web-form'" style="display:inline-block;width:fit-content;">
+  <div v-else-if="type === 'web-form'" style="display:inline-block;width:100%;">
     <web-form 
       :name="options && options.name" 
+      :inline="options && options.inline"
+      :display="options && options.display"
       :action="options && options.action"
       :columns="options && options.columns" 
       :default-values="options && options.defaultValues"
@@ -36,6 +38,7 @@
       :options="options && options.options"
       :loading="loading"
       :exclude="options && options.exclude"
+      :merge="options && options.merge"
       :submit-name="options && options.submitName"
       :submit-options="options && options.submitOptions"
       :value-format="options && options.valueFormat"
@@ -71,12 +74,16 @@
   <!-- 表格 -->
   <web-table v-else-if="type === 'web-table'"
     :columns="options && options.columns"
-    :data="options && options.data"
+    :data="data || (options && options.data)"
     :request="options && options.request"
     :border="options && options.border"
     :loading="loading"
+    :pageno="pageno"
+    :counts="counts"
+    :pagination="pagination"
     @get-data="getData"
     @command="command"
+    @to-page="toPage"
     :env="env"
     />
   <!-- 按钮 -->
@@ -174,8 +181,13 @@
           @upload-file="uploadFile"
           @submit="submit"
           @command="command"
+          @to-page="toPage"
           :unique="unique"
           :loading="loading"
+          :data="data"
+          :pageno="pageno"
+          :counts="counts"
+          :pagination="pagination"
           :times="times"
           :code-times="codeTimes"
           :verify-code-options="verifyCodeOptions"
@@ -214,6 +226,18 @@ export default class WebComponent extends mixins(EnvironmentMixin) {
   
   @Prop({ default: false })
   loading!: true
+
+  @Prop({ default: undefined })
+  data!: Record<string, any>[] | null
+
+  @Prop({ default: 1 })
+  pageno!: number
+
+  @Prop({ default: 0 })
+  counts!: number
+
+  @Prop({ default: false })
+  pagination!: number | false
 
   @Prop({ default: undefined })
   options!: Record<string, any>
@@ -259,6 +283,9 @@ export default class WebComponent extends mixins(EnvironmentMixin) {
 
   @Emit('command')
   command (type: string, row?: Record<string, any>, component?: Vue) {}
+
+  @Emit('to-page')
+  toPage (page: number) {}
 
   @Emit('close')
   close () {}

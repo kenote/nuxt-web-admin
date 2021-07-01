@@ -5,9 +5,8 @@ import { dataNodeProxy, FilterQuery } from '@kenote/common'
 import { Store, Types } from '~/store'
 import { AccountConfigure } from '@/types/config'
 import { isString, isPlainObject } from 'lodash'
-import { isYaml } from '@/utils'
+import { parseTemplate } from '@/utils'
 import jsYaml from 'js-yaml'
-import nunjucks from 'nunjucks'
 import ruleJudgment from 'rule-judgment'
 
 @Component<PageMixin>({
@@ -51,8 +50,8 @@ export default class PageMixin extends mixins(BaseMixin) {
   isFilter (conditions: FilterQuery<any> | string) {
     if (!conditions) return true
     let query = conditions
-    if (isString(conditions) && isYaml(conditions)) {
-      query = jsYaml.safeLoad(nunjucks.renderString(conditions, this.env)) as FilterQuery<any>
+    if (isString(conditions)) {
+      query = jsYaml.safeLoad(parseTemplate(conditions, this.env)) as FilterQuery<any>
       if (!isPlainObject(query)) return true
     } 
     let filter = ruleJudgment(query as FilterQuery<any>)

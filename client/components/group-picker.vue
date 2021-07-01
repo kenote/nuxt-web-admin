@@ -68,7 +68,7 @@ import { Component, Vue, Prop, Provide, Model, Emit, Watch, mixins, Inject } fro
 import { Channel } from '@/types/client'
 import ruleJudgment from 'rule-judgment'
 import { map, remove, cloneDeep, template, get } from 'lodash'
-import { parseProps, parseDate } from '@/utils'
+import { parseProps } from '@/utils'
 import Emitter from 'element-ui/lib/mixins/emitter'
 
 interface DialogOptions {

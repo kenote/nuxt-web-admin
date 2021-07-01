@@ -83,10 +83,10 @@ components:
                       row.level:
                         $gte: 9998
                     command: action:remove
-            request:
-              method: POST
-              url: /api/group/list
-              loading: true 
+            # request:
+            #   method: POST
+            #   url: /api/group/list
+            #   loading: true 
   - key: 1-2
     name: web-container
     conditions: |-
@@ -154,6 +154,7 @@ components:
               success: 用户组已创建
               afterCommand: 
                 - action:list
+                - action:refresh
             # 设置默认值
             defaultValues: |-
               level: 1000
@@ -223,11 +224,15 @@ components:
               success: 用户组信息已更新
               afterCommand: 
                 - action:list
+                - action:refresh
             # 设置默认值
             defaultValues: |-
               name: {{selected.name}}
               level: {{selected.level}}
               description: {{selected.description}}
+            valueFormat:
+              description:
+                type: string
   - key: 1-4
     name: web-container
     conditions: |-
@@ -279,6 +284,7 @@ components:
               success: 频道入口已更新
               afterCommand: 
                 - action:list
+                - action:refresh
             # 设置默认值
             defaultValues: |-
               name: {{selected.name}}
@@ -331,6 +337,7 @@ components:
               success: 频道入口已更新
               afterCommand: 
                 - action:list
+                - action:refresh
             # 设置默认值
             defaultValues: |-
               name: {{selected.name}}
@@ -403,6 +410,7 @@ components:
                   command: action:list
               afterCommand: 
                 - action:list
+                - action:refresh
             # 设置默认值
             defaultValues: |-
               name: {{selected.name}}
@@ -459,11 +467,27 @@ env:
   display: list
   dialog: none
 
+# 初始化数据
+initialData:
+  request:
+    method: POST
+    url: /api/group/list
+  submitOptions:
+    success: 新数据已拉取
+    assignment:
+      data: data
+
 # 定义 Action
 actions:
   # 刷新
   refresh:
-    method: refreshData
+    request:
+      method: POST
+      url: /api/group/list
+    submitOptions:
+      success: 新数据已拉取
+      assignment:
+        data: data
   # 访问权限
   # 删除操作
   # remove:

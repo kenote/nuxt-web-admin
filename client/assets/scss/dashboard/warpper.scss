@@ -283,6 +283,10 @@
     width: fit-content;
   }
 
+  .el-table--scrollable-x .el-table__body-wrapper {
+    overflow-x: scroll;
+  }
+
   .el-dialog {
 
     .el-dialog__header {

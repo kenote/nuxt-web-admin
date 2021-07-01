@@ -1,49 +1,65 @@
 <template>
-  <div class="form-container">
+  <div :class="inline ? 'search-container' : 'form-container'">
     <h2>{{ name }}</h2>
-    <el-row :gutter="20">
-      <el-col :span="display ? 12 : 24">
-        <el-form ref="theForm" :model="values" :rules="Rules" @submit.native.prevent="handleSubmit" label-width="150px" v-loading="loading">
-          <template v-if="columns">
-            <template v-for="(item, key) in columns">
-              <el-form-item v-if="isFilter(item.conditions, { values })" 
-                :key="key" 
-                :ref="item.key"
-                :prop="item.type === 'avatar-picker' ? undefined : item.key" 
-                :label="item.name" 
-                :rules="Rules && Rules[item.key]" 
-                :style="item.type === 'color-picker' ? 'height:40px;' : ''">
-                <web-form-item 
-                  v-model="values[item.key]"
-                  :type="item.type"
-                  :data="item.data"
-                  :props="item.props"
-                  :placeholder="item.placeholder" 
-                  :width="item.width"
-                  :height="item.height"
-                  :border="item.border"
-                  :min="item.min"
-                  :max="item.max"
-                  :step="item.step"
-                  :size="item.size"
-                  :format="item.format"
-                  :value-format="item.valueFormat"
-                  :options="item.options"
-                  :multiple="item.multiple"
-                  :disabled="isDisabled(item.disabled, { values })"
-                  :request="item.request"
-                  :avatar-options="options && options.avatar"
-                  :code-times="codeTimes"
-                  :is-send-code="isSend"
-                  @send-code="sendCode(values)"
-                  @get-data="getData"
-                  @upload-file="uploadFile"
-                  @change="isChange && $emit('change', parseValues(values))"
-                  />
-              </el-form-item>
+    <el-form ref="theForm" 
+      :model="values" 
+      :rules="Rules" 
+      @submit.native.prevent="handleSubmit" 
+      :label-width="inline ? '100px' : '150px'" 
+      v-loading="loading" 
+      :inline="inline">
+      <el-row :gutter="20">
+        <el-col :span="display ? 12 : 24">
+            <template v-if="columns">
+              <template v-for="(item, key) in columns">
+                <el-form-item v-if="isFilter(item.conditions, { values })" 
+                  :key="key" 
+                  :ref="item.key"
+                  :prop="item.type === 'avatar-picker' ? undefined : item.key" 
+                  :label="item.name" 
+                  :rules="Rules && Rules[item.key]" 
+                  :style="item.type === 'color-picker' ? 'height:40px;' : ''">
+                  <web-form-item 
+                    v-model="values[item.key]"
+                    :type="item.type"
+                    :data="item.data"
+                    :props="item.props"
+                    :placeholder="item.placeholder" 
+                    :width="item.width"
+                    :height="item.height"
+                    :border="item.border"
+                    :min="item.min"
+                    :max="item.max"
+                    :step="item.step"
+                    :size="item.size"
+                    :format="item.format"
+                    :value-format="item.valueFormat"
+                    :options="item.options"
+                    :multiple="item.multiple"
+                    :disabled="isDisabled(item.disabled, { values })"
+                    :request="item.request"
+                    :avatar-options="options && options.avatar"
+                    :code-times="codeTimes"
+                    :is-send-code="isSend"
+                    @send-code="sendCode(values)"
+                    @get-data="getData"
+                    @upload-file="uploadFile"
+                    @change="isChange && $emit('change', parseValues(values))"
+                    />
+                </el-form-item>
+              </template>
             </template>
-          </template>
-          <el-form-item v-if="!isChange">
+        </el-col>
+        
+        <el-col v-if="display" :span="11" style="padding-top:40px;">
+          <slot name="display"></slot>
+          ddd
+        </el-col>
+      </el-row>
+      <el-row v-if="!isChange" :gutter="20">
+        <el-col :span="24" >
+          <div class="footer el-form-item">
+            
             <el-button v-if="times === 0" type="primary" native-type="submit" :loading="loading">{{ submitName }}</el-button>
             <el-button v-else type="info" :loading="loading" disabled>(等待 {{ times }} 秒后) {{ submitName }}</el-button>
             <el-button v-if="submitOptions && submitOptions.reset" plain @click="handleRest">{{ submitOptions.reset }}</el-button>
@@ -54,17 +70,15 @@
                 :key="item.key"
                 :type="item.style"
                 :disabled="isDisabled(item.disabled, { values })"
-                @click="command(item.command)">
+                @click="command(item.command, {})" plain>
                 {{ item.name }}
               </el-button>
             </template>
-          </el-form-item>
-        </el-form>
-      </el-col>
-      <el-col v-if="display" :span="11" style="padding-top:40px;">
-        <slot name="display"></slot>
-      </el-col>
-    </el-row>
+            
+          </div>
+        </el-col>
+      </el-row>
+    </el-form>
     
   </div>
 </template>
@@ -73,7 +87,7 @@
 import { Component, Prop, Provide, Emit, mixins } from 'nuxt-property-decorator'
 import { Verify, Channel } from '@/types/client'
 import { Form as ElForm, FormItem as ElFormItem } from 'element-ui'
-import { zipObject, unset, isEqual, map, pick, assign, cloneDeep, merge, omit, isArray } from 'lodash'
+import { zipObject, unset, isEqual, map, pick, assign, cloneDeep, merge, omit, isArray, get, set } from 'lodash'
 import { formatData, ParseData } from 'parse-string'
 import { parseRules, parseParams } from '@/utils'
 import EnvironmentMixin from '~/mixins/environment'
@@ -81,7 +95,12 @@ import EnvironmentMixin from '~/mixins/environment'
 @Component<WebForm>({
   name: 'web-form',
   created () {
-    this.DefaultValues = parseParams(this.defaultValues || '')(this.env)
+    if (this.submitOptions?.assignment) {
+      this.DefaultValues = get(this.env, 'conditions') ?? {}
+    }
+    else {
+      this.DefaultValues = parseParams(this.defaultValues || '')(this.env)
+    }
     this.values = cloneDeep(this.DefaultValues)
     this.Rules = parseRules(this.rules, this)
   },
@@ -104,6 +123,9 @@ export default class WebForm extends mixins(EnvironmentMixin) {
   name!: string
 
   @Prop({ default: false })
+  inline!: boolean
+
+  @Prop({ default: false })
   loading!: boolean
 
   @Prop({ default: undefined })
@@ -118,7 +140,7 @@ export default class WebForm extends mixins(EnvironmentMixin) {
   @Prop({ default: false })
   isChange!: boolean
 
-  @Prop({ default: undefined })
+  @Prop({ default: false })
   display!: boolean
 
   @Prop({ default: '提 交' })
@@ -129,6 +151,9 @@ export default class WebForm extends mixins(EnvironmentMixin) {
 
   @Prop({ default: undefined })
   exclude!: string[]
+
+  @Prop({ default: undefined })
+  merge!: Record<string, string[]>
 
   @Prop({ default: undefined })
   action!: Channel.RequestConfig
@@ -211,6 +236,11 @@ export default class WebForm extends mixins(EnvironmentMixin) {
   }
 
   parseValues (value: Record<string, any>) {
+    if (this.merge) {
+      for (let [key, val] of Object.entries(this.merge)) {
+        set(value, key, pick(value, val))
+      }
+    }
     let values = this.exclude ? omit(value, this.exclude) : value
     let items = this.columns.filter( r => ['datetimerange', 'daterange', 'monthrange'].includes(r.type!) )
     for (let item of items) {

@@ -1,14 +1,65 @@
 
 import nunjucks from 'nunjucks'
 import { Command, Channel, Verify } from '@/types/client'
-import { dataNodeProxy, FilterQuery } from '@kenote/common'
-import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit } from 'lodash'
+import { dataNodeProxy } from '@kenote/common'
+import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit, isNumber, toNumber, isNaN } from 'lodash'
 import jsYaml from 'js-yaml'
 import urlParse from 'url-parse'
 import qs from 'query-string'
 import * as validate from './validate'
 import Vue from 'vue'
-import ruleJudgment from 'rule-judgment'
+import ruleJudgment, { FilterQuery, emit } from 'rule-judgment'
+import dayjs from 'dayjs'
+import { ParseData, formatData, toValue } from 'parse-string'
+import { httpClient } from './http-client'
+import * as esprima from 'esprima'
+import escodegen from 'escodegen'
+
+/**
+ * 格式化字符串
+ * @param value 
+ * @param format 
+ * @param replace 
+ */
+export function formatString (value: any, format?: ParseData.format | ParseData.format[], replace?: string | number) {
+  if (!value && value != 0) return replace ?? value
+  if (!format) return value
+  return formatData(format, {
+    dateFormat: (date: any, format: string = 'YYYY-MM-DD') => dayjs(date).format(format)
+  })(value)
+}
+
+export async function asyncRequire (url: string) {
+  try {
+    let result = await httpClient().GET<string>(url)
+    let escode = readEscode(result ?? '') 
+    return escode
+  } catch (error) {
+    return undefined
+  }
+}
+
+/**
+ * 运行Js代码
+ * @param code 
+ */
+ export function readEscode (source: string) {
+  let ast = esprima.parseModule(source)
+  let result = escodegen.generate(ast)
+  // tslint:disable-next-line: no-eval
+  return eval(result)
+}
+
+/**
+ * 解析模版
+ * @param tpl 
+ * @param context 
+ */
+export function parseTemplate (tpl: string, context: object) {
+  let env = new nunjucks.Environment()
+  env.addFilter(parseDate.name, value => String(parseDate(value))) // 解析时间字面量
+  return env.renderString(tpl, context)
+}
 
 /**
  * 解析命令指向
@@ -75,8 +126,8 @@ export function filterDataNode (data: Channel.DataNode[], keywords: string, list
 export function isDisabled (disabled: boolean | FilterQuery<any> | string, env: Record<string, any> = {}) {
   if (!disabled) return false
   let query = disabled
-  if (isString(disabled) && isYaml(disabled)) {
-    query = jsYaml.safeLoad(nunjucks.renderString(disabled, { ...env })) as FilterQuery<any>
+  if (isString(disabled)) {
+    query = jsYaml.safeLoad(parseTemplate(disabled, { ...env })) as FilterQuery<any>
     if (!isPlainObject(query)) return false
   } 
   if (isPlainObject(query)) {
@@ -94,8 +145,8 @@ export function isDisabled (disabled: boolean | FilterQuery<any> | string, env: 
 export function isFilter (conditions: FilterQuery<any> | string, env: Record<string, any> = {}) {
   if (!conditions) return true
   let query = conditions
-  if (isString(conditions) && isYaml(conditions)) {
-    query = jsYaml.safeLoad(nunjucks.renderString(conditions, { ...env })) as FilterQuery<any>
+  if (isString(conditions)) {
+    query = jsYaml.safeLoad(parseTemplate(conditions, { ...env })) as FilterQuery<any>
     if (!isPlainObject(query)) return true
   } 
   let filter = ruleJudgment(query as FilterQuery<any>)
@@ -110,8 +161,8 @@ export function isFilter (conditions: FilterQuery<any> | string, env: Record<str
 export function getFilter (conditions: FilterQuery<any> | string, env: Record<string, any> = {}) {
   if (!conditions) return (data: any) => true
   let query: FilterQuery<any> = conditions as FilterQuery<any>
-  if (isString(conditions) && isYaml(conditions)) {
-    query = jsYaml.safeLoad(nunjucks.renderString(conditions, { ...env })) as FilterQuery<any>
+  if (isString(conditions)) {
+    query = jsYaml.safeLoad(parseTemplate(conditions, { ...env })) as FilterQuery<any>
   }
   if (!isPlainObject(query)) return (data: any) => true
   return ruleJudgment(query)
@@ -146,36 +197,114 @@ export function isYaml (str: string): boolean {
 /**
  * 解析成时间格式
  */
-export function parseDate (value: string | Date) {
+export function parseDate (value: string | Date, nowValue?: Date | null): Date | null {
   if (isDate(value)) {
     return value
   }
-  let data = {
-    'now': new Date(),
-    'today': new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
-    'days': new Date().getDate(),
-    'month': new Date().getMonth(),
-    'year': new Date().getFullYear()
+  // 组合使用
+  if (/(\_)/.test(value)) {
+    let dates = value.split(/\_/)
+    let now: Date | null = null
+    for (let item of dates) {
+      if (now && !/(day?(s|e)|week?(s|e))$/.test(item)) break
+      now = parseDate(item, now)
+    }
+    return now
   }
-  let result =  template(value, { interpolate: /{([\s\S]+?)}/g })(data)
-  // tslint:disable-next-line: no-eval
-  let time = eval(result)
-  if (/(years)/.test(value)) {
-    time = new Date().setFullYear(time, 0, 0)
+  let dateValue = paeseDateString(value)
+  // 当前时间
+  if (value === 'now') {
+    return new Date()
   }
-  else if (/(year)/.test(value)) {
-    time = new Date().setFullYear(time)
+  // 今天
+  else if (value === 'today') {
+    return parseDate('days')
   }
-  else if (/(months)/.test(value)) {
-    time = new Date().setMonth(time, 0)
+  // 昨天
+  else if (value === 'yesterday') {
+    return parseDate('-1 days')
   }
-  else if (/(month)/.test(value)) {
-    time = new Date().setMonth(time)
+  // 天的当前时间
+  else if (/(day)$/.test(value)) {
+    let today = nowValue ?? new Date()
+    return new Date(today.setDate(today.getDate() + dateValue))
   }
-  else if (/(days)/.test(value)) {
-    time = new Date().setDate(time)
+  // 天的开始时间
+  else if (/(days)$/.test(value)) {
+    let today = nowValue ?? new Date()
+    return new Date(new Date(today.setDate(today.getDate() + dateValue)).setHours(0, 0, 0, 0))
   }
-  return new Date(time)
+  // 天的结束时间
+  else if (/(daye)$/.test(value)) {
+    let today = nowValue ?? new Date()
+    return new Date(new Date(today.setDate(today.getDate() + dateValue)).setHours(23, 59, 59, 999))
+  }
+  // 周的当前时间
+  else if (/(week)$/.test(value)) {
+    let now = nowValue ?? new Date()
+    let nowDayOfWeek = now.getDay() - 1
+    let date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - nowDayOfWeek + (dateValue * 7) + nowDayOfWeek)
+      .setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
+    return new Date(date)
+  }
+  // 周的开始时间
+  else if (/(weeks)$/.test(value)) {
+    let now = nowValue ?? new Date()
+    let nowDayOfWeek = now.getDay() - 1
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate() - nowDayOfWeek + (dateValue * 7) + 0)
+  }
+  // 周的结束时间
+  else if (/(weeke)$/.test(value)) {
+    let now = nowValue ?? new Date()
+    let nowDayOfWeek = now.getDay() - 1
+    let date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - nowDayOfWeek + (dateValue * 7) + 6)
+      .setHours(23, 59, 59, 999)
+    return new Date(date)
+  }
+  // 月份的当前时间
+  else if (/(month)$/.test(value)) {
+    return new Date(new Date(new Date().setMonth(dateValue)))
+  }
+  // 月份的开始时间
+  else if (/(months)$/.test(value)) {
+    return new Date(new Date(new Date().setMonth(dateValue, 1)).setHours(0, 0, 0, 0))
+  }
+  // 月份的结束时间
+  else if (/(monthe)$/.test(value)) {
+    let offset = dateValue - new Date().getMonth() + 1
+    return new Date(parseDate(`${offset} months`)!.getTime() - 1)
+  }
+  // 年份的当前时间
+  else if (/(year)$/.test(value)) {
+    return new Date(new Date().setFullYear(dateValue))
+  }
+  // 年份的开始时间
+  else if (/(years)$/.test(value)) {
+    return new Date(new Date(new Date().setFullYear(dateValue, 0, 1)).setHours(0, 0, 0, 0))
+  }
+  // 年份的结束时间
+  else if (/(yeare)$/.test(value)) {
+    return new Date(new Date(new Date().setFullYear(dateValue, 11, 31)).setHours(23, 59, 59, 999))
+  }
+  return null
+}
+
+export function paeseDateString (value: string) {
+  let [ label, suffix ] = value.split(/\s+/)
+  let [ type ] = value.match(/(year|month|day|week)/) ?? []
+  let date = {
+    day: 0,
+    month: new Date().getMonth(),
+    year: new Date().getFullYear()
+  }
+  let val = get(date, type) ?? 0
+  if (/(\d+){4}/.test(label)) {
+    val = Number(label)
+  }
+  else if (!isNaN(Number(label))) {
+    val += Number(label)
+  }
+  return val
 }
 
 /**
@@ -197,8 +326,11 @@ export function getUrl (url: string, params?: Record<string, string>) {
  */
  export function parseParams (params: any) {
   return (data?: Record<string, any>) => {
+    let parseData = merge(data, {
+      // now: parseDate('{now}')
+    })
     let str = isString(params) ? params : jsYaml.safeDump(params)
-    let val = nunjucks.renderString(str, data ?? {})
+    let val = nunjucks.renderString(str, parseData)
     return jsYaml.load(val)
   }
 }

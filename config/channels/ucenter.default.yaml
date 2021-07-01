@@ -42,3 +42,17 @@ children:
         disabled: |-
           auth.group.level:
             $lt: 9998
+  # 票据管理
+  - key: 2-2
+    name: 票据管理
+    children:
+      - key: 2-1-1
+        name: 票据列表
+        description: 管理用户组/角色配置
+        keywords: [ 用户中心, 票据管理, 票据列表, yonghu, yh, piaoju, ticket, pj ]
+        route: /ucenter/ticket
+        configuration: /data/pages/ucenter/ticket.yml
+        refresh: true
+        disabled: |-
+          auth.group.level:
+            $lt: 9998

@@ -42,6 +42,20 @@
               </el-button>
             </template>
           </template>
+          <!-- 处理状态 -->
+          <template v-else-if="column.status">
+            <template v-for="item in column.status">
+              <el-tag :key="item.key" v-if="isFilter(item.conditions, { row: scope.row })" :type="item.type">{{item.name}}</el-tag>
+            </template>
+          </template>
+          <!-- 处理模版 -->
+          <template v-else-if="column.template">
+            <span>{{ parseTemplate(column.template, scope.row) }}</span>
+          </template>
+          <el-tooltip v-else-if="column.clipboard" content="点击复制" placement="top">
+            <el-link v-clipboard="handleClipboard(getValues(scope.row, column.key))" >{{ getValues(scope.row, column.key) }}</el-link>
+          </el-tooltip>
+          
           <span v-else>{{ getValues(scope.row, column.key) }}</span>
         </template>
       </el-table-column>
@@ -64,6 +78,7 @@ import { cloneDeep, orderBy, chunk, get } from 'lodash'
 import { Channel } from '@/types/client'
 import ruleJudgment from 'rule-judgment'
 import EnvironmentMixin from '~/mixins/environment'
+import { formatString, parseTemplate } from '@/utils'
 
 interface Conditions {
   size     ?: number
@@ -129,6 +144,8 @@ export default class WebTable extends mixins(EnvironmentMixin) {
 
   @Provide()
   keywords: string = ''
+
+  parseTemplate = parseTemplate
 
   @Emit('get-data')
   getData (request: Channel.RequestConfig, options: Conditions | null, next?: (data: Record<string, any>[]) => void) {}
@@ -201,14 +218,14 @@ export default class WebTable extends mixins(EnvironmentMixin) {
         let { prop, order } = this.sortOptions
         conditions.sort = [ prop, order ]
       }
-      this.getData(this.request, conditions)
+      this.toPage(page)
       return
     }
     this.current = page
     if (this.pageno !== page) {
       this.toPage(page)
     }
-    let tmpData = cloneDeep(data)
+    let tmpData = cloneDeep(data ?? this.Idata)
     if (this.sortOptions?.order) {
       let { prop, order } = this.sortOptions
       tmpData = orderBy(tmpData, [ prop ], [ order.replace(/(ending)$/, '') as 'asc' | 'desc' ])
@@ -225,8 +242,15 @@ export default class WebTable extends mixins(EnvironmentMixin) {
   getValues (values: Record<string, any>, key: string) {
     let value = get(values, key)
     let filter = ruleJudgment({ key: { $eq: key } })
-    let { defaultValue } = this.columns.find(filter) ?? {}
-    return value ?? defaultValue
+    let { defaultValue, format } = this.columns.find(filter) ?? {}
+    if (format) {
+      // console.log(format, is)
+    }
+    return formatString(value, format, defaultValue)
+  }
+
+  handleClipboard (value: string) {
+    return value
   }
 }
 </script>

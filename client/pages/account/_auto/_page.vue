@@ -14,8 +14,13 @@
         @upload-file="uploadFile"
         @submit="handleSubmit"
         @command="handleCommand"
+        @to-page="toPage"
         :unique="handleUnique"
         :loading="loading"
+        :data="data"
+        :pageno="pageno"
+        :counts="counts"
+        :pagination="pagination"
         :times="times"
         :env="env"
         />
@@ -62,13 +67,12 @@
 import { Component, mixins, Provide, Watch, Vue } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Channel, HttpResult, HttpClientOptions } from '@/types/client'
-import { isString, merge, get } from 'lodash'
-import { isYaml, parseParams, runCommand, getFilter } from '@/utils'
+import { isString, merge, get, set, cloneDeep, assign, omit } from 'lodash'
+import { isYaml, parseParams, runCommand, getFilter, parseTemplate } from '@/utils'
 import jsYaml from 'js-yaml'
 import { PutResult } from '@kenote/upload'
-import nunjucks from 'nunjucks'
 import { UserDocument } from '@/types/services/db'
-import { ElMessageBoxOptions, MessageBoxInputData } from 'element-ui/types/message-box'
+import { ElMessageBoxOptions } from 'element-ui/types/message-box'
 
 interface DrawerOptions {
   key         : string
@@ -115,7 +119,19 @@ export default class AutoPage extends mixins(PageMixin) {
   uniqueOptions: Channel.RequestConfig = {}
 
   @Provide()
-  data: any = null
+  data: Record<string, any>[] | null = null
+
+  @Provide()
+  pageno: number = 1
+
+  @Provide()
+  counts: number = 0
+
+  @Provide()
+  pagination: number | false = false
+
+  @Provide()
+  conditions: Record<string, any> = {}
 
   @Provide()
   selected: Record<string, any> | null = null
@@ -184,13 +200,19 @@ export default class AutoPage extends mixins(PageMixin) {
       try {
         let result = await this.$httpClient().GET(configuration)
         if (!isString(result) && !isYaml(result)) return
-        let { tools, components, uniqueOptions, env, actions } = jsYaml.load(result) as Channel.Configuration
+        let { tools, components, uniqueOptions, env, actions, initialData, pageSize } = jsYaml.load(result) as Channel.Configuration
         this.tools = tools ?? []
         this.configuration = result
         this.components = components ?? []
         this.uniqueOptions = uniqueOptions ?? {}
         this.env = merge(this.env, env)
         this.actionOptions = actions ?? {}
+        if (pageSize) {
+          this.pagination = pageSize
+        }
+        if (initialData) {
+          this.handleSubmit(this.conditions, initialData.request!, initialData.submitOptions ?? {})
+        }
       } catch (error) {
         
       }
@@ -215,7 +237,7 @@ export default class AutoPage extends mixins(PageMixin) {
     if (request.loading) {
       this.loading = true
     }
-    let Iurl = nunjucks.renderString(url ?? '', this.env)
+    let Iurl = parseTemplate(url ?? '', this.env)
     let IParams = parseParams(params ?? {})(this.env)
     console.log(IParams)
     setTimeout(async () => {
@@ -229,14 +251,27 @@ export default class AutoPage extends mixins(PageMixin) {
     
   }
 
+  toPage (page: number) {
+    this.pageno = page
+    let action = get(this.actionOptions, 'refresh')
+    if (action) {
+      let { request, confirm, method, submitOptions } = action as Channel.ActionOptions
+      this.handleSubmit(merge(this.conditions, { page}), request!, submitOptions ?? {})
+    }
+  }
+
   /**
    * 提交数据
    */
   handleSubmit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {
     let { method, url, headers } = action ?? {}
-    let { success, commit, afterCommand } = options
+    let { success, commit, afterCommand, assignment, pagination } = options
     let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
-    let Iurl = nunjucks.renderString(url ?? '', this.env)
+    let Iurl = parseTemplate(url ?? '', this.env)
+    if (pagination === 'remote') {
+      this.pageno = values.page ?? 1
+      values = merge({ page: this.pageno, size: this.pagination }, values)
+    }
     this.loading = true
     setTimeout(async () => {
       try {
@@ -248,7 +283,13 @@ export default class AutoPage extends mixins(PageMixin) {
           this.$message.error(result.error)
         }
         else {
-          this.data = result.data
+          if (assignment) {
+            this.conditions = omit(values, ['page', 'size'])
+            set(this.env, 'conditions', omit(values, ['page', 'size']))
+            for (let [key, val] of Object.entries(assignment)) {
+              set(this, key as string, get(result, val))
+            }
+          }
           if (commit) {
             let commitType = get(this.types, commit)
             commitType && this.$store.commit(commitType, result.data)
@@ -317,11 +358,19 @@ export default class AutoPage extends mixins(PageMixin) {
   handleCommand (value: string, row?: Record<string, any>, component?: Vue) {
     return runCommand(this, {
       action: async (type: string, row: Record<string, any> | null) => {
+        console.log(type, row)
         let action = get(this.actionOptions, type)
         if (action) {
-          let { request, confirm, method } = action
+          let { request, confirm, method, submitOptions } = action as Channel.ActionOptions
           if (confirm) {
             await this.actionConfirm(action, row!)
+          }
+          else if (submitOptions) {
+            let conditions = cloneDeep(this.conditions)
+            if (submitOptions.pagination === 'remote') {
+              conditions = merge(this.conditions, { page: this.pageno })
+            }
+            this.handleSubmit(conditions, request!, submitOptions)
           }
           else if (method) {
             if (component) {
@@ -357,7 +406,8 @@ export default class AutoPage extends mixins(PageMixin) {
     if (!row) {
       return this.$message.warning(`缺少操作对象！`)
     }
-    let { request, confirm } = config
+    let { request, confirm, submitOptions } = config
+    let { afterCommand, success } = submitOptions ?? {}
     let options: ElMessageBoxOptions = {
       confirmButtonText    : '确定',
       cancelButtonText     : '取消',
@@ -365,8 +415,23 @@ export default class AutoPage extends mixins(PageMixin) {
     }
     try {
       await this.$confirm(confirm?.message!, confirm?.title ?? '提示', options)
-      let { method, url } = request!
-      // let result = await this.$httpClient(this.httpOptions)[method ?? 'POST'](url ?? '', values) as HttpResult<any>
+      let { method, url, params  } = request!
+      let Iurl = parseTemplate(url ?? '', { row })
+      console.log(Iurl)
+      let IParams = parseParams(params ?? {})({ row })
+      console.log(IParams)
+      let result = await this.$httpClient(this.httpOptions)[method ?? 'POST'](Iurl, IParams) as HttpResult<any>
+      if (result.error) {
+        this.$message.error(result.error)
+      }
+      else {
+        this.$message.success(success ?? '信息已更新')
+        if (afterCommand) {
+          for (let item of afterCommand) {
+            this.handleCommand(item, {}, this.parent ?? undefined)
+          }
+        }
+      }
     } catch (error) {
       this.$message.info(confirm?.cancel ?? `您已取消操作`)
     }
@@ -382,8 +447,8 @@ export default class AutoPage extends mixins(PageMixin) {
    */
   async handleUnique (name: string, path: string | null, type: string) {
     let { url, params, headers } = this.uniqueOptions
-    let Iurl = nunjucks.renderString(url ?? '', { type })
-    let Iparams = nunjucks.renderString(params ?? '', { name, _id: get(this, path!) })
+    let Iurl = parseTemplate(url ?? '', { type })
+    let Iparams = parseTemplate(url ?? '', { name, _id: get(this, path!) })
     let values = jsYaml.safeLoad(Iparams)
     let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
     try {

@@ -110,12 +110,20 @@ export declare namespace Channel {
     uniqueOptions ?: RequestConfig
     env           ?: Record<string, any>
     actions       ?: Record<string, ActionOptions>
+    initialData   ?: InitialData
+    pageSize      ?: number
+  }
+
+  interface InitialData {
+    request       ?: RequestConfig
+    submitOptions ?: SubmitOptions
   }
 
   interface ActionOptions {
     request       ?: RequestConfig
     confirm       ?: ConfirmOptions
     method        ?: string
+    submitOptions ?: SubmitOptions
   }
 
   interface ConfirmOptions {
@@ -228,6 +236,10 @@ export declare namespace Channel {
      * 排除字段
      */
     exclude       ?: string[]
+    /**
+     * 合并字段
+     */
+    merge         ?: Record<string, string[]>
     /**
      * 提交按钮名称
      */
@@ -383,6 +395,14 @@ export declare namespace Channel {
      * 操作选项
      */
     emit          ?: EmitOptions[]
+    /**
+     * 回调赋值
+     */
+    assignment    ?: Record<string, string>
+    /**
+     * 分页模式
+     */
+    pagination    ?: string
   }
 
   // 表格单元
@@ -416,6 +436,18 @@ export declare namespace Channel {
      */
     format        ?: ParseData.format | ParseData.format[]
     /**
+     * 模版
+     */
+    template      ?: string
+    /**
+     * 状态
+     */
+    status        ?: StatusOptions[]
+    /**
+     * 剪贴板
+     */
+    clipboard     ?: boolean
+    /**
      * 默认值
      */
     defaultValue  ?: string | number
@@ -427,6 +459,28 @@ export declare namespace Channel {
      * 列排序
      */
     sortable      ?: boolean | 'custem'
+  }
+
+  /**
+   * 状态选项
+   */
+  interface StatusOptions {
+    /**
+     * 字段名称
+     */
+    key            : string
+    /**
+     * 字段 Label
+     */
+    name           : string
+    /**
+     * 类型
+     */
+    type           : string
+    /**
+     * 显示条件
+     */
+    conditions    ?: FilterQuery<any> | string
   }
 
   /**

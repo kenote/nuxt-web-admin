@@ -1,5 +1,8 @@
 import { HttpError } from 'http-errors'
 import { Context, NextHandler } from '@kenote/core'
+import { isSafeInteger, toSafeInteger, isPlainObject, isBoolean } from 'lodash'
+import { isDateString } from 'rule-judgment'
+import validator from 'validator'
 
 export { ErrorCode, ErrorMessage, httpError } from './error'
 export { default as logger } from './logger'
@@ -16,4 +19,21 @@ export function nextError (error: HttpError, ctx: Context, next: NextHandler) {
   else {
     return next(error)
   }
+}
+
+export function toPageInfo (pageno: number, size: number = 10) {
+  size = toSafeInteger(size)
+  let limit = isNaN(size) || size < 1 ? 10 : size
+  let parseVal = toSafeInteger(pageno ?? 1)
+  let val = isNaN(parseVal) ? 1 : parseVal
+  let page = isNaN(val) || val < 1 ? 1 : parseVal
+  let skip = (page -1) * limit
+  return { page, skip, limit }
+}
+
+export const customize = {
+  isDateString,
+  isPlainObject,
+  isBoolean,
+  toBoolean: value => validator.toBoolean(value)
 }

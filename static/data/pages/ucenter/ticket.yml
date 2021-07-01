@@ -1,0 +1,429 @@
+
+# 设置环境变量
+env:
+  display: list
+  dialog: none
+  ticketTypes: &ticketTypes
+    - key: cdkey
+      name: 兑换码
+    - key: register
+      name: 注册邀请码
+
+# 页面分页大小
+pageSize: 5
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    conditions: |-
+      display: list
+    options:
+      layout: vertical
+      alignItems: flex-start
+      children:
+        # - key: 1-1-1
+        #   name: web-container
+        #   options:
+        #     width: 100%
+        #     margin: 0 0 20px
+        #     children:
+        #       - key: 1-1-1-1
+        #         name: web-button
+        #         options:
+        #           name: 创建票据
+        #           type: primary
+        #           size: medium
+        #           command: action:create
+        - key: 1-1-2
+          name: web-form
+          options:
+            inline: true
+            columns:
+              - key: name
+                name: 票据名称
+                type: input
+                placeholder: 请输入票据名称
+                options:
+                  clearable: true
+                width: 200
+              - key: type
+                name: 票据类型
+                type: select
+                placeholder: 请选择票据类型
+                data: *ticketTypes
+                options:
+                  clearable: true
+                width: 200
+              - key: expired
+                name: 过期状态
+                type: select
+                placeholder: 请选择过期状态
+                data: 
+                  - key: true
+                    name: 已过期
+                  - key: false
+                    name: 未过期
+                options:
+                  clearable: true
+                width: 160
+              - key: used
+                name: 使用状态
+                type: select
+                placeholder: 请选择使用状态
+                data: 
+                  - key: true
+                    name: 已使用
+                  - key: false
+                    name: 未使用
+                options:
+                  clearable: true
+                width: 160
+            # 规则验证
+            rules:
+            # 请求地址
+            action:
+              method: POST
+              url: /api/ticket
+            # 提交按钮名称
+            submitName: 搜 索
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: create
+                  name: 创建票据
+                  type: button
+                  style: success
+                  command: action:create
+              success: 新数据已拉取
+              assignment:
+                data: data.data
+                counts: data.counts
+                pagination: data.limit
+              pagination: remote
+            # 设置默认值
+            defaultValues: {}
+            # 对提交值格式化
+            valueFormat:
+              used:
+                type: map
+              expired:
+                type: map
+        - key: 1-1-3
+          name: web-table
+          options:
+            columns:
+              - key: id
+                name: ID
+                width: 80
+                fixed: left
+              - key: name
+                name: 名称
+                width: 120
+                align: left
+              - key: type
+                name: 类型
+                width: 120
+                align: left
+                format:
+                  - type: string
+                    maps:
+                      cdkey: 兑换码
+                      register: 注册邀请码
+              - key: cdkey
+                name: 密钥
+                width: 350
+                align: left
+                clipboard: true
+              - key: last_at
+                name: 失效时间
+                width: 180
+                align: left
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+              - key: $count
+                name: 使用次数
+                width: 80
+                template: '{{ uses }}/{{ stint }}'
+              - key: $expired_status
+                name: 过期状态
+                width: 100
+                status: 
+                  - key: expired
+                    name: 已过期
+                    type: danger
+                    conditions: |-
+                      row.last_at:
+                        $lte: {{ 'now' | parseDate }}
+                  - key: not_expired
+                    name: 未过期
+                    type: successs
+                    conditions: |-
+                      row.last_at:
+                        $gt: {{ 'now' | parseDate }}
+              - key: $used_status
+                name: 使用状态
+                width: 100
+                status:
+                  - key: used
+                    name: 已使用
+                    type: info
+                    conditions: |-
+                      row.used: true
+                  - key: not_used
+                    name: 不可使用
+                    type: warning
+                    conditions: |-
+                      $and:
+                        - row.used: false
+                        - row.last_at:
+                            $lte: {{ 'now' | parseDate }}
+                  - key: be_used
+                    name: 可使用
+                    type: successs
+                    conditions: |-
+                      $and:
+                        - row.used: false
+                        - row.last_at:
+                            $gt: {{ 'now' | parseDate }}
+              - key: $space
+                minWidth: 10 
+              - key: actions
+                name: 操作
+                fixed: right
+                align: left
+                width: 160
+                emit:
+                  - key: edit
+                    name: 编辑
+                    type: button
+                    style: primary
+                    command: action:edit
+                  - key: delete
+                    name: 删除
+                    type: button
+                    style: danger
+                    command: action:remove
+  - key: 1-2
+    name: web-container
+    conditions: |-
+      display: create
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-2-1
+          name: web-form
+          options:
+            name: 创建票据
+            columns:
+              - key: name
+                name: 票据名称
+                type: input
+                placeholder: 请输入票据名称
+              - key: type
+                name: 票据类型
+                type: select
+                placeholder: 请输选择票据类型
+                data: *ticketTypes
+              - key: group
+                name: 对应用户组
+                type: select
+                placeholder: 请输选择对用用户组
+                request:
+                  method: POST
+                  url: /api/group/lite
+                props:
+                  key: _id
+                format: '[{id}] {name}'
+                conditions: |-
+                  values.type: register
+              - key: stint
+                name: 最大次数
+                type: input-number
+                min: 1
+                max: 9999
+              - key: last_at
+                name: 失效时间
+                type: datetime
+                placeholder: 请输选择失效时间
+            # 规则验证
+            rules:
+              name:
+                - required: true
+                  message: 请输入票据名称
+              type:
+                - required: true
+                  message: 请选择票据类型
+              group:
+                - required: true
+                  message: 请选择对应用户组
+              last_at:
+                - required: true
+                  message: 请输选择失效时间
+            # 请求地址
+            action:
+              method: POST
+              url: /api/ticket/create
+            # 排除项
+            exclude:
+              - group
+            # 合并项
+            merge:
+              setting: [ group ]
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 票据已创建
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            defaultValues: |-
+              stint: 1
+  - key: 1-3
+    name: web-container
+    conditions: |-
+      display: edit
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-2-1
+          name: web-form
+          options:
+            name: 编辑票据
+            columns:
+              - key: name
+                name: 票据名称
+                type: input
+                placeholder: 请输入票据名称
+              - key: type
+                name: 票据类型
+                type: select
+                placeholder: 请输选择票据类型
+                data: *ticketTypes
+                disabled: true
+              - key: group
+                name: 对应用户组
+                type: select
+                placeholder: 请输选择对用用户组
+                request:
+                  method: POST
+                  url: /api/group/lite
+                props:
+                  key: _id
+                format: '[{id}] {name}'
+                conditions: |-
+                  values.type: register
+              - key: stint
+                name: 最大次数
+                type: input-number
+                min: 1
+                max: 9999
+              - key: last_at
+                name: 失效时间
+                type: datetime
+                placeholder: 请输选择失效时间
+            # 规则验证
+            rules:
+              name:
+                - required: true
+                  message: 请输入票据名称
+              type:
+                - required: true
+                  message: 请选择票据类型
+              group:
+                - required: true
+                  message: 请选择对应用户组
+              last_at:
+                - required: true
+                  message: 请输选择失效时间
+            # 请求地址
+            action:
+              method: POST
+              url: /api/ticket/edit/{{selected._id}}
+            # 排除项
+            exclude:
+              - group
+            # 合并项
+            merge:
+              setting: [ group ]
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 票据已创建
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            # defaultValues: |-
+            #   stint: 1
+            # 设置默认值
+            defaultValues: |-
+              name: {{selected.name}}
+              type: {{selected.type}}
+              group: {{selected.setting.group}}
+              stint: {{selected.stint}}
+              last_at: {{selected.last_at}}
+
+
+
+# 初始化数据
+initialData:
+  request:
+    method: POST
+    url: /api/ticket
+  submitOptions:
+    success: 新数据已拉取
+    assignment:
+      data: data.data
+      counts: data.counts
+      pagination: data.limit
+    pagination: remote
+
+# 定义 Action
+actions:
+  # 刷新
+  refresh:
+    request:
+      method: POST
+      url: /api/ticket
+    submitOptions:
+      success: 新数据已拉取
+      assignment:
+        data: data.data
+        counts: data.counts
+        pagination: data.limit
+      pagination: remote
+  # 访问权限
+  # 删除操作
+  remove:
+    request:
+      method: DELETE
+      url: |-
+        /api/ticket/{{row._id}}
+    confirm:
+      message: 确认要永久删除该票据, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 票据已删除
+      afterCommand: 
+        - action:refresh
