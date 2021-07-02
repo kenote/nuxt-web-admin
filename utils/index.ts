@@ -176,8 +176,8 @@ export function getFilter (conditions: FilterQuery<any> | string, env: Record<st
 export function getConditions (conditions: FilterQuery<any> | string, env: Record<string, any> = {}) {
   if (!conditions) return null
   let query = conditions
-  if (isString(conditions) && isYaml(conditions)) {
-    query = jsYaml.safeLoad(nunjucks.renderString(conditions, { ...env })) as FilterQuery<any>
+  if (isString(conditions)) {
+    query = jsYaml.safeLoad(parseTemplate(conditions, { ...env })) as FilterQuery<any>
   }
   if (!isPlainObject(query)) return null
   return query as FilterQuery<any>

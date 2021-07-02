@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {
+  Alert,
   Autocomplete,
   Avatar,
   Backtop,
@@ -63,6 +64,7 @@ import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 import CascaderPanel from 'element-ui/lib/cascader-panel'
 
 export default () => {
+  Vue.use(Alert)
   Vue.use(Autocomplete)
   Vue.use(Avatar)
   Vue.use(Backtop)

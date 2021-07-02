@@ -352,6 +352,10 @@ export declare namespace Channel {
      * 显示条件
      */
     conditions    ?: FilterQuery<any> | string
+    /**
+     * 后缀显示文字
+     */
+    suffix        ?: string
   }
 
   interface SubmitOptions {

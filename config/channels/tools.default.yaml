@@ -1,0 +1,31 @@
+
+
+# 频道 key
+key: !!str 5
+# 频道 名称
+name: 系统工具
+# 频道标识
+label: tools
+# 频道描述
+description: 系统工具
+# 路由入口
+route: /tools
+# 图标
+icon: iconfont icon-Tools
+# 选项
+options: {}
+# 展现条件
+conditions: |-
+  auth.group.level:
+    $gte: 9000
+# 分栏页面
+children:
+  # 帐户管理
+  - key: 5-1
+    name: 数据转换
+    children:
+      - key: 5-1-1
+        name: 人民币转换
+        description: 转换人民币大写
+        keywords: [ 系统工具, 人民币转换, 人民币大写, daxie, dx, rmb ]
+        route: /tools/rmb

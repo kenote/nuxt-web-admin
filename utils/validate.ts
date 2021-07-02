@@ -88,3 +88,16 @@ export function validateCDKey (name: string) {
     return callback()
   }
 }
+
+export function validateDecimal () {
+  return (rule: any, value: any, callback: (message?: string) => any) => {
+    let valid = validator.isDecimal(value)
+    if (!valid) {
+      return callback('请输入正确的小写金额')
+    }
+    if (Number(value) > 100000000000) {
+      return callback('金额过大，应小于1000亿元')
+    }
+    return callback()
+  }
+}

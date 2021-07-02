@@ -46,6 +46,7 @@
                     @upload-file="uploadFile"
                     @change="isChange && $emit('change', parseValues(values))"
                     />
+                  <span v-if="item.suffix">{{ item.suffix }}</span>
                 </el-form-item>
               </template>
             </template>
@@ -53,7 +54,6 @@
         
         <el-col v-if="display" :span="11" style="padding-top:40px;">
           <slot name="display"></slot>
-          ddd
         </el-col>
       </el-row>
       <el-row v-if="!isChange" :gutter="20">
@@ -209,6 +209,9 @@ export default class WebForm extends mixins(EnvironmentMixin) {
   @Emit('command')
   command (type: string, row: Record<string, any>) {}
 
+  @Emit('reset')
+  reset (values: Record<string, any>) {}
+
   handleSubmit () {
     let theForm = this.$refs['theForm'] as ElForm
     theForm.validate(valid => {
@@ -259,6 +262,7 @@ export default class WebForm extends mixins(EnvironmentMixin) {
   handleRest () {
     let theForm = this.$refs['theForm'] as ElForm
     theForm.resetFields()
+    this.$emit('reset', this.DefaultValues)
     this.values = cloneDeep(this.DefaultValues)
   }
   
