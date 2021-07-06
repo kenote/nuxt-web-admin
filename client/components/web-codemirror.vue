@@ -18,7 +18,7 @@ import { isEmpty, isBoolean } from 'lodash'
 @Component<WebCodeMittor>({
   name: 'web-codemirror',
   mounted () {
-    this.code = this.value
+    this.code = this.value ?? ''
   }
 })
 export default class WebCodeMittor extends Vue {

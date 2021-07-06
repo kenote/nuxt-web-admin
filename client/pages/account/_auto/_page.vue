@@ -15,6 +15,7 @@
         @submit="handleSubmit"
         @command="handleCommand"
         @to-page="toPage"
+        @selection-change="selectionChange"
         :unique="handleUnique"
         :loading="loading"
         :data="data"
@@ -88,7 +89,8 @@ interface DrawerOptions {
   created () {
     this.env = {
       auth: this.auth,
-      selected: this.selected
+      selected: this.selected,
+      selection: this.selection
     }
   },
   mounted () {
@@ -137,6 +139,9 @@ export default class AutoPage extends mixins(PageMixin) {
   selected: Record<string, any> | null = null
 
   @Provide()
+  selection: Record<string, any>[] = []
+
+  @Provide()
   parent: Vue | null = null
 
   @Provide()
@@ -178,9 +183,15 @@ export default class AutoPage extends mixins(PageMixin) {
   }
 
   @Watch('selected')
-  onSelectedChange (val: UserDocument, oldVal: UserDocument) {
+  onSelectedChange (val: Record<string, any>, oldVal: Record<string, any>) {
     if (val === oldVal) return
     this.env.selected = val
+  }
+
+  @Watch('selection')
+  onSelectionChange (val: Record<string, any>[], oldVal: Record<string, any>[]) {
+    if (val === oldVal) return
+    this.env.selection = val
   }
 
   getComponentOptions (component: Channel.Component) {
@@ -251,13 +262,23 @@ export default class AutoPage extends mixins(PageMixin) {
     
   }
 
+  /**
+   * 跳转页号
+   */
   toPage (page: number) {
     this.pageno = page
     let action = get(this.actionOptions, 'refresh')
     if (action) {
       let { request, confirm, method, submitOptions } = action as Channel.ActionOptions
-      this.handleSubmit(merge(this.conditions, { page}), request!, submitOptions ?? {})
+      this.handleSubmit(merge(this.conditions, { page }), request!, submitOptions ?? {})
     }
+  }
+
+  /**
+   * 监听多选条目
+   */
+  selectionChange (selection: Record<string, any>[]) {
+    this.selection = selection
   }
 
   /**
@@ -416,10 +437,8 @@ export default class AutoPage extends mixins(PageMixin) {
     try {
       await this.$confirm(confirm?.message!, confirm?.title ?? '提示', options)
       let { method, url, params  } = request!
-      let Iurl = parseTemplate(url ?? '', { row })
-      console.log(Iurl)
-      let IParams = parseParams(params ?? {})({ row })
-      console.log(IParams)
+      let Iurl = parseTemplate(url ?? '', this.env)
+      let IParams = parseParams(params ?? {})(this.env)
       let result = await this.$httpClient(this.httpOptions)[method ?? 'POST'](Iurl, IParams) as HttpResult<any>
       if (result.error) {
         this.$message.error(result.error)

@@ -96,6 +96,14 @@ components:
                   type: button
                   style: success
                   command: action:create
+                - key: deletes
+                  name: 删除选中
+                  type: button
+                  style: danger
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:deletes
               success: 新数据已拉取
               assignment:
                 data: data.data
@@ -113,6 +121,18 @@ components:
         - key: 1-1-3
           name: web-table
           options:
+            selection: true
+            sorter:
+              request:
+                method: POST
+                url: /api/ticket
+              submitOptions:
+                success: 新数据已拉取
+                assignment:
+                  data: data.data
+                  counts: data.counts
+                  pagination: data.limit
+                pagination: remote
             columns:
               - key: id
                 name: ID
@@ -144,6 +164,7 @@ components:
                   - type: date
                     func: dateFormat
                     options: [ 'YYYY-MM-DD HH:mm:ss' ]
+                sortable: true
               - key: $count
                 name: 使用次数
                 width: 80
@@ -207,6 +228,8 @@ components:
                     type: button
                     style: danger
                     command: action:remove
+            # 展开信息；支持 Markdown
+            # expand: |-
   - key: 1-2
     name: web-container
     conditions: |-
@@ -422,6 +445,21 @@ actions:
         /api/ticket/{{row._id}}
     confirm:
       message: 确认要永久删除该票据, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 票据已删除
+      afterCommand: 
+        - action:refresh
+  # 多选删除
+  deletes:
+    request:
+      method: DELETE
+      url: |-
+        /api/ticket
+      params: |-
+        ids: [{% for item in selection %} {{item._id}}, {% endfor %}]
+    confirm:
+      message: 确认要永久删除所选票据, 是否继续?
       cancel: 您已取消删除操作！
     submitOptions:
       success: 票据已删除

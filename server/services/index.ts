@@ -1,6 +1,6 @@
 import { HttpError } from 'http-errors'
 import { Context, NextHandler } from '@kenote/core'
-import { isSafeInteger, toSafeInteger, isPlainObject, isBoolean } from 'lodash'
+import { isSafeInteger, toSafeInteger, isPlainObject, isBoolean, isArray } from 'lodash'
 import { isDateString } from 'rule-judgment'
 import validator from 'validator'
 
@@ -29,6 +29,17 @@ export function toPageInfo (pageno: number, size: number = 10) {
   let page = isNaN(val) || val < 1 ? 1 : parseVal
   let skip = (page -1) * limit
   return { page, skip, limit }
+}
+
+export function toArray (value: string | string[], splitter: string | RegExp = /\,/) {
+  return isArray(value) ? value : value.split(splitter)
+}
+
+export function toSortOptions (value?: string[]) {
+  let [ prop, order ] = value ?? []
+  if (!prop) return undefined
+  let options = { [prop]: /^(desc)/.test(order ?? 'asc') ? -1 : 0 }
+  return options
 }
 
 export const customize = {

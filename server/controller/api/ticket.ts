@@ -13,7 +13,7 @@ export default class TicketController {
   @Post('/', { filters: [ ...authenticate, filter.ticket.list ] })
   async list (ctx: Context, next: NextHandler) {
     let { ErrorCode, httpError, nextError, db, customize } = ctx.service
-    let { pageInfo, query } = ctx.payload
+    let { pageInfo, query, options } = ctx.payload
     let { limit, skip } = pageInfo
     let conditions: FilterQuery<TicketDocument> = {}
     if (query.name) {
@@ -35,7 +35,7 @@ export default class TicketController {
       }
     }
     try {
-      let result = await db.ticket.Dao.list(conditions, { limit, skip })
+      let result = await db.ticket.Dao.list(conditions, { ...options, limit, skip })
       return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)
@@ -74,12 +74,12 @@ export default class TicketController {
   /**
    * 删除票据 
    */
+  @Delete('/', { filters: [ ...authenticate, filter.ticket.remove ]})
   @Delete('/:_id', { filters: [ ...authenticate, filter.ticket.remove ]})
   async remove (ctx: Context, next: NextHandler) {
     let { ErrorCode, httpError, nextError, db } = ctx.service
-    let { _id } = ctx.params
     try {
-      let result = await db.ticket.Dao.remove({ _id })
+      let result = await db.ticket.Dao.remove(ctx.payload)
       return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)

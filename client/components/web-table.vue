@@ -1,6 +1,12 @@
 <template>
   <fragment>
-    <el-table ref="filterTable" :data="pdata" v-loading="loading" :border="border">
+    <el-table ref="filterTable" :data="pdata" @sort-change="handleSortChange" @selection-change="selectionChange" v-loading="loading" :border="border">
+      <el-table-column v-if="expand" type="expand" fixed="left" >
+        <template slot-scope="props">
+          <web-markdown :content="parseTemplate(expand, { ...env, row: props.row })" />
+        </template>
+      </el-table-column>
+      <el-table-column v-if="selectionOpen" type="selection" fixed="left" width="40" />
       <el-table-column v-for="(column, key) in columns" :key="key"
         :label="column.name"
         :prop="column.key"
@@ -8,6 +14,7 @@
         :width="column.width"
         :min-width="column.minWidth || 100"
         :sortable="column.sortable"
+        :show-overflow-tooltip="true"
         :align="column.align || 'center'">
         <template slot-scope="scope">
           <template v-if="column.emit">
@@ -74,7 +81,7 @@
 import { Component, Prop, Provide, Emit, Watch, mixins } from 'nuxt-property-decorator'
 import { Table as ElTable } from 'element-ui'
 import { DefaultSortOptions } from 'element-ui/types/table'
-import { cloneDeep, orderBy, chunk, get } from 'lodash'
+import { cloneDeep, orderBy, chunk, get, merge } from 'lodash'
 import { Channel } from '@/types/client'
 import ruleJudgment from 'rule-judgment'
 import EnvironmentMixin from '~/mixins/environment'
@@ -111,6 +118,15 @@ export default class WebTable extends mixins(EnvironmentMixin) {
 
   @Prop({ default: false })
   loading!: boolean
+
+  @Prop({ default: false })
+  selectionOpen!: boolean
+
+  @Prop({ default: undefined })
+  expand!: string
+
+  @Prop({ default: undefined })
+  sorter!: Channel.Sorter
 
   @Prop({ default: undefined })
   columns!: Channel.TableColumn[]
@@ -155,6 +171,9 @@ export default class WebTable extends mixins(EnvironmentMixin) {
 
   @Emit('command')
   command (type: string, row: Record<string, any>, component?: Vue) {}
+
+  @Emit('selection-change')
+  selectionChange (values: Record<string, any>[]) {}
 
   @Watch('data')
   onDataChange (val: Record<string, any>[], oldVal: Record<string, any>[]) {
@@ -208,7 +227,7 @@ export default class WebTable extends mixins(EnvironmentMixin) {
     }
   }
 
-  handleCurrentChange (page: number, data: Record<string, any>[]) {
+  handleCurrentChange (page: number, data?: Record<string, any>[]) {
     let pagesize = this.pagination || 10
     if (this.counts > -1) {
       if (this.current === page) return
@@ -239,6 +258,22 @@ export default class WebTable extends mixins(EnvironmentMixin) {
     }
   }
 
+  handleSortChange (column: DefaultSortOptions) {
+    let { prop, order } = column
+    this.sortOptions = order ? { prop, order } : undefined
+    if (this.sorter && this.counts > (this.pagination || 15)) {
+      let { request, submitOptions } = this.sorter
+      // 请求远程排序
+      let conditions: Conditions = { size: this.pagination || 15, page: this.current }
+      if (order) {
+        conditions.sort = [ prop, order ]
+      }
+      this.$emit('submit', conditions, request, submitOptions)
+      return
+    }
+    this.handleCurrentChange(this.current)
+  }
+
   getValues (values: Record<string, any>, key: string) {
     let value = get(values, key)
     let filter = ruleJudgment({ key: { $eq: key } })
@@ -249,6 +284,9 @@ export default class WebTable extends mixins(EnvironmentMixin) {
     return formatString(value, format, defaultValue)
   }
 
+  /**
+   * 拷贝字符串
+   */
   handleClipboard (value: string) {
     return value
   }

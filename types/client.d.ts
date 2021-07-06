@@ -126,6 +126,11 @@ export declare namespace Channel {
     submitOptions ?: SubmitOptions
   }
 
+  interface Sorter {
+    request       ?: RequestConfig
+    submitOptions ?: SubmitOptions
+  }
+
   interface ConfirmOptions {
     title         ?: string
     message        : string

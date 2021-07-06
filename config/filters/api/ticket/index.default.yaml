@@ -71,6 +71,8 @@ list:
     type: number
   - key: size
     type: number
+  - key: sort
+    type: string[]
     
 # 编辑票据
 edit:

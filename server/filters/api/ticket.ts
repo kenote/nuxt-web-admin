@@ -1,6 +1,6 @@
 import { Context, NextHandler } from '@kenote/core'
 import { CreateGroupDocument } from '@/types/services/db'
-import { get, isDate, isPlainObject, merge, omit } from 'lodash'
+import { get, isDate, isPlainObject, merge, omit, isArray } from 'lodash'
 import { filterData, FilterData } from 'parse-string'
 import { loadConfig } from '@kenote/config'
 import validator from 'validator'
@@ -32,14 +32,18 @@ export async function create (ctx: Context, next: NextHandler) {
 }
 
 export async function list (ctx: Context, next: NextHandler) {
-  let { nextError, db, httpError, ErrorCode, toPageInfo, customize } = ctx.service
+  let { nextError, db, httpError, ErrorCode, toPageInfo, customize, toSortOptions } = ctx.service
   let filters = loadConfig<Record<string, FilterData.options[]>>('config/filters/api/ticket', { mode: 'merge', assign: { now: new Date() } })
   try {
     let document = filterData(filters.list, customize)(ctx.body)
-    let { page, size } = document
+    let { page, size, sort } = document
+    let [ prop, order ] = sort ?? []
     ctx.payload = {
       pageInfo: toPageInfo(page ?? 1, size ?? 15),
-      query: omit(document, ['page', 'size'])
+      query: omit(document, ['page', 'size']),
+      options: {
+        sort: toSortOptions(sort)
+      }
     }
     ctx.filterUserLevel(0, 9998)
     return next()
@@ -79,12 +83,16 @@ export async function edit (ctx: Context, next: NextHandler) {
 }
 
 export async function remove (ctx: Context, next: NextHandler) {
-  let { nextError, db, httpError, ErrorCode, toPageInfo, customize } = ctx.service
+  let { nextError, db, httpError, ErrorCode, toPageInfo, customize, toArray } = ctx.service
   let { _id } = ctx.params
-  if (!validator.isMongoId(_id)) {
+  let { ids } = ctx.body
+  if (_id && !validator.isMongoId(_id)) {
     throw httpError(ErrorCode.ERROR_VALID_IDMARK_NOTEXIST)
   }
   try {
+    ctx.payload = {
+      _id: _id ?? { $in: toArray(ids) }
+    }
     ctx.filterUserLevel(0, 9998)
     return next()
   } catch (error) {

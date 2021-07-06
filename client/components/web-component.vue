@@ -74,6 +74,9 @@
   <!-- 表格 -->
   <web-table v-else-if="type === 'web-table'"
     :columns="options && options.columns"
+    :selection-open="options && options.selection"
+    :sorter="options && options.sorter"
+    :expand="options && options.expand"
     :data="data || (options && options.data)"
     :request="options && options.request"
     :border="options && options.border"
@@ -84,6 +87,8 @@
     @get-data="getData"
     @command="command"
     @to-page="toPage"
+    @selection-change="selectionChange"
+    @submit="submit"
     :env="env"
     />
   <!-- 按钮 -->
@@ -182,6 +187,7 @@
           @submit="submit"
           @command="command"
           @to-page="toPage"
+          @selection-change="selectionChange"
           :unique="unique"
           :loading="loading"
           :data="data"
@@ -223,6 +229,9 @@ export default class WebComponent extends mixins(EnvironmentMixin) {
   
   @Prop({ default: undefined })
   type!: string
+  
+  @Prop({ default: undefined })
+  name!: string
   
   @Prop({ default: false })
   loading!: true
@@ -286,6 +295,9 @@ export default class WebComponent extends mixins(EnvironmentMixin) {
 
   @Emit('to-page')
   toPage (page: number) {}
+
+  @Emit('selection-change')
+  selectionChange (values: Record<string, any>[]) {}
 
   @Emit('close')
   close () {}
