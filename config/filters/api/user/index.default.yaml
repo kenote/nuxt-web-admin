@@ -1,0 +1,126 @@
+
+
+# 获取用户列表
+list:
+  - key: findname
+    type: string
+  - key: findtype
+    type: string
+  - key: group
+    type: string[]
+  - key: create_at
+    type: date[]
+  - key: page
+    type: number
+  - key: size
+    type: number
+  - key: sort
+    type: string[]
+
+# 创建用户
+create:
+  - key: username
+    type: string
+    rules:
+      - required: true
+        message: 用户名不能为空
+        code: 1000
+      - pattern: !!js/regexp /^[a-zA-Z]{1}[a-zA-Z0-9\_\-]/
+        message: 英文字符开头，支持小写英文、数字、下划线和中划线组合
+        code: 1000
+      - min: 5
+        max: 20
+        message: 长度限定 5 - 20 位字符
+        code: 1000
+  - key: password
+    type: string
+    rules:
+      - required: true
+        message: 登录密码不能为空
+        code: 1000
+      - pattern: !!js/regexp /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/
+        message: 密码需要 8 - 20 位的字母、数字和英文符号
+        code: 1000
+  - key: group
+    type: string
+    rules:
+      - required: true
+        message: 用户组不能为空
+        code: 1000
+      - validator: isMongoId
+        message: 用户组必须是个 ObjectId
+        code: 1000
+  - key: nickname
+    type: string
+  - key: sex
+    type: number
+    defaultValue: 0
+  - key: email
+    type: string
+    rules:
+      - validator: isEmail
+        message: 请输入正确的邮箱地址，如 example@163.com
+        code: 1000
+  - key: mobile
+    type: string
+    rules:
+      - validator: isMobile
+        message: 请输入正确的手机号码，且不可使用虚拟手机号码
+        code: 1000
+  - key: binds
+    type: string[]
+    defaultValue: []
+
+# 编辑用户
+edit:
+  - key: username
+    type: string
+    rules:
+      - required: true
+        message: 用户名不能为空
+        code: 1000
+      - pattern: !!js/regexp /^[a-zA-Z]{1}[a-zA-Z0-9\_\-]/
+        message: 英文字符开头，支持小写英文、数字、下划线和中划线组合
+        code: 1000
+      - min: 5
+        max: 20
+        message: 长度限定 5 - 20 位字符
+        code: 1000
+  - key: password
+    type: string
+    rules:
+      - pattern: !!js/regexp /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/
+        message: 密码需要 8 - 20 位的字母、数字和英文符号
+        code: 1000
+  - key: nickname
+    type: string
+  - key: sex
+    type: number
+    defaultValue: 0
+  - key: email
+    type: string
+    rules:
+      - validator: isEmail
+        message: 请输入正确的邮箱地址，如 example@163.com
+        code: 1000
+  - key: mobile
+    type: string
+    rules:
+      - validator: isMobile
+        message: 请输入正确的手机号码，且不可使用虚拟手机号码
+        code: 1000
+  - key: binds
+    type: string[]
+    defaultValue: []
+
+# 切换用户组
+switchGroup:
+  - key: group
+    type: string
+    rules:
+      - required: true
+        message: 用户组不能为空
+        code: 1000
+      - validator: isMongoId
+        message: 用户组必须是个 ObjectId
+        code: 1000

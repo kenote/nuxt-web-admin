@@ -2,7 +2,7 @@
 import nunjucks from 'nunjucks'
 import { Command, Channel, Verify } from '@/types/client'
 import { dataNodeProxy } from '@kenote/common'
-import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit, isNumber, toNumber, isNaN } from 'lodash'
+import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit, isNumber, toNumber, isNaN, isEmpty, isNull } from 'lodash'
 import jsYaml from 'js-yaml'
 import urlParse from 'url-parse'
 import qs from 'query-string'
@@ -15,6 +15,11 @@ import { httpClient } from './http-client'
 import * as esprima from 'esprima'
 import escodegen from 'escodegen'
 
+export const customize = {
+  // 格式化日期时间
+  dateFormat: (date: any, format: string = 'YYYY-MM-DD') => dayjs(date).format(format)
+}
+
 /**
  * 格式化字符串
  * @param value 
@@ -22,11 +27,9 @@ import escodegen from 'escodegen'
  * @param replace 
  */
 export function formatString (value: any, format?: ParseData.format | ParseData.format[], replace?: string | number) {
-  if (!value && value != 0) return replace ?? value
+  if (!value && value !== 0) return replace ?? value
   if (!format) return value
-  return formatData(format, {
-    dateFormat: (date: any, format: string = 'YYYY-MM-DD') => dayjs(date).format(format)
-  })(value)
+  return formatData(format, customize)(value)
 }
 
 export async function asyncRequire (url: string) {
@@ -360,7 +363,7 @@ export function parseRules (rules: Record<string, Verify.Rule[]>, self?: Record<
  * @param value 
  */
 export function runCommand (self: Vue, commands?: Record<string, Function>) {
-  return (value: string, row?: Record<string, any>, component?: Vue) => {
+  return (value: string, row?: Record<string, any>, component?: Vue | Record<string, any>) => {
     let command = parseCommand(value)
     if (!command) return
     if (command.type === 'command') {

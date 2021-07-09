@@ -12,6 +12,9 @@ export default async (context: Context) => {
   if (!auth) {
     return redirect('/login', { url_callback: route.path })
   }
+  if (route.path === '/dashboard') {
+    return
+  }
   let channels = get(store.state, 'setting.channels') as Channel.DataNode[]
   let channelId = getChannelKey(channels, route.path, 'route')
   if (!channelId) {

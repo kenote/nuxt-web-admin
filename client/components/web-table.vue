@@ -6,7 +6,7 @@
           <web-markdown :content="parseTemplate(expand, { ...env, row: props.row })" />
         </template>
       </el-table-column>
-      <el-table-column v-if="selectionOpen" type="selection" fixed="left" width="40" />
+      <el-table-column v-if="selectionOpen" type="selection" fixed="left" width="40" :selectable=" row => !isDisabled(selectionDisabled, { row }) " />
       <el-table-column v-for="(column, key) in columns" :key="key"
         :label="column.name"
         :prop="column.key"
@@ -47,6 +47,19 @@
                 >
                 {{ item.name }}
               </el-button>
+              <web-form-item v-else-if="item.type === 'select'"
+                :key="item.key"
+                :type="item.type"
+                :data="blockData(item.data || env[item.datakey], item.datablock, scope.row)"
+                :props="item.props"
+                :format="item.format"
+                :width="item.width"
+                :size="item.size"
+                :multiple="item.multiple"
+                :disabled="isDisabled(item.disabled, { row: scope.row })"
+                :value="get(scope.row, item.valuekey || column.key)"
+                @change="value => command(item.command, scope.row, { [item.valuekey || column.key]: value })"
+                />
             </template>
           </template>
           <!-- 处理状态 -->
@@ -83,9 +96,9 @@ import { Table as ElTable } from 'element-ui'
 import { DefaultSortOptions } from 'element-ui/types/table'
 import { cloneDeep, orderBy, chunk, get, merge } from 'lodash'
 import { Channel } from '@/types/client'
-import ruleJudgment from 'rule-judgment'
+import ruleJudgment, { FilterQuery } from 'rule-judgment'
 import EnvironmentMixin from '~/mixins/environment'
-import { formatString, parseTemplate } from '@/utils'
+import { formatString, parseTemplate, getFilter } from '@/utils'
 
 interface Conditions {
   size     ?: number
@@ -121,6 +134,9 @@ export default class WebTable extends mixins(EnvironmentMixin) {
 
   @Prop({ default: false })
   selectionOpen!: boolean
+
+  @Prop({ default: undefined })
+  selectionDisabled!: boolean | FilterQuery<any> | string
 
   @Prop({ default: undefined })
   expand!: string
@@ -162,6 +178,7 @@ export default class WebTable extends mixins(EnvironmentMixin) {
   keywords: string = ''
 
   parseTemplate = parseTemplate
+  get = get
 
   @Emit('get-data')
   getData (request: Channel.RequestConfig, options: Conditions | null, next?: (data: Record<string, any>[]) => void) {}
@@ -289,6 +306,18 @@ export default class WebTable extends mixins(EnvironmentMixin) {
    */
   handleClipboard (value: string) {
     return value
+  }
+
+  blockData (data: Record<string, any>[], query: FilterQuery<any> | string, row: Record<string, any>) {
+    let filter = getFilter(query, { ...this.env, row })
+    let tmpData: Record<string, any>[] = []
+    for (let item of data) {
+      if (filter(item)) {
+        item.disabled = true
+      }
+      tmpData.push(item)
+    }
+    return tmpData
   }
 }
 </script>

@@ -75,6 +75,7 @@
   <web-table v-else-if="type === 'web-table'"
     :columns="options && options.columns"
     :selection-open="options && options.selection"
+    :selection-disabled="options && options.selectionDisabled"
     :sorter="options && options.sorter"
     :expand="options && options.expand"
     :data="data || (options && options.data)"

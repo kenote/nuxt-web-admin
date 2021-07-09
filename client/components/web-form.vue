@@ -17,8 +17,12 @@
                   :ref="item.key"
                   :prop="item.type === 'avatar-picker' ? undefined : item.key" 
                   :label="item.name" 
+                  :label-width="item.labelWidth"
                   :rules="Rules && Rules[item.key]" 
                   :style="item.type === 'color-picker' ? 'height:40px;' : ''">
+                  <el-select slot="label" v-if="item.label" v-model="values[item.label.key]">
+                    <el-option v-for="(name, key) in item.label.options" :key="key" :label="name" :value="key"></el-option>
+                  </el-select>
                   <web-form-item 
                     v-model="values[item.key]"
                     :type="item.type"
@@ -87,16 +91,17 @@
 import { Component, Prop, Provide, Emit, mixins } from 'nuxt-property-decorator'
 import { Verify, Channel } from '@/types/client'
 import { Form as ElForm, FormItem as ElFormItem } from 'element-ui'
-import { zipObject, unset, isEqual, map, pick, assign, cloneDeep, merge, omit, isArray, get, set } from 'lodash'
+import { zipObject, unset, isEqual, map, pick, assign, cloneDeep, merge, omit, isArray, get, set, identity, isUndefined, omitBy } from 'lodash'
 import { formatData, ParseData } from 'parse-string'
 import { parseRules, parseParams } from '@/utils'
 import EnvironmentMixin from '~/mixins/environment'
+import ruleJudgment from 'rule-judgment';
 
 @Component<WebForm>({
   name: 'web-form',
   created () {
     if (this.submitOptions?.assignment) {
-      this.DefaultValues = get(this.env, 'conditions') ?? {}
+      this.DefaultValues = get(this.env, 'conditions') ?? parseParams(this.defaultValues || '')(this.env)
     }
     else {
       this.DefaultValues = parseParams(this.defaultValues || '')(this.env)
@@ -220,7 +225,7 @@ export default class WebForm extends mixins(EnvironmentMixin) {
         let values = this.parseValues(pick(this.values, keys))
         let original = this.parseValues(pick(this.DefaultValues, keys))
         let { changeSubmit } = this.submitOptions ?? {}
-        if (changeSubmit && isEqual(values, original)) {
+        if (changeSubmit && isEqual(omitBy(values, isUndefined), original)) {
           this.$message.warning(changeSubmit ?? '数据好像没什么改变，无需提交')
           return
         }
@@ -230,6 +235,9 @@ export default class WebForm extends mixins(EnvironmentMixin) {
             this.values = cloneDeep(this.DefaultValues)
           }
         })
+        let labelFiller = ruleJudgment<Channel.FormItem>({ label: { $exists: true }})
+        let labelKeys = map(this.columns.filter( labelFiller ), 'label.key')
+        values = merge(values, pick(this.values, labelKeys))
         this.submit(values, this.action, submitOptions)
       }
       else {
@@ -247,7 +255,7 @@ export default class WebForm extends mixins(EnvironmentMixin) {
     let values = this.exclude ? omit(value, this.exclude) : value
     let items = this.columns.filter( r => ['datetimerange', 'daterange', 'monthrange'].includes(r.type!) )
     for (let item of items) {
-      let itemArr = item.key.split(/\_/)
+      let itemArr = item.key.split(/(\_){2}/)
       if (itemArr.length === 2) {
         values = { ...values, ...zipObject(itemArr, values[item.key]) }
         unset(values, item.key)

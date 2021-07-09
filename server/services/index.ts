@@ -46,5 +46,8 @@ export const customize = {
   isDateString,
   isPlainObject,
   isBoolean,
-  toBoolean: value => validator.toBoolean(value)
+  toBoolean: value => validator.toBoolean(value),
+  isEmail: value => value ? validator.isEmail(value) : true,
+  isMobile: value => value ? validator.isMobilePhone(value, 'zh-CN') : true,
+  isMongoId: value => value ? validator.isMongoId(value) : true
 }

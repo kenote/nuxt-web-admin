@@ -10,7 +10,7 @@ env:
       name: 注册邀请码
 
 # 页面分页大小
-pageSize: 5
+pageSize: 15
 
 # 定义组件
 components:
@@ -392,7 +392,8 @@ components:
                   name: 取消
                   type: button
                   command: action:list
-              success: 票据已创建
+              success: 票据已更新
+              changeSubmit: 数据好像没什么改变，无需提交!
               afterCommand: 
                 - action:list
                 - action:refresh

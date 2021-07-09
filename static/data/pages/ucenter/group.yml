@@ -222,6 +222,7 @@ components:
                   type: button
                   command: action:list
               success: 用户组信息已更新
+              changeSubmit: 数据好像没什么改变，无需提交!
               afterCommand: 
                 - action:list
                 - action:refresh
@@ -282,6 +283,7 @@ components:
                   type: button
                   command: action:list
               success: 频道入口已更新
+              changeSubmit: 数据好像没什么改变，无需提交!
               afterCommand: 
                 - action:list
                 - action:refresh

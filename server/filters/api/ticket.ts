@@ -37,7 +37,6 @@ export async function list (ctx: Context, next: NextHandler) {
   try {
     let document = filterData(filters.list, customize)(ctx.body)
     let { page, size, sort } = document
-    let [ prop, order ] = sort ?? []
     ctx.payload = {
       pageInfo: toPageInfo(page ?? 1, size ?? 15),
       query: omit(document, ['page', 'size']),

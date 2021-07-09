@@ -217,6 +217,7 @@ export declare namespace Channel {
     params        ?: any
     loading       ?: boolean
     conditions    ?: FilterQuery<any> | string
+    saveEnvkey    ?: string
   }
 
   // 表单器
@@ -310,6 +311,10 @@ export declare namespace Channel {
      */
     data          ?: FormItemData[]
     /**
+     * 多项选择时的数据
+     */
+    datakey       ?: string
+    /**
      * data 键名配置选项
      */
     props         ?: Record<string, string> 
@@ -361,6 +366,21 @@ export declare namespace Channel {
      * 后缀显示文字
      */
     suffix        ?: string
+    /**
+     * 选项Label
+     */
+    label         ?: FormItemLabel
+  }
+
+  interface FormItemLabel {
+    /**
+     * 字段名称
+     */
+    key            : string
+    /**
+     * Label 选项
+     */
+    options        : any
   }
 
   interface SubmitOptions {
@@ -400,6 +420,10 @@ export declare namespace Channel {
      * 完成后调用指令
      */
     afterCommand  ?: string[]
+    /**
+     * 失败后调用指令
+     */
+    failCommand   ?: string
     /**
      * 操作选项
      */

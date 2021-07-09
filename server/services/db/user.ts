@@ -44,11 +44,11 @@ export async function create (doc: RegisterDocument) {
     throw httpError(ErrorCode.ERROR_VALID_USERNAME_UNIQUE)
   }
   let isEamil = await Dao.findOne({ email })
-  if (isEamil) {
+  if (isEamil && doc.email) {
     throw httpError(ErrorCode.ERROR_VALID_EMAIL_UNIQUE)
   }
   let isMobile = await Dao.findOne({ mobile })
-  if (isMobile) {
+  if (isMobile && doc.mobile) {
     throw httpError(ErrorCode.ERROR_VALID_MOBILE_UNIQUE)
   }
   let password = Bcrypt.encode(doc.password)

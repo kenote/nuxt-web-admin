@@ -39,6 +39,8 @@ children:
         description: 查询/管理用户信息
         keywords: [ 用户中心, 用户管理, yonghu, yh ]
         route: /ucenter/user
+        configuration: /data/pages/ucenter/user.yml
+        refresh: true
         disabled: |-
           auth.group.level:
             $lt: 9998

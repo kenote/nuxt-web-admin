@@ -49,7 +49,7 @@ import { getUrl } from '@/utils'
     }
     if (this.auth) {
       let { username, nickname } = this.auth
-      this.username = nickname ?? username
+      this.username = nickname || username
     }
   }
 })
@@ -78,7 +78,7 @@ export default class AuthPanel extends mixins(BaseMixin) {
     }
     if (this.auth) {
       let { username, nickname } = this.auth
-      this.username = nickname ?? username
+      this.username = nickname || username
     }
   }
 

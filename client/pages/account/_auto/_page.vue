@@ -68,7 +68,7 @@
 import { Component, mixins, Provide, Watch, Vue } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Channel, HttpResult, HttpClientOptions } from '@/types/client'
-import { isString, merge, get, set, cloneDeep, assign, omit } from 'lodash'
+import { isString, merge, get, set, cloneDeep, assign, omit, intersection, isEmpty } from 'lodash'
 import { isYaml, parseParams, runCommand, getFilter, parseTemplate } from '@/utils'
 import jsYaml from 'js-yaml'
 import { PutResult } from '@kenote/upload'
@@ -222,7 +222,10 @@ export default class AutoPage extends mixins(PageMixin) {
           this.pagination = pageSize
         }
         if (initialData) {
-          this.handleSubmit(this.conditions, initialData.request!, initialData.submitOptions ?? {})
+          setTimeout(() => {
+            this.handleSubmit(this.conditions, initialData?.request!, initialData?.submitOptions ?? {})
+          }, 500)
+          
         }
       } catch (error) {
         
@@ -243,18 +246,22 @@ export default class AutoPage extends mixins(PageMixin) {
    * 获取单项数据
    */
   handleGetData (request: Channel.RequestConfig, options: Record<string, any> | null, next: (data: Channel.FormItemData[]) => void) {
-    let { method, url, conditions, params } = request
+    let { method, url, conditions, params, saveEnvkey } = request
     let httpClient = this.$httpClient(this.httpOptions)
     if (request.loading) {
       this.loading = true
     }
     let Iurl = parseTemplate(url ?? '', this.env)
     let IParams = parseParams(params ?? {})(this.env)
-    console.log(IParams)
+    // console.log(IParams)
     setTimeout(async () => {
       let result = await httpClient[method!](Iurl, IParams) as HttpResult<any[]>
       let filter = getFilter(conditions!, this.env)
-      next(result.data?.filter(filter!) ?? [])
+      let data = result.data?.filter(filter!) ?? []
+      if (saveEnvkey) {
+        set(this.env, saveEnvkey, data)
+      }
+      next(data)
       if (request.loading) {
         this.loading = false
       }
@@ -285,13 +292,16 @@ export default class AutoPage extends mixins(PageMixin) {
    * 提交数据
    */
   handleSubmit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {
-    let { method, url, headers } = action ?? {}
-    let { success, commit, afterCommand, assignment, pagination } = options
+    let { method, url, headers, params } = action ?? {}
+    let { success, commit, afterCommand, assignment, pagination, failCommand } = options
     let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
     let Iurl = parseTemplate(url ?? '', this.env)
     if (pagination === 'remote') {
       this.pageno = values.page ?? 1
       values = merge({ page: this.pageno, size: this.pagination }, values)
+    }
+    else if (params) {
+      values = parseParams(params)({ ...this.env, values })
     }
     this.loading = true
     setTimeout(async () => {
@@ -324,10 +334,14 @@ export default class AutoPage extends mixins(PageMixin) {
           options.next && options.next(values)
         }
       } catch (error) {
+        console.log(error)
         this.$message.error(error.message)
+        if (failCommand) {
+          this.handleCommand(failCommand, {}, this.parent ?? undefined)
+        }
       }
       this.loading = false
-    }, 300)
+    }, 500)
     
   }
 
@@ -376,10 +390,10 @@ export default class AutoPage extends mixins(PageMixin) {
   /**
    * 运行指令集
    */
-  handleCommand (value: string, row?: Record<string, any>, component?: Vue) {
+  handleCommand (value: string, row?: Record<string, any>, component?: Vue | Record<string, any>) {
     return runCommand(this, {
-      action: async (type: string, row: Record<string, any> | null) => {
-        console.log(type, row)
+      action: async (type: string, row: Record<string, any> | null, a) => {
+        // console.log(type, row, component)
         let action = get(this.actionOptions, type)
         if (action) {
           let { request, confirm, method, submitOptions } = action as Channel.ActionOptions
@@ -387,11 +401,29 @@ export default class AutoPage extends mixins(PageMixin) {
             await this.actionConfirm(action, row!)
           }
           else if (submitOptions) {
-            let conditions = cloneDeep(this.conditions)
-            if (submitOptions.pagination === 'remote') {
-              conditions = merge(this.conditions, { page: this.pageno })
+            if (component && !component?.$el) {
+              let values = {}
+              for (let key of Object.keys(component!)) {
+                if (get(row, key) !== get(component, key)) {
+                  set(values, key, get(component, key))
+                }
+              }
+              if (isEmpty(values)) return
+              let IRequest = cloneDeep(request) ?? {}
+              IRequest.url = parseTemplate(request?.url ?? '', { row })
+              this.handleSubmit(values, IRequest, submitOptions)
             }
-            this.handleSubmit(conditions, request!, submitOptions)
+            else {
+              let conditions = cloneDeep(this.conditions)
+              if (submitOptions.pagination === 'remote') {
+                conditions = merge(this.conditions, { page: this.pageno })
+              }
+              setTimeout(() => {
+                this.handleSubmit(conditions, request!, submitOptions!)
+              }, 300)
+              
+            }
+              
           }
           else if (method) {
             if (component) {
@@ -405,6 +437,7 @@ export default class AutoPage extends mixins(PageMixin) {
         else {
           this.env.display = type
           this.selected = row ?? null
+          this.selection = []
         }
       },
       dialog: async (type: string, row: Record<string, any> | null, component?: Vue) => {
@@ -467,7 +500,7 @@ export default class AutoPage extends mixins(PageMixin) {
   async handleUnique (name: string, path: string | null, type: string) {
     let { url, params, headers } = this.uniqueOptions
     let Iurl = parseTemplate(url ?? '', { type })
-    let Iparams = parseTemplate(url ?? '', { name, _id: get(this, path!) })
+    let Iparams = parseTemplate(params ?? '', { name, _id: get(this, path!) })
     let values = jsYaml.safeLoad(Iparams)
     let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
     try {
@@ -477,7 +510,8 @@ export default class AutoPage extends mixins(PageMixin) {
       }
       return true
     } catch (error) {
-      this.$message.warning(error.message)
+      return true
+      // this.$message.warning(error.message)
     }
   }
   

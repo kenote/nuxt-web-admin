@@ -1,0 +1,527 @@
+
+# 设置环境变量
+env:
+  display: list
+  dialog: none
+  groups: []
+
+# 页面分页大小
+pageSize: 15
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    conditions: |-
+      display: list
+    options:
+      layout: vertical
+      alignItems: flex-start
+      children:
+        - key: 1-1-2
+          name: web-form
+          options:
+            inline: true
+            columns:
+              - key: create_at
+                name: 注册时间
+                type: datetimerange
+                placeholder: [ 选择开始时间, 选择结束时间 ]
+                options:
+                  clearable: true
+              - key: findname
+                name: 查询名称
+                type: input
+                placeholder: 请输入查询名称
+                labelWidth: 120px
+                label:
+                  key: findtype
+                  options:
+                    username: 用户名
+                    nickname: 昵称
+                    email: 电子邮箱
+                    mobilb: 手机号
+                options:
+                  clearable: true
+                width: 300
+              - key: group
+                name: 用户组/角色
+                type: select
+                placeholder: 请选择用户组/角色
+                multiple: true
+                request:
+                  method: POST
+                  url: /api/group/list
+                  saveEnvkey: groups
+                props:
+                  key: _id
+                format: '[{id}] {name}'
+                options:
+                  clearable: true
+                width: 200
+            # 规则验证
+            rules:
+            # 请求地址
+            action:
+              method: POST
+              url: /api/user
+            # 提交按钮名称
+            submitName: 搜 索
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: create
+                  name: 创建用户
+                  type: button
+                  style: success
+                  command: action:create
+                - key: deletes
+                  name: 删除选中
+                  type: button
+                  style: danger
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:deletes
+              success: 新数据已拉取
+              assignment:
+                data: data.data
+                counts: data.counts
+                pagination: data.limit
+              pagination: remote
+            # 设置默认值
+            defaultValues: |-
+              findtype: username
+            # 对提交值格式化
+            valueFormat:
+        - key: 1-1-3
+          name: web-table
+          options:
+            selection: true
+            selectionDisabled: |-
+              row.group.level:
+                $gte: {{auth.group.level}}
+            sorter:
+              request:
+                method: POST
+                url: /api/ticket
+              submitOptions:
+                success: 新数据已拉取
+                assignment:
+                  data: data.data
+                  counts: data.counts
+                  pagination: data.limit
+                pagination: remote
+            columns:
+              - key: id
+                name: ID
+                width: 80
+                fixed: left
+              - key: username
+                name: 用户名
+                width: 120
+                align: left
+                fixed: left
+              - key: nickname
+                name: 昵称
+                width: 120
+                align: left
+                defaultValue: --
+              - key: sex
+                name: 性别
+                width: 90
+                format:
+                  - type: number
+                    maps: { 0: 未知, 1: 男, 2: 女 }
+              - key: group
+                name: 用户组/角色
+                width: 180
+                format:
+                  - type: map
+                    maps: name
+                emit:
+                  - key: switch-group
+                    type: select
+                    width: 150
+                    datakey: groups
+                    datablock: |-
+                      level:
+                        $gte: {{auth.group.level}}
+                    props:
+                      key: _id
+                    format: '[{id}] {name}'
+                    disabled: |-
+                      row.group.level:
+                        $gte: {{auth.group.level}}
+                    valuekey: group._id
+                    size: medium
+                    command: action:switchGroup
+              - key: email
+                name: 电子邮箱
+                width: 240
+                align: left
+                format:
+                  - type: string
+                    regexp: !!js/regexp /\w{4}@/
+                    substr: '****@'
+                defaultValue: --
+              - key: mobile
+                name: 手机号
+                width: 120
+                align: left
+                format:
+                  - type: string
+                    regexp: !!js/regexp /^(\d{3})\d+(\d{4})$/
+                    substr: '$1****$2'
+                defaultValue: --
+              - key: create_at
+                name: 创建时间
+                width: 180
+                align: left
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+                sortable: true
+              - key: update_at
+                name: 最后更新
+                width: 180
+                align: left
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+                sortable: true
+              - key: $space
+                minWidth: 10 
+              - key: actions
+                name: 操作
+                fixed: right
+                align: left
+                width: 160
+                emit:
+                  - key: edit
+                    name: 编辑
+                    type: button
+                    style: primary
+                    command: action:edit
+                    disabled: |-
+                      $and:
+                        - auth.group.level:
+                            $lte: 9998
+                        - row.group.level:
+                            $gte: {{auth.group.level}}
+                  - key: delete
+                    name: 删除
+                    type: button
+                    style: danger
+                    command: action:remove
+                    disabled: |-
+                      row.group.level:
+                        $gte: {{auth.group.level}}
+            # 展开信息；支持 Markdown
+            # expand: |-
+  - key: 1-2
+    name: web-container
+    conditions: |-
+      display: create
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-2-1
+          name: web-form
+          options:
+            name: 创建新用户
+            columns:
+              - key: username
+                name: 用户名
+                type: input
+                placeholder: 请输入用户名
+              - key: password
+                name: 登录密码
+                type: input-password
+                placeholder: 请输入登录密码
+                options:
+                  showPassword: true
+              - key: group
+                name: 用户组/角色
+                type: select
+                placeholder: 请输选择用户组/角色
+                request:
+                  method: POST
+                  url: /api/group/lite
+                props:
+                  key: _id
+                format: '[{id}] {name}'
+              - key: nickname
+                name: 昵称
+                type: input
+                placeholder: 请输入昵称
+              - key: sex
+                name: 性别
+                type: radio
+                data:
+                  - key: 0
+                    name: 未知
+                  - key: 1
+                    name: 男
+                  - key: 2
+                    name: 女
+              - key: email
+                name: 电子邮箱
+                type: input
+                placeholder: 请输入电子邮箱
+              - key: mobile
+                name: 手机号码
+                type: input
+                placeholder: 请输入手机号码
+              - key: binds
+                name: 绑定
+                type: checkbox
+                data:
+                  - key: email
+                    name: 电子邮箱
+                  - key: mobile
+                    name: 手机号码
+            # 规则验证
+            rules:
+              username:
+                - required: true
+                  message: 请输入用户名
+                - validator: [ validateUsername, username, null ]
+                  trigger: [ blur, change ]
+              password:
+                - required: true
+                  message: 请输入登录密码
+                - validator: [ validatePassword ]
+                  trigger: [ blur, change ]
+              group:
+                - required: true
+                  message: 请选择用户组/角色
+              email:
+                - validator: [ validateEmail, email, null ]
+                  trigger: [ blur, change ]
+              mobile:
+                - validator: [ validateMobile, zh-CN, mobile, null ]
+                  trigger: [ blur, change ]
+            # 请求地址
+            action:
+              method: POST
+              url: /api/user/create
+            # 排除项
+            # exclude:
+            #   - group
+            # 合并项
+            # merge:
+            #   setting: [ group ]
+            # 提交按钮名称
+            submitName: 创 建
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 票据已创建
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            defaultValues: |-
+              sex: 0
+              binds: []
+               
+  - key: 1-3
+    name: web-container
+    conditions: |-
+      display: edit
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-2-1
+          name: web-form
+          options:
+            name: 编辑用户
+            columns:
+              - key: username
+                name: 用户名
+                type: input
+                placeholder: 请输入用户名
+              - key: password
+                name: 登录密码
+                type: input-password
+                placeholder: 请输入登录密码
+                options:
+                  showPassword: true
+              - key: group
+                name: 用户组/角色
+                type: select
+                placeholder: 请输选择用户组/角色
+                request:
+                  method: POST
+                  url: /api/group/list
+                props:
+                  key: _id
+                format: '[{id}] {name}'
+                disabled: true
+              - key: nickname
+                name: 昵称
+                type: input
+                placeholder: 请输入昵称
+              - key: sex
+                name: 性别
+                type: radio
+                data:
+                  - key: 0
+                    name: 未知
+                  - key: 1
+                    name: 男
+                  - key: 2
+                    name: 女
+              - key: email
+                name: 电子邮箱
+                type: input
+                placeholder: 请输入电子邮箱
+              - key: mobile
+                name: 手机号码
+                type: input
+                placeholder: 请输入手机号码
+              - key: binds
+                name: 绑定
+                type: checkbox
+                data:
+                  - key: email
+                    name: 电子邮箱
+                  - key: mobile
+                    name: 手机号码
+            # 规则验证
+            rules:
+              username:
+                - required: true
+                  message: 请输入用户名
+                - validator: [ validateUsername, username, 'selected._id' ]
+                  trigger: [ blur, change ]
+              password:
+                - validator: [ validatePassword ]
+                  trigger: [ blur, change ]
+              email:
+                - validator: [ validateEmail, email, 'selected._id' ]
+                  trigger: [ blur, change ]
+              mobile:
+                - validator: [ validateMobile, zh-CN, mobile, 'selected._id' ]
+                  trigger: [ blur, change ]
+            # 请求地址
+            action:
+              method: POST
+              url: /api/user/edit/{{selected._id}}
+            # 排除项
+            exclude:
+              - group
+            # 合并项
+            # merge:
+            #   setting: [ group ]
+            # 提交按钮名称
+            submitName: 修 改
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 用户信息已更新
+              changeSubmit: 数据好像没什么改变，无需提交!
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            defaultValues: |-
+              username: {{selected.username}}
+              group: {{selected.group._id}}
+              nickname: '{{selected.nickname}}'
+              sex: {{selected.sex}}
+              email: '{{selected.email}}'
+              mobile: '{{selected.mobile}}'
+              binds: [{% for item in selected.binds %} {{item}}, {% endfor %}]
+
+
+# 初始化数据
+initialData:
+  request:
+    method: POST
+    url: /api/user
+  submitOptions:
+    success: 新数据已拉取
+    assignment:
+      data: data.data
+      counts: data.counts
+      pagination: data.limit
+    pagination: remote
+
+# 查询验证接口
+uniqueOptions:
+  url: /api/account/check/{{type}}
+  params: |-
+    name: {{ name }}
+    _id: {{ _id }}
+
+# 定义 Action
+actions:
+  # 刷新
+  refresh:
+    request:
+      method: POST
+      url: /api/user
+    submitOptions:
+      success: 新数据已拉取
+      assignment:
+        data: data.data
+        counts: data.counts
+        pagination: data.limit
+      pagination: remote
+  # 切换用户组
+  switchGroup:
+    request:
+      method: PUT
+      url: /api/user/switch-group/{{row._id}}
+      params: |-
+        group: {{values.group._id}}
+    submitOptions:
+      success: 用户组已更新
+      afterCommand: 
+        - action:refresh
+      failCommand: action:refresh
+  # 删除操作
+  remove:
+    request:
+      method: DELETE
+      url: |-
+        /api/user/{{row._id}}
+    confirm:
+      message: 确认要永久删除该用户, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 用户已删除
+      afterCommand: 
+        - action:refresh
+  # 多选删除
+  deletes:
+    request:
+      method: DELETE
+      url: |-
+        /api/user
+      params: |-
+        ids: [{% for item in selection %} {{item._id}}, {% endfor %}]
+    confirm:
+      message: 确认要永久删除所选用户, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 用户已删除
+      afterCommand: 
+        - action:refresh
