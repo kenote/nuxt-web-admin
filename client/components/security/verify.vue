@@ -38,7 +38,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Provide, Watch, Emit } from 'nuxt-property-decorator'
 import { UserDocument } from '@/types/services/db'
-import { AccountConfigure, SecurityConfigure } from '@/types/config/account'
+import { AccountConfigure } from '@/types/config/account'
 import { Verify } from '@/types/client'
 import { Form as ElForm } from 'element-ui'
 import { Account } from '@/types/account'
@@ -109,6 +109,7 @@ export default class SecurityVerify extends Vue {
     this.email = val.email
     this.mobile = val.mobile ?? ''
     this.binds = val.binds
+    this.type = val.binds[0] as Account.verifyUserType ?? 'email'
   }
 
   handleCommand (value: Account.verifyUserType): void {

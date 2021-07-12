@@ -48,13 +48,13 @@ authpanel:
   main:
     - name: 基本资料
       link: router:/account/baseinfo
+      buttons:
+        - name: 更新
+          link: command:update
     - name: 安全设置
       link: router:/account/security
     - name: 我的收藏
       link: router:/account/collect
-      buttons:
-        - name: 签到
-          link: command:test
   exit:
     name: 退出控制台
     link: command:logout

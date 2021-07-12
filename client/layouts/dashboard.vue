@@ -55,7 +55,7 @@
         <!-- 内容页面 -->
         <div class="page-main">
           <breadcrumb v-if="selectedChannel.name" :data="getChannelData()" :route-path="$route.path" />
-          <div class="page-tools">
+          <div class="page-tools" v-if="!isDisabled(pageSetting.disabled, env)">
             <el-button v-if="pageSetting && pageSetting.refresh"
               icon="el-icon-refresh" 
               @click="handleCommand('command:refresh')" 
@@ -65,7 +65,13 @@
           <perfect-scrollbar :options="{ suppressScrollX: true }" ref="mainScroll">
             <dashboard v-if="isDisabled(pageSetting.disabled, env)" v-loading="refresh">
               <client-only placeholder="Page Loading...">
-                403 Forbidden
+                <!-- 403 Forbidden -->
+                <el-empty style="margin-top:80px">
+                  <div slot="description">
+                    <h3>403 Forbidden</h3>
+                    <p>您尚未获得该页面的访问权限</p>
+                  </div>
+                </el-empty>
               </client-only>
             </dashboard>
             <nuxt v-else :style="selectedChannel.name ? '' : 'padding-top:20px;'"></nuxt>
@@ -103,6 +109,7 @@ import { Route } from 'vue-router'
 import { getChannelKey, dataNodeProxy } from '@kenote/common'
 import { MetaInfo } from 'vue-meta'
 import { UserDocument } from '@/types/services/db'
+import { isEqual } from 'lodash'
 
 @Component<DashboardLayout>({
   name: 'dashboard-layout',
@@ -253,6 +260,9 @@ export default class DashboardLayout extends mixins(BaseMixin) {
       },
       logout: () => {
         this.logout()
+      },
+      update: () => {
+        this.handleRefreshAuth()
       }
     })(value, row)
   }
@@ -285,6 +295,25 @@ export default class DashboardLayout extends mixins(BaseMixin) {
         this.$notify.error({ title: '错误', message: error.message })
       }
     }, 300)
+  }
+
+  /**
+   * 刷新用户信息
+   */
+  async handleRefreshAuth () {
+    try {
+      let result = await this.$httpClient({ token: this.token }).GET<HttpResult<UserDocument>>('/api/account/accesstoken')
+      if (result?.error) {
+        this.$message.error(result.error)
+      }
+      else {
+        if (!isEqual(this.auth, result?.data)) {
+          this.$store.commit(this.types.auth.AUTH, result?.data)
+        }
+      }
+    } catch (error) {
+      this.$message.error(error.message)
+    }
   }
   
 }

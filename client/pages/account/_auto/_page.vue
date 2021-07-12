@@ -334,7 +334,6 @@ export default class AutoPage extends mixins(PageMixin) {
           options.next && options.next(values)
         }
       } catch (error) {
-        console.log(error)
         this.$message.error(error.message)
         if (failCommand) {
           this.handleCommand(failCommand, {}, this.parent ?? undefined)

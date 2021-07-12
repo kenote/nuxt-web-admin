@@ -159,7 +159,7 @@ export async function upInfo (conditions: FilterQuery<UserDocument>, doc: Partia
         binds.push(key)
       }
     }
-    data.binds = Array.from(new Set(binds))
+    data.binds = doc.binds ?? Array.from(new Set(binds))
   }
   if (doc.password) {
     let password = Bcrypt.encode(doc.password)
