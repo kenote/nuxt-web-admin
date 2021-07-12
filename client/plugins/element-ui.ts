@@ -22,6 +22,7 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
+  Empty,
   Form,
   FormItem,
   Icon,
@@ -87,6 +88,7 @@ export default () => {
   Vue.use(Dropdown)
   Vue.use(DropdownItem)
   Vue.use(DropdownMenu)
+  Vue.use(Empty)
   Vue.use(Form)
   Vue.use(FormItem)
   Vue.use(Icon)
