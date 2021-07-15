@@ -48,6 +48,7 @@
               :icon="selectedChannel.icon"
               :data="getChannelData()"
               :default-active="$route.path"
+              :access="access"
               :env="env"
               />
           </div>
@@ -55,7 +56,7 @@
         <!-- 内容页面 -->
         <div class="page-main">
           <breadcrumb v-if="selectedChannel.name" :data="getChannelData()" :route-path="$route.path" />
-          <div class="page-tools" v-if="!isDisabled(pageSetting.disabled, env)">
+          <div class="page-tools" v-if="!accessDisabled(pageSetting.disabled)">
             <el-button v-if="pageSetting && pageSetting.refresh"
               icon="el-icon-refresh" 
               @click="handleCommand('command:refresh')" 
@@ -63,7 +64,7 @@
             </el-button>
           </div>
           <perfect-scrollbar :options="{ suppressScrollX: true }" ref="mainScroll">
-            <dashboard v-if="isDisabled(pageSetting.disabled, env)" v-loading="refresh">
+            <dashboard v-if="accessDisabled(pageSetting.disabled)" v-loading="refresh">
               <client-only placeholder="Page Loading...">
                 <!-- 403 Forbidden -->
                 <el-empty style="margin-top:80px">
@@ -85,6 +86,8 @@
             <web-list 
               :data="(channels || []).map(parseProps({ key: 'key', name: 'name', icon: 'icon', link: 'route' }))" 
               :env="env"
+              :exclude="platform"
+              exclude-key="label"
               @command="path => path && handleCommand('router:' + path)" 
               />
           </div>
@@ -110,6 +113,9 @@ import { getChannelKey, dataNodeProxy } from '@kenote/common'
 import { MetaInfo } from 'vue-meta'
 import { UserDocument } from '@/types/services/db'
 import { isEqual } from 'lodash'
+import { getUserArrayInfo } from '@/utils/user'
+import { AccountConfigure } from '@/types/config'
+import { FilterQuery } from 'rule-judgment'
 
 @Component<DashboardLayout>({
   name: 'dashboard-layout',
@@ -120,10 +126,16 @@ import { isEqual } from 'lodash'
     this.env = {
       auth: this.auth
     }
+    if (this.auth) {
+      let { level } = this.auth.group
+      this.platform = level >= 9000 ? null : getUserArrayInfo(this.auth, 'platform')
+      this.access = level >= 9000 ? null : getUserArrayInfo(this.auth, 'access')
+    }
   },
   async mounted () {
     document.body.className = 'dashboard-body'
     await this.updateChannel(this.$route.path)
+    // console.log(getUserArrayInfo(this.auth!, 'platform'), this.accountOptions.platform)
   }
 })
 export default class DashboardLayout extends mixins(BaseMixin) {
@@ -139,6 +151,9 @@ export default class DashboardLayout extends mixins(BaseMixin) {
 
   @Store.Setting.State
   refresh!: boolean
+
+  @Store.Setting.State
+  accountOptions!: AccountConfigure
 
   @Provide()
   env: Record<string, any> = {}
@@ -164,7 +179,21 @@ export default class DashboardLayout extends mixins(BaseMixin) {
   @Provide()
   pageSetting: Partial<Channel.DataNode> = {}
 
+  @Provide()
+  platform: string[] | null = null
+
+  @Provide()
+  access: string[] | null = null
+
   isDisabled = isDisabled
+
+  accessDisabled (value: boolean | FilterQuery<any> | string) {
+    let disabled = isDisabled(value, this.env)
+    if (disabled) return disabled
+    let level = this.auth?.group?.level ?? 0
+    if (level >= 9000) return false
+    return !this.access?.includes(this.$route.path)
+  }
 
   @Watch('$route')
   async onRouteChange (val: Route, oldVal: Route) {
@@ -188,6 +217,15 @@ export default class DashboardLayout extends mixins(BaseMixin) {
   onAuthChange (val: UserDocument, oldVal: UserDocument) {
     if (val === oldVal) return
     this.env.auth = val
+    if (val) {
+      let { level } = val.group
+      this.platform = level >= 9000 ? null : getUserArrayInfo(val, 'platform')
+      this.access = level >= 9000 ? null : getUserArrayInfo(val, 'access')
+    }
+    else {
+      this.platform = null
+      this.access = null
+    }
   }
 
   handleVisible (visible: boolean) {

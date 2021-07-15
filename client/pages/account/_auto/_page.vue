@@ -259,7 +259,7 @@ export default class AutoPage extends mixins(PageMixin) {
       let filter = getFilter(conditions!, this.env)
       let data = result.data?.filter(filter!) ?? []
       if (saveEnvkey) {
-        set(this.env, saveEnvkey, data)
+        set(this.env, saveEnvkey, cloneDeep(data))
       }
       next(data)
       if (request.loading) {
@@ -294,6 +294,14 @@ export default class AutoPage extends mixins(PageMixin) {
   handleSubmit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {
     let { method, url, headers, params } = action ?? {}
     let { success, commit, afterCommand, assignment, pagination, failCommand } = options
+    if (!action) {
+      if (afterCommand) {
+        for (let item of afterCommand) {
+          this.handleCommand(item, {}, this.parent ?? undefined)
+        }
+      }
+      return
+    }
     let httpOptions: HttpClientOptions = merge(this.httpOptions, { headers })
     let Iurl = parseTemplate(url ?? '', this.env)
     if (pagination === 'remote') {

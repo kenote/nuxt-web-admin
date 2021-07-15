@@ -1,5 +1,6 @@
 import { Document } from 'mongoose'
 import { ObjectId } from 'bson'
+import { UserDocument } from './user'
 
 export declare interface TeamDocument extends Document {
   /**
@@ -17,7 +18,7 @@ export declare interface TeamDocument extends Document {
   /**
    * 频道权限
    */
-  platform             : number[]
+  platform             : string[]
   /**
    * 页面权限
    */
@@ -33,7 +34,7 @@ export declare interface TeamDocument extends Document {
   /**
    * 设置团长
    */
-  owner               ?: string
+  owner               ?: UserDocument
 }
 
 export declare interface CreateTeamDocument extends EditTeamDocument {
@@ -59,7 +60,7 @@ export declare interface EditTeamDocument {
   /**
    * 频道权限
    */
-  platform            ?: number[]
+  platform            ?: string[]
   /**
    * 页面权限
    */

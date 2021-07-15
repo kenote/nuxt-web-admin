@@ -2,7 +2,7 @@
 import nunjucks from 'nunjucks'
 import { Command, Channel, Verify } from '@/types/client'
 import { dataNodeProxy } from '@kenote/common'
-import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit, isNumber, toNumber, isNaN, isEmpty, isNull } from 'lodash'
+import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit, isNumber, toNumber, isNaN, isEmpty, isNull, compact } from 'lodash'
 import jsYaml from 'js-yaml'
 import urlParse from 'url-parse'
 import qs from 'query-string'
@@ -68,15 +68,17 @@ export function parseTemplate (tpl: string, context: object) {
  * 解析命令指向
  * @param value 
  */
-export function parseCommand (value: string): Command.value | null {
+export function parseCommand<T> (value: string, tag?: string): Command.value<T> | null {
   if (!value) return null
-  let command = value.match(/^(dialog|action|command|router|https?)\:(\S+)$/)
+  let tags = compact([ 'dialog', 'action', 'command', 'router', 'https?', tag ]).join('|')
+  let regex = new RegExp(`^(${tags})\\:(\\S+)$`)
+  let command = value.match(regex)
   if (!command) return null
   let [ , type, path ] = command
   if (/^(https?)/.test(type)) {
     return { type: 'http', path: value }
   }
-  return { type, path } as Command.value
+  return { type, path } as Command.value<any>
 }
 
 /**

@@ -92,6 +92,21 @@
     @submit="submit"
     :env="env"
     />
+  <!-- 成员管理器 -->
+  <web-people v-else-if="type === 'web-people'"
+    :title="options && options.title"
+    :columns="options && options.columns"
+    :request="options && options.request"
+    :invite="options && options.invite"
+    :add-request="options && options.add"
+    :remove-request="options && options.remove"
+    :owner-request="options && options.owner"
+    :close-after="options && options.closeAfter"
+    :env="env"
+    @command="command"
+    @get-data="getData"
+    @submit="submit"
+    />
   <!-- 按钮 -->
   <el-button v-else-if="type === 'web-button'"
     :size="options && options.size"

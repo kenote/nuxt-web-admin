@@ -43,6 +43,9 @@ export async function create (ctx: Context, next: NextHandler) {
       throw httpError(ErrorCode.ERROR_VALID_GROUP_NOTEXIST)
     }
     ctx.filterUserLevel(group.level, 9998)
+    if (group.level >= 9999) {
+      throw httpError(ErrorCode.ERROR_BYLOND_LEVEL_OPERATE)
+    }
     return next()
   } catch (error) {
     nextError(error, ctx, next)
@@ -90,6 +93,9 @@ export async function switchGroup (ctx: Context, next: NextHandler) {
       throw httpError(ErrorCode.ERROR_AUTH_OPERATE_GROUP_NULL)
     }
     ctx.filterUserLevel(group.level, 9998)
+    if (group.level >= 9999) {
+      throw httpError(ErrorCode.ERROR_BYLOND_LEVEL_OPERATE)
+    }
     return next()
   } catch (error) {
     nextError(error, ctx, next)

@@ -21,7 +21,6 @@ emailVerify:
 # 默认开启频道
 platform:
   - account
-  - ucenter
 
 # 安全中心
 security:

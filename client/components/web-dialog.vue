@@ -15,7 +15,7 @@
       </section>
       <span slot="footer" class="dialog-footer">
         <div class="dialog-footer-left">
-          
+          <slot name="tools"></slot>
         </div>
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary" @click="handleSubmit" v-loading="loading">确 定</el-button>

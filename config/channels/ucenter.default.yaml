@@ -44,6 +44,16 @@ children:
         disabled: |-
           auth.group.level:
             $lt: 9998
+      - key: 2-1-3
+        name: 团队管理
+        description: 创建、设置团队权限
+        keywords: [ 用户中心, 团队管理, yonghu, yh, tuandui, td, team ]
+        route: /ucenter/team
+        configuration: /data/pages/ucenter/team.yml
+        refresh: true
+        disabled: |-
+          auth.group.level:
+            $lt: 9998
   # 票据管理
   - key: 2-2
     name: 票据管理

@@ -24,7 +24,7 @@ export declare interface GroupDocument extends Document {
   /**
    * 频道权限
    */
-  platform             : number[]
+  platform             : string[]
   /**
    * 页面权限
    */
@@ -62,7 +62,7 @@ export declare interface EditGroupDocument {
   /**
    * 频道权限
    */
-  platform            ?: number[]
+  platform            ?: string[]
   /**
    * 页面权限
    */

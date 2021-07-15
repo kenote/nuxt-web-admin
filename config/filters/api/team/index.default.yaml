@@ -1,0 +1,47 @@
+
+
+# 获取团队列表
+list:
+  - key: name
+    type: string
+  - key: page
+    type: number
+  - key: size
+    type: number
+  - key: sort
+    type: string[]
+
+# 创建团队
+create:
+  - key: name
+    type: string
+    rules:
+      - required: true
+        message: 团队名称不能为空
+        code: 1000
+  - key: description
+    type: string
+
+# 编辑用户组
+edit:
+  - key: name
+    type: string
+    rules:
+      - required: true
+        message: 用户组名称不能为空
+        code: 1000
+  - key: description
+    type: string
+    defaultValue: ''
+
+# 添加成员/移除成员
+people:
+  - key: user
+    type: string
+    rules:
+      - required: true
+        message: 用户ID不能为空
+        code: 1000
+      - validator: isMongoId
+        message: 用户ID必须是个 ObjectId
+        code: 1000

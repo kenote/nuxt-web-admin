@@ -95,7 +95,6 @@ export default class LoginPage extends mixins(PageMixin) {
             let result = await this.$httpClient().post<HttpResult<UserDocument | Account.uuidResult<UserDocument[]>>>(`/api/account/login`, this.values)
             this.loading = false
             if (result?.error) {
-              console.log(result.error)
               this.sendWait(3)
               this.$notify.warning({ title: '警告', message: result.error })
             }

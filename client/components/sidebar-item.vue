@@ -12,11 +12,12 @@
         :index="item.route || item.key"
         :disabled="item.disabled"
         :children="item.children"
+        :access="access"
         :env="env"
         />
     </template>
   </el-submenu>
-  <el-menu-item v-else :index="index" :disabled="isDisabled(disabled)">
+  <el-menu-item v-else :index="index" :disabled="accessDisabled(index)">
     <i v-if="icon" v-bind:class="icon"></i>
     <div slot="title">
       <span>{{ name }}</span>
@@ -29,6 +30,7 @@ import { Component, Prop, mixins } from 'nuxt-property-decorator'
 import { Channel } from '@/types/client'
 import { FilterQuery } from '@kenote/common'
 import EnvironmentMixin from '~/mixins/environment'
+import { get } from 'lodash'
 
 @Component<SidebarItem>({
   name: 'sidebar-item'
@@ -48,7 +50,18 @@ export default class SidebarItem extends mixins(EnvironmentMixin) {
   disabled!: boolean | FilterQuery<any> | string
 
   @Prop({ default: undefined })
+  access!: string[]
+
+  @Prop({ default: undefined })
   children!: Channel.DataNode[]
+
+  accessDisabled (routePath: string) {
+    let disabled = this.isDisabled(this.disabled)
+    if (disabled) return disabled
+    let level = get(this.env, 'auth.group.level', 0)
+    if (level >= 9000) return false
+    return !this.access?.includes(routePath)
+  }
 }
 
 </script>

@@ -154,7 +154,7 @@
     max-height: 580px;
   }
 
-  .el-autocomplete-suggestion {
+  .searchbar-popper {
     border-radius: 0;
     background-color: #373d41;
     border: 1px #2a2a2a solid;
@@ -229,6 +229,46 @@
       &:hover {
         color: #ededed;
         background-color: #2a2f32;
+      }
+    }
+  }
+
+  .fetch-people-popper {
+    border-radius: 0;
+
+    .popper__arrow {
+      display: block;
+    }
+
+    li {
+      line-height: normal;
+      padding: 0;
+      pointer-events: none;
+
+      &>div {
+        padding: 10px 15px;
+        pointer-events: visible;
+        line-height: 36px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        span {
+          margin-left: 10px;
+          vertical-align: middle;
+        }
+        
+        .name {
+          font-weight: 500;
+        }
+
+        .el-avatar {
+          margin-left: 0;
+        }
+
+        i {
+          font-weight: 800;
+        }
       }
     }
   }

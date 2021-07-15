@@ -18,22 +18,23 @@ export default async (context: Context) => {
   let channels = get(store.state, 'setting.channels') as Channel.DataNode[]
   let channelId = getChannelKey(channels, route.path, 'route')
   if (!channelId) {
-    error({ statusCode: 404 })
+    return error({ statusCode: 404 })
   }
   let channel = channels.find( ruleJudgment({ key: channelId }))
   if (channel) {
     if (
       !ruleJudgment({ $where: item => isFilter(item.conditions, { auth })})(channel)
     ) {
-      error({ statusCode: 404 })
+      return error({ statusCode: 404 })
     }
-    let page = dataNodeProxy<Channel.DataNode>(channel.children ?? []).find({ route: route.path })
-    if (page) {
-      if (
-        !ruleJudgment({ $where: item => isFilter(item.conditions, { auth })})(page)
-      ) {
-        error({ statusCode: 404 })
-      }
-    }
+    // let page = dataNodeProxy<Channel.DataNode>(channel.children ?? []).find({ route: route.path })
+    // console.log(page)
+    // if (page) {
+    //   if (
+    //     !ruleJudgment({ $where: item => isFilter(item.conditions, { auth })})(page)
+    //   ) {
+    //     return error({ statusCode: 404 })
+    //   }
+    // }
   }
 }

@@ -17,7 +17,7 @@ options: {}
 # 展现条件
 conditions: |-
   auth.group.level:
-    $gte: 9000
+    $gte: 1000
 # 分栏页面
 children:
   # 帐户管理

@@ -21,7 +21,7 @@ export const Dao = modelDao<UserDocument>(models.User, {
       select: [ 'id', 'name', 'level', 'description', 'store', 'platform', 'access' ]
     },
     {
-      path: 'team',
+      path: 'teams',
       select: [ 'id', 'name', 'description', 'platform', 'access', 'rtsps', 'super', 'owner' ]
     }
   ]

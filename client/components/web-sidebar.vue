@@ -21,6 +21,7 @@
             :icon="item.icon"
             :index="item.route || item.key"
             :disabled="item.disabled"
+            :access="access"
             :children="item.children"
             :env="env"
             />
@@ -55,6 +56,9 @@ export default class Sidebar extends mixins(EnvironmentMixin) {
 
   @Prop({ default: undefined })
   data!: Channel.DataNode[]
+
+  @Prop({ default: undefined })
+  access!: string[]
 
   @Provide()
   defaultOpeneds: string[] = []

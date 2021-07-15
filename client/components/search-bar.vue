@@ -7,6 +7,7 @@
       v-model="search" 
       :fetch-suggestions="querySearch"
       @select="handleCommand"
+      popper-class="searchbar-popper"
       :placeholder="placeholder" >
       <i v-show="search" class="el-icon-error el-input__icon" slot="suffix" @click="handleClear"></i>
       <div slot-scope="{ item }">

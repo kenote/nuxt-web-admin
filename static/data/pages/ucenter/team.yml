@@ -1,0 +1,503 @@
+
+# 设置环境变量
+env:
+  display: list
+  dialog: none
+
+# 页面分页大小
+pageSize: 15
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    conditions: |-
+      display: list
+    options:
+      layout: vertical
+      alignItems: flex-start
+      children:
+        - key: 1-1-2
+          name: web-form
+          options:
+            inline: true
+            columns:
+              - key: name
+                name: 团队名称
+                type: input
+                placeholder: 请输入团队名称
+                options:
+                  clearable: true
+                width: 300
+            # 规则验证
+            rules:
+            # 请求地址
+            action:
+              method: POST
+              url: /api/team
+            # 提交按钮名称
+            submitName: 搜 索
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: create
+                  name: 创建团队
+                  type: button
+                  style: success
+                  command: action:create
+                - key: deletes
+                  name: 删除选中
+                  type: button
+                  style: danger
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:deletes
+              success: 新数据已拉取
+              assignment:
+                data: data.data
+                counts: data.counts
+                pagination: data.limit
+              pagination: remote
+            # 设置默认值
+            defaultValues: {}
+        - key: 1-1-3
+          name: web-table
+          options:
+            selection: true
+            sorter:
+              request:
+                method: POST
+                url: /api/team
+              submitOptions:
+                success: 新数据已拉取
+                assignment:
+                  data: data.data
+                  counts: data.counts
+                  pagination: data.limit
+                pagination: remote
+            columns:
+              - key: id
+                name: ID
+                width: 80
+                fixed: left
+              - key: name
+                name: 名称
+                width: 120
+                align: left
+              - key: owner
+                name: 团长
+                width: 120
+                format:
+                  - type: map
+                    maps: username
+                defaultValue: --
+              - key: peoples
+                name: 人数
+                width: 120
+              - key: description
+                name: 描述
+                minWidth: 300
+                align: left
+                defaultValue: --
+              - key: $space
+                minWidth: 10 
+              - key: actions
+                name: 操作
+                fixed: right
+                align: left
+                width: 240
+                emit:
+                  - key: edit
+                    name: 编辑
+                    type: dropdown
+                    command: action:edit
+                    options:
+                      - key: platform
+                        name: 频道入口
+                        command: action:platform
+                      - key: access
+                        name: 访问权限
+                        disabled: |-
+                          row.platform:
+                            $size: 0
+                        command: dialog:access
+                      - key: people
+                        name: 成员管理
+                        command: dialog:people
+                  - key: delete
+                    name: 删除
+                    type: button
+                    style: danger
+                    command: action:remove
+  - key: 1-2
+    name: web-container
+    conditions: |-
+      display: create
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-2-1
+          name: web-form
+          options:
+            name: 创建团队
+            columns:
+              - key: name
+                name: 团队名称
+                type: input
+                placeholder: 请输入团队名称
+              - key: description
+                name: 描 述
+                type: textarea
+                placeholder: 请输入内容...
+                max: 100
+                options:
+                  showWordLimit: true
+                  resize: none
+                  rows: 4
+                  autosize:
+                    minRows: 4
+                    maxRows: 4
+            # 规则验证
+            rules:
+              name:
+                - required: true
+                  message: 请输入团队名称
+            # 请求地址
+            action:
+              method: POST
+              url: /api/team/create
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 团队已创建
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            defaultValues: {}
+  - key: 1-3
+    name: web-container
+    conditions: |-
+      display: edit
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-3-1
+          name: web-form
+          options:
+            name: 编辑团队
+            columns:
+              - key: name
+                name: 团队名称
+                type: input
+                placeholder: 请输入团队名称
+              - key: description
+                name: 描 述
+                type: textarea
+                placeholder: 请输入内容...
+                max: 100
+                options:
+                  showWordLimit: true
+                  resize: none
+                  rows: 4
+                  autosize:
+                    minRows: 4
+                    maxRows: 4
+            # 规则验证
+            rules:
+              name:
+                - required: true
+                  message: 请输入团队名称
+            # 请求地址
+            action:
+              method: POST
+              url: /api/team/edit/{{selected._id}}
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 团队信息已更新
+              changeSubmit: 数据好像没什么改变，无需提交!
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            defaultValues: |-
+              name: {{selected.name}}
+              description: '{{selected.description}}'
+            valueFormat:
+              description:
+                type: string
+  - key: 1-4
+    name: web-container
+    conditions: |-
+      display: platform
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-4-1
+          name: web-form
+          options:
+            name: 频道入口
+            columns:
+              - key: name
+                name: 团队名称
+                type: input
+                placeholder: 请输入团队名称
+                disabled: true
+              - key: platform
+                name: 频道选择
+                type: transfer
+                request:
+                  method: POST
+                  url: /api/channel/list
+                props:
+                  label: name
+                  key: key
+                  disabled: disabled
+                options:
+                  filterable: true
+                  titles: [ 待选频道, 已选频道 ]
+            # 请求地址
+            action:
+              method: POST
+              url: /api/team/platform/{{selected._id}}
+            # 排除项
+            exclude:
+              - name
+            # 提交按钮名称
+            submitName: 提 交
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 频道入口已更新
+              changeSubmit: 数据好像没什么改变，无需提交!
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            defaultValues: |-
+              name: {{selected.name}}
+              platform: [{% for item in selected.platform %} {{item}}, {% endfor %}]
+
+  - key: 1-7
+    name: web-dialog
+    conditions: |-
+      dialog: access
+    options:
+      key: dialog-access
+      title: 访问权限
+      content:
+        type: datanode-select
+        props:
+          id: route
+          label: name
+        nodeKey: route
+        postKey: access
+        request:
+          method: POST
+          url: /api/channel/node
+          params: |-
+            platform: [{% for item in selected.platform %} {{item}}, {% endfor %}]
+        defaultValues: |-
+          [{% for item in selected.access %} {{item}}, {% endfor %}]
+        # 请求地址
+        action:
+          method: POST
+          url: /api/team/access/{{selected._id}}
+        # 提交选项
+        submitOptions:
+          success: 访问权限已更新
+          afterCommand: 
+            - dialog:none
+            - action:refresh
+  - key: 1-8
+    name: web-people
+    conditions: |-
+      dialog: people
+    options:
+      title: 成员管理
+      columns:
+        - key: id
+          name: ID
+          width: 80
+          fixed: left
+        - key: username
+          name: 用户名
+          width: 120
+          align: left
+          fixed: left
+        - key: nickname
+          name: 昵称
+          width: 120
+          align: left
+          defaultValue: --
+        - key: sex
+          name: 性别
+          width: 90
+          format:
+            - type: number
+              maps: { 0: 未知, 1: 男, 2: 女 }
+        - key: group
+          name: 用户组/角色
+          width: 180
+          format:
+            - type: map
+              maps: name
+        - key: email
+          name: 电子邮箱
+          width: 240
+          align: left
+          format:
+            - type: string
+              regexp: !!js/regexp /\w{4}@/
+              substr: '****@'
+          defaultValue: --
+        - key: mobile
+          name: 手机号
+          width: 120
+          align: left
+          format:
+            - type: string
+              regexp: !!js/regexp /^(\d{3})\d+(\d{4})$/
+              substr: '$1****$2'
+          defaultValue: --
+        - key: $space
+          minWidth: 10 
+        - key: actions
+          name: 操作
+          fixed: right
+          align: left
+          width: 180
+          emit:
+            - key: delete
+              name: 移除
+              type: button
+              style: danger
+              command: people:remove
+              disabled: |-
+                row.owner: true
+            - key: owner
+              name: 设为团长
+              type: button
+              style: success
+              command: people:owner
+              disabled: |-
+                row.owner: true
+      # 查询用户接口
+      invite:
+        method: PUT
+        url: /api/team/invite_suggestions/{{selected._id}}
+        params: |-
+          name: '{{name}}'
+      # 获取成员接口
+      request:
+        method: GET
+        url: /api/team/people/{{selected._id}}
+      # 添加成员接口
+      add:
+        method: PUT
+        url: /api/team/people/{{selected._id}}
+        params: |-
+          user: '{{row._id}}'
+      # 移除成员接口
+      remove:
+        method: DELETE
+        url: /api/team/people/{{selected._id}}
+        params: |-
+          user: '{{row._id}}'
+      # 设置所有者
+      owner:
+        method: PUT
+        url: /api/team/owner/{{selected._id}}
+        params: |-
+          user: '{{row._id}}'
+      # 关闭后命令
+      closeAfter: 
+        - dialog:none
+        - action:refresh
+      
+        
+
+
+
+# 初始化数据
+initialData:
+  request:
+    method: POST
+    url: /api/team
+  submitOptions:
+    success: 新数据已拉取
+    assignment:
+      data: data.data
+      counts: data.counts
+      pagination: data.limit
+    pagination: remote
+
+
+
+# 定义 Action
+actions:
+  # 刷新
+  refresh:
+    request:
+      method: POST
+      url: /api/team
+    submitOptions:
+      success: 新数据已拉取
+      assignment:
+        data: data.data
+        counts: data.counts
+        pagination: data.limit
+      pagination: remote
+  # 删除操作
+  remove:
+    request:
+      method: DELETE
+      url: |-
+        /api/team/{{row._id}}
+    confirm:
+      message: 确认要永久删除该团队, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 团队已删除
+      afterCommand: 
+        - action:refresh
+  # 多选删除
+  deletes:
+    request:
+      method: DELETE
+      url: |-
+        /api/team
+      params: |-
+        ids: [{% for item in selection %} {{item._id}}, {% endfor %}]
+    confirm:
+      message: 确认要永久删除所选团队, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 团队已删除
+      afterCommand: 
+        - action:refresh

@@ -17,8 +17,8 @@ export declare namespace Command {
 
   type type = 'dialog' | 'action' | 'command' | 'router' | 'http'
 
-  interface value {
-    type     : type
+  interface value<T> {
+    type     : type | T
     path     : string
   }
 }
@@ -415,7 +415,7 @@ export declare namespace Channel {
     /**
      * 回调更新
      */
-    next          ?: (values: Record<string, any>) => void
+    next          ?: (values: any) => void
     /**
      * 完成后调用指令
      */
