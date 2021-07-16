@@ -22,6 +22,8 @@
             :index="item.route || item.key"
             :disabled="item.disabled"
             :access="access"
+            :ignore-platform="ignorePlatform"
+            :platform="platform"
             :children="item.children"
             :env="env"
             />
@@ -59,6 +61,12 @@ export default class Sidebar extends mixins(EnvironmentMixin) {
 
   @Prop({ default: undefined })
   access!: string[]
+
+  @Prop({ default: undefined })
+  ignorePlatform!: string[]
+
+  @Prop({ default: '' })
+  platform!: string
 
   @Provide()
   defaultOpeneds: string[] = []

@@ -13,6 +13,8 @@
         :disabled="item.disabled"
         :children="item.children"
         :access="access"
+        :ignore-platform="ignorePlatform"
+        :platform="platform"
         :env="env"
         />
     </template>
@@ -53,6 +55,12 @@ export default class SidebarItem extends mixins(EnvironmentMixin) {
   access!: string[]
 
   @Prop({ default: undefined })
+  ignorePlatform!: string[]
+
+  @Prop({ default: '' })
+  platform!: string
+
+  @Prop({ default: undefined })
   children!: Channel.DataNode[]
 
   accessDisabled (routePath: string) {
@@ -60,6 +68,7 @@ export default class SidebarItem extends mixins(EnvironmentMixin) {
     if (disabled) return disabled
     let level = get(this.env, 'auth.group.level', 0)
     if (level >= 9000) return false
+    if (this.ignorePlatform?.includes(this.platform)) return
     return !this.access?.includes(routePath)
   }
 }

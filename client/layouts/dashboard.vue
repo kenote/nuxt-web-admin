@@ -49,6 +49,8 @@
               :data="getChannelData()"
               :default-active="$route.path"
               :access="access"
+              :ignore-platform="accountOptions.platform"
+              :platform="selectedChannel.label"
               :env="env"
               />
           </div>
@@ -128,7 +130,7 @@ import { FilterQuery } from 'rule-judgment'
     }
     if (this.auth) {
       let { level } = this.auth.group
-      this.platform = level >= 9000 ? null : getUserArrayInfo(this.auth, 'platform')
+      this.platform = level >= 9000 ? null : getUserArrayInfo(this.auth, 'platform').concat(this.accountOptions?.platform)
       this.access = level >= 9000 ? null : getUserArrayInfo(this.auth, 'access')
     }
   },
@@ -192,6 +194,8 @@ export default class DashboardLayout extends mixins(BaseMixin) {
     if (disabled) return disabled
     let level = this.auth?.group?.level ?? 0
     if (level >= 9000) return false
+    if (this.accountOptions?.platform?.includes(this.selectedChannel.label!)) return false
+    if (this.$route.path === '/dashboard') return false
     return !this.access?.includes(this.$route.path)
   }
 
@@ -219,7 +223,7 @@ export default class DashboardLayout extends mixins(BaseMixin) {
     this.env.auth = val
     if (val) {
       let { level } = val.group
-      this.platform = level >= 9000 ? null : getUserArrayInfo(val, 'platform')
+      this.platform = level >= 9000 ? null : getUserArrayInfo(val, 'platform').concat(this.accountOptions?.platform)
       this.access = level >= 9000 ? null : getUserArrayInfo(val, 'access')
     }
     else {

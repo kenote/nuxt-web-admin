@@ -5,6 +5,7 @@ import sessionPlugin from '~/plugins/session'
 import passportPlugin from '~/plugins/passport'
 import Restful from '~/middlewares/restful'
 import nuxtPulgin from '~/plugins/nuxt'
+import logger from '~/services/logger'
 
 @Module({
   /**
@@ -50,6 +51,7 @@ class TemplateModule {}
      * 此处不支持 async 方法
      */
     exception: (err: any, ctx: Context) => {
+      logger.error(err)
       ctx.renderException('error', { message: 'This page could internal server error' })
     }
   }
