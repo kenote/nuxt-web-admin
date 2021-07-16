@@ -117,6 +117,7 @@ export declare namespace Channel {
   interface InitialData {
     request       ?: RequestConfig
     submitOptions ?: SubmitOptions
+    defaultValues ?: Record<string, any> | string
   }
 
   interface ActionOptions {

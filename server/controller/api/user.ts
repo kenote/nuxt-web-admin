@@ -34,7 +34,9 @@ export default class UserController {
       conditions.create_at = { $gte: begin, $lt: end }
     }
     try {
-      let result = await db.user.Dao.list(conditions, { ...options, limit, skip })
+      let result = await db.user.Dao.list(conditions, { ...options, limit, skip,
+        select: [ 'id', 'username', 'email', 'mobile', 'nickname', 'avatar', 'sex', 'group', 'teams', 'binds', 'create_at', 'update_at' ]
+      })
       return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)

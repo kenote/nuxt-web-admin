@@ -133,7 +133,8 @@ export default class TeamController {
     }
     try {
       let result = await db.user.Dao.find(conditions, {
-        select: [ 'id', 'username', 'email', 'mobile', 'nickname', 'avatar', 'sex', 'group', 'teams' ]
+        select: [ 'id', 'username', 'email', 'mobile', 'nickname', 'avatar', 'sex', 'group', 'teams' ],
+        limit: 100
       })
       return ctx.api(result)
     } catch (error) {

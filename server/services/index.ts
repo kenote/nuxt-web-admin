@@ -21,6 +21,14 @@ export function nextError (error: HttpError, ctx: Context, next: NextHandler) {
   }
 }
 
+export function apilog (response: any, ctx: Context) {
+  let { originalUrl, method, headers, body } = ctx
+  let info = {
+    originalUrl, method, headers, body, response
+  }
+  ctx.service.logger.info(info)
+}
+
 export function toPageInfo (pageno: number, size: number = 10) {
   size = toSafeInteger(size)
   let limit = isNaN(size) || size < 1 ? 10 : size

@@ -222,8 +222,9 @@ export default class AutoPage extends mixins(PageMixin) {
           this.pagination = pageSize
         }
         if (initialData) {
+          let defaultValues = initialData?.defaultValues ? parseParams(initialData?.defaultValues)(this.env) : this.conditions
           setTimeout(() => {
-            this.handleSubmit(this.conditions, initialData?.request!, initialData?.submitOptions ?? {})
+            this.handleSubmit(defaultValues, initialData?.request!, initialData?.submitOptions ?? {})
           }, 500)
           
         }

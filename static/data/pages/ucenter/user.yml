@@ -463,6 +463,8 @@ initialData:
       counts: data.counts
       pagination: data.limit
     pagination: remote
+  defaultValues: |-
+    findtype: username
 
 # 查询验证接口
 uniqueOptions:

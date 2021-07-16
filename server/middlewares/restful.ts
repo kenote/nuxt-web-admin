@@ -34,9 +34,11 @@ export default class Restful {
     return (info: any, error?: HttpError) => {
       if (error) {
         let { message } = error
+        ctx.service.apilog({ error: message }, ctx)
         ctx.json({ error: message })
       }
       else {
+        ctx.service.apilog({ data: JSON.stringify(info, null, 2) }, ctx)
         ctx.json({ data: info })
       }
     }
