@@ -117,6 +117,28 @@
           }
         }
 
+        p {
+          margin: 8px 0;
+        }
+
+        .codeSent-info {
+          margin-bottom: 20px;
+          padding: 15px 0;
+          text-align: center;
+          border: 1px solid #d1dbe5;
+          border-radius: 4px;
+          background-color: #f8f8f8;
+          overflow: hidden;
+
+          p {
+            color: #747474;
+
+            a {
+              color: #00aff8;
+            }
+          }
+        }
+
         .service-terms {
           color: #747474;
           font-size: 14px;

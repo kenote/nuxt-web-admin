@@ -109,3 +109,33 @@ remove:
       - required: true
         message: 缺少身份验证
         code: 1000
+
+# 重置密码（找回密码用）
+resetpwd:
+  - key: verify_id
+    type: string
+    rules:
+      - required: true
+        message: 缺少验证ID
+        code: 1000
+  - key: code
+    type: string
+    rules:
+      - required: true
+        message: 缺少验证码
+        code: 1000
+  - key: name
+    type: string
+    rules:
+      - required: true
+        message: 缺少电子邮箱或手机号
+        code: 1000
+  - key: password
+    type: string
+    rules:
+      - required: true
+        message: 密码不能为空
+        code: 1000
+      - pattern: !!js/regexp /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/
+        message: 密码需要 8 - 20 位的字母、数字和英文符号
+        code: 1000

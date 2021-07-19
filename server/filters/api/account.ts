@@ -44,7 +44,18 @@ export async function upInfo (ctx: Context, next: NextHandler) {
     ctx.payload = result
     return next()
   } catch (error) {
-    console.log(error)
+    nextError(error, ctx, next)
+  }
+}
+
+export async function resetpwd (ctx: Context, next: NextHandler) {
+  let { nextError, db, httpError, ErrorCode } = ctx.service
+  let filters = loadConfig<Record<string, FilterData.options[]>>('config/filters/api/account', { mode: 'merge' })
+  try {
+    let result = filterData(filters.resetpwd, customize)(ctx.body)
+    ctx.payload = result
+    return next()
+  } catch (error) {
     nextError(error, ctx, next)
   }
 }

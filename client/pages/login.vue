@@ -86,14 +86,10 @@ export default class LoginPage extends mixins(PageMixin) {
     let theForm = this.$refs['theForm'] as ElForm
     theForm.validate(valid => {
       if (valid) {
-        console.log('submit', this.values)
-        
-
         this.loading = true
         setTimeout(async () => {
           try {
             let result = await this.$httpClient().post<HttpResult<UserDocument | Account.uuidResult<UserDocument[]>>>(`/api/account/login`, this.values)
-            this.loading = false
             if (result?.error) {
               this.sendWait(3)
               this.$notify.warning({ title: '警告', message: result.error })
@@ -112,8 +108,8 @@ export default class LoginPage extends mixins(PageMixin) {
             }
           } catch (error) {
             this.$notify.error({ title: '错误', message: error.message })
-            this.loading = false
           }
+          this.loading = false
         }, 300)
         
       }

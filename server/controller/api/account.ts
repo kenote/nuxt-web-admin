@@ -177,7 +177,7 @@ export default class AccountController {
         else if (type === 'mobile') {
           await sms.sendSms(user.mobile!, 'password', { code: verify.token })
         }
-        return ctx.api({ result: true })
+        return ctx.api({ result: true, verify_id: verify._id })
       }
       // 用户登录用
       else if (verify_id === 'login' && type == 'mobile') {
@@ -257,6 +257,30 @@ export default class AccountController {
         await db.verify.Dao.remove({ _id: verify._id })
         return ctx.api(result)
       }
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 重置密码（找回密码用）
+   */
+  @Put('/resetpwd/:type(email|mobile)', { filters: [ filter.account.resetpwd ] })
+  async resetpwd (ctx: Context, next: NextHandler) {
+    let { nextError, db, httpError, ErrorCode } = ctx.service
+    let { mailphoneTime } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+    let { type } = ctx.params
+    let { code, verify_id, password, name } = ctx.payload
+    try {
+      let user = await db.user.Dao.findOne({ [type]: name })
+      if (!user) {
+        throw httpError(ErrorCode.ERROR_FINDUSER_NOTEXIST)
+      }
+      let verify = await db.verify.check({ user: user._id, code }, mailphoneTime, verify_id)
+      let result = await db.user.upInfo({ _id: user._id }, { password })
+      console.log('password', password)
+      await db.verify.Dao.remove({ _id: verify._id })
+      return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)
     }

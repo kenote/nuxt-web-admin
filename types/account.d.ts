@@ -45,6 +45,13 @@ export declare namespace Account {
   interface verifyUserRequest {
     type          : verifyUserType
     name          : string
+    verify_id    ?: string
+  }
+
+  interface lostpass {
+    code         ?: string
+    password     ?: string
+    repassed     ?: string
   }
 
   /**
