@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Context, NextHandler } from '@kenote/core'
 import { authenticate } from '~/plugins/passport'
-import { UserDocument } from '@/types/services/db'
-import { isArray, omit, pick, keys } from 'lodash'
+import { UserDocument, RegisterDocument, TicketDocument } from '@/types/services/db'
+import { isArray, omit, pick, keys, get } from 'lodash'
 import * as filter from '~/filters/api'
 import { Account } from '@/types/account'
 import { FilterQuery } from 'mongoose'
@@ -10,7 +10,6 @@ import { toUser } from '~/middlewares/auth'
 import { loadConfig } from '@kenote/config'
 import { AccountConfigure } from '@/types/config'
 import ruleJudgment from 'rule-judgment'
-
 
 @Controller('/account')
 export default class AccountController {
@@ -281,6 +280,47 @@ export default class AccountController {
       console.log('password', password)
       await db.verify.Dao.remove({ _id: verify._id })
       return ctx.api(result)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 注册用户
+   */
+  @Post('/register', { filters: [ filter.account.register ] })
+  async register (ctx: Context, next: NextHandler) {
+    let { nextError, db, httpError, ErrorCode } = ctx.service
+    let { invitation, emailVerify } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+    let user: RegisterDocument = omit(ctx.payload, ['invitation']) as RegisterDocument
+    try {
+      let group = await db.group.basicGroup()
+      let ticket: TicketDocument | null = null
+      if (invitation || ctx.payload?.invitation) {
+        ticket = await db.ticket.valid(ctx.payload?.invitation, { name: '邀请码', type: 'register' })
+        let { setting } = ticket
+        user.group = get(setting, 'group', group._id) 
+      }
+      else {
+        user.group = group._id
+      }
+      let result = await db.user.register(user, ticket, emailVerify)
+      return ctx.api(result)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 验证电子邮箱/手机号
+   */
+  @Put('/verify/:type(email|mobile)', { filters: [ filter.account.verifyEmailMobile ] })
+  async verifyEmailMobile (ctx: Context, next: NextHandler) {
+    let { nextError, db, httpError, ErrorCode } = ctx.service
+    let { emailVerify } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+    try {
+      let result =  await db.user.verifyEmailMobile(ctx.payload, emailVerify)
+      return ctx.api({ result: !!result })
     } catch (error) {
       nextError(error, ctx, next)
     }

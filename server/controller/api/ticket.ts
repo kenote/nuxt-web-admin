@@ -85,4 +85,19 @@ export default class TicketController {
       nextError(error, ctx, next)
     }
   }
+
+  /**
+   * 验证票据
+   */
+  @Put('/verify', { filters: [ filter.ticket.verify ] })
+  async verify (ctx: Context, next: NextHandler) {
+    let { ErrorCode, httpError, nextError, db } = ctx.service
+    let { cdkey, name, type } = ctx.payload
+    try {
+      let result = await db.ticket.valid(cdkey, { name, type })
+      return ctx.api(result)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
 }

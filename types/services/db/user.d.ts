@@ -173,3 +173,8 @@ export declare interface CheckWarning {
   email                : number
   mobile               : number
 }
+
+export declare type VerifyWarning = Record<string, {
+  timeout              : number
+  falied               : number
+}>

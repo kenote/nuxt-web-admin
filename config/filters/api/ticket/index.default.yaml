@@ -112,3 +112,14 @@ edit:
     format:
       - type: map
     defaultValue: {}
+
+# 验证票据
+verify:
+  - key: cdkey
+    type: string
+  - key: name
+    type: string
+    defaultValue: 兑换码
+  - key: type
+    type: string
+    defaultValue: cdkey

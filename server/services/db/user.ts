@@ -1,7 +1,7 @@
 import { FilterQuery } from 'mongoose'
 import { modelDao } from '@kenote/mongoose'
 import { models } from '~/models'
-import { UserDocument, SafeUserDocument, RegisterDocument, CreateUserDocument, VerifyDocument, EditUserDocument } from '@/types/services/db'
+import { UserDocument, SafeUserDocument, RegisterDocument, CreateUserDocument, VerifyDocument, EditUserDocument, TicketDocument } from '@/types/services/db'
 import { isArray, merge, omit, get, keys } from 'lodash'
 import { ErrorCode, httpError } from '~/services/error'
 import * as Bcrypt from '~/services/bcrypt'
@@ -12,7 +12,8 @@ import Mail from 'nodemailer/lib/mailer'
 import { AccountConfigure } from '@/types/config'
 import nunjucks from 'nunjucks'
 import ruleJudgment from 'rule-judgment'
-import { CheckWarning } from '@/types/services/db/user'
+import { CheckWarning, VerifyWarning } from '@/types/services/db/user'
+import * as ticketDB from './ticket'
 
 export const Dao = modelDao<UserDocument>(models.User, {
   populate: [
@@ -54,7 +55,57 @@ export async function create (doc: RegisterDocument) {
   let password = Bcrypt.encode(doc.password)
   let newUser: CreateUserDocument = merge(omit(doc, ['password']), password)
   let result = await Dao.create(newUser)
-  return omit(result, ['encrypt', 'salt'])
+  return omit(result, ['encrypt', 'salt']) as UserDocument
+}
+
+/**
+ * 注册用户
+ * @param doc 
+ * @param ticket 
+ */
+export async function register (doc: RegisterDocument, ticket: TicketDocument | null, emailVerify?: AccountConfigure.emailVerify) {
+  let user = await create(doc)
+  if (ticket) {
+    let used = ticket.stint <= ticket.uses + 1
+    await ticketDB.Dao.updateOne({ _id: ticket._id }, { $inc: { uses: 1 }, used })
+  }
+  if (emailVerify && doc.email) {
+    await sendEmailVerify(user, emailVerify)
+  }
+  return user
+}
+
+/**
+ * 校验电子邮箱/手机号
+ * @param doc 
+ * @param emailVerify 
+ */
+export async function verifyEmailMobile (doc: Account.verifyEmailMobile<{ type: Account.verifyUserType }>, emailVerify: AccountConfigure.emailVerify) {
+  let warnings: VerifyWarning = {
+    email: {
+      timeout: ErrorCode.ERROR_VERIFY_EMAIL_TIMEOUT,
+      falied: ErrorCode.ERROR_VERIFY_EMAIL_FAILED
+    },
+    mobile: {
+      timeout: ErrorCode.ERROR_VERIFY_MOBILE_TIMEOUT,
+      falied: ErrorCode.ERROR_VERIFY_MOBILE_FAILED
+    }
+  }
+  let verify = await verifyDB.Dao.findOne(doc)
+  if (!verify) {
+    throw httpError(warnings[doc.type].falied)
+  }
+  let difftime = Date.now() - verify.create_at.getTime()
+  let timeout = emailVerify.timeout * 1000
+  if (difftime > timeout) {
+    throw httpError(warnings[doc.type].timeout)
+  }
+  if (verify.approved) {
+    throw httpError(ErrorCode.ERROR_VERIFY_TOKEN_VERIFIED)
+  }
+  await verifyDB.Dao.updateOne({ _id: verify._id }, { approved: true })
+  await Dao.updateOne({ _id: verify.user?._id }, { $addToSet: { binds: doc.type }})
+  return verify
 }
 
 /**

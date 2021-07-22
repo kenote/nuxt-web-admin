@@ -24,6 +24,10 @@ export declare interface AccountConfigure {
    * 默认开启频道
    */
   platform             : string[]
+  /**
+   * 注册是否需要邀请
+   */
+  invitation          ?: boolean
 }
 
 export declare namespace AccountConfigure {

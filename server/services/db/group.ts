@@ -12,6 +12,32 @@ export const Dao = modelDao<GroupDocument>(models.Group, {
 })
 
 /**
+ * 获取基础用户组
+ */
+export const basicGroup = async () => await getGroup('min')
+
+/**
+ * 获取创建者用户组
+ */
+export const creatorGroup = async () => await getGroup('max')
+
+/**
+ * 获取最大/最小等级用户组
+ * @param tag 
+ */
+async function getGroup (tag: 'min' | 'max') {
+  let [ item ] = await models.Group.aggregate([
+    { $group: {
+        _id: { _id: '$_id', name: '$name', id: '$id', level: '$level', description: '$description', platform: '$platform', access: '$access', store: '$stroe' },
+        [`level_${tag}`]: { [`$${tag}`]: '$level' }
+      }
+    },
+    { $limit: 1 }
+  ])
+  return item?._id as GroupDocument
+}
+
+/**
  * 创建新用户组
  * @param docs 
  */

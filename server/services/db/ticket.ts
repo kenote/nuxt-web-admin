@@ -42,7 +42,6 @@ export async function valid (cdkey: string, options: TicketOptions) {
     throw httpError(ErrorCode.ERROR_VALID_TICKET_NULL, [ name ])
   }
   let { last_at, used } = ticket
-  console.log(ticket.last_at)
   if (last_at.getTime() <= Date.now()) {
     throw httpError(ErrorCode.ERROR_VALID_TICKET_EXPIRED, [ name ])
   }

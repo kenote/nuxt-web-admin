@@ -48,6 +48,9 @@ export declare namespace Account {
     verify_id    ?: string
   }
 
+  /**
+   * 找回密码
+   */
   interface lostpass {
     code         ?: string
     password     ?: string
@@ -55,10 +58,27 @@ export declare namespace Account {
   }
 
   /**
+   * 注册用户
+   */
+  interface register {
+    username     ?: string
+    email        ?: string
+    password     ?: string
+    invitation   ?: string
+  }
+
+  type verifyEmailMobile<T = {}> = {
+    token         : string
+    _id           : string
+  } & T
+
+  /**
    * 验证票据请求
    */
   interface ticket {
     cdkey        ?: string
+    name         ?: string
+    type         ?: string
   }
 
   /**

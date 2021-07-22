@@ -139,3 +139,49 @@ resetpwd:
       - pattern: !!js/regexp /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/
         message: 密码需要 8 - 20 位的字母、数字和英文符号
         code: 1000
+
+# 注册用户
+register:
+  - key: username
+    type: string
+    rules:
+      - required: true
+        message: 用户名不能为空
+        code: 1000
+      - pattern: !!js/regexp /^[a-zA-Z]{1}[a-zA-Z0-9\_\-]/
+        message: 英文字符开头，支持小写英文、数字、下划线和中划线组合
+        code: 1000
+      - min: 5
+        max: 20
+        message: 长度限定 5 - 20 位字符
+        code: 1000
+  - key: email
+    type: string
+    rules:
+      - required: true
+        message: 电子邮箱不能为空
+        code: 1000
+      - validator: isEmail
+        message: 请输入正确的邮箱地址，如 example@163.com
+        code: 1000
+  - key: password
+    type: string
+    rules:
+      - required: true
+        message: 登录密码不能为空
+        code: 1000
+      - pattern: !!js/regexp /^(?=.*[A-Za-z])[A-Za-z0-9$@$!%*#?&]{8,20}$/
+        message: 密码需要 8 - 20 位的字母、数字和英文符号
+        code: 1000
+  - key: invitation
+    type: string
+
+# 验证电子邮箱/手机号
+verifyEmailMobile:
+  - key: token
+    type: string
+    rules:
+      - require: true
+        message: 缺少 Token 凭证
+  - key: _id
+    type: string

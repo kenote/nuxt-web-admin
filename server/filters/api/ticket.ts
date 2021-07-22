@@ -98,3 +98,15 @@ export async function remove (ctx: Context, next: NextHandler) {
     nextError(error, ctx, next)
   }
 }
+
+export async function verify (ctx: Context, next: NextHandler) {
+  let { nextError, customize } = ctx.service
+  let filters = loadConfig<Record<string, FilterData.options[]>>('config/filters/api/ticket', { mode: 'merge', assign: { now: new Date() } })
+  try {
+    let document = filterData(filters.verify, customize)(ctx.body)
+    ctx.payload = document
+    return next()
+  } catch (error) {
+    nextError(error, ctx, next)
+  }
+}

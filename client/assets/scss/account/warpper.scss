@@ -42,6 +42,51 @@
       margin: auto;
       padding-top: 70px;
 
+      .verify-result-box {
+        text-align: center;
+        margin: 40px 0;
+
+        &.success {
+          i {
+            color: #229bcd;
+          }
+        }
+    
+        &.warning {
+          i {
+            color: #e6a23c;
+          }
+        }
+    
+        &.error {
+          i {
+            color: #ff5742;
+          }
+        }
+
+        &>i {
+          font-size: 100px;
+        }
+
+        .verify-result-content {
+          margin-top: 30px;
+
+          h1 {
+            font-size: 28px;
+            margin: 20px 0;
+            color: #5b6b72;
+          }
+
+          a {
+            font-size: 18px;
+            padding-bottom: 2px;
+            border-bottom: 1px solid #229bcd;
+            color: #229bcd;
+            font-weight: 700;
+          }
+        }
+      }
+
       .landing-activity {
         margin: 0 auto;
         width: 480px;
@@ -84,6 +129,34 @@
           text-align: center;
           font-size: 24px;
           color: #6a6a6a;
+        }
+
+        h5 {
+          text-align: center;
+          font-size: 18px;
+          color: #747474;
+          margin: 0;
+        }
+
+        .content {
+          margin: 10px 34px;
+          border-top: 1px rgba(0,0,0,0.13) solid;
+          color: #747474;
+          font-size: 14px;
+          padding: 10px 0;
+      
+          a {
+            color: #25A9E8;
+            font-weight: normal;
+      
+            &.el-button--primary {
+              color: #ffffff;
+            }
+          }
+
+          .el-button {
+            border-radius: 0;
+          }
         }
 
         form {
@@ -150,6 +223,7 @@
       
           .ng-hide {
             float: right;
+            margin-left: 10px;
           }
         }
       }
