@@ -30,6 +30,8 @@
         <p class="service-terms">
           <nuxt-link to="/lostpass">忘记密码</nuxt-link>
           <nuxt-link to="/register" class="ng-hide">立即注册</nuxt-link>
+          <!-- <span class="ng-hide">|</span>
+          <nuxt-link to="/login-verify" class="ng-hide">验证码登录</nuxt-link> -->
         </p>
       </el-form>
     </div>

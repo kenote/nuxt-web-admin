@@ -1,0 +1,43 @@
+
+- key: team::create
+  type: create
+  name: 创建了团队
+  method: [ POST ]
+  url: /api/team/create
+  regexp: !!js/regexp /^(/\api\/team\/create)/
+- key: team::edit
+  type: edit
+  name: 编辑了团队信息
+  method: [ POST ]
+  url: /api/team/edit
+  regexp: !!js/regexp /^(/\api\/team\/edit)/
+- key: team::remove
+  type: remove
+  name: 删除了团队
+  method: [ DELETE ]
+  url: /api/team
+  regexp: !!js/regexp /^(/\api\/team)/
+- key: team::authority
+  type: edit
+  name: 编辑了团队权限
+  method: [ POST ]
+  url: /api/team
+  regexp: !!js/regexp /^(/\api\/team\/)(platform|access)/
+- key: team::people::add
+  type: edit
+  name: 添加了团队成员
+  method: [ POST ]
+  url: /api/team/people
+  regexp: !!js/regexp /^(/\api\/team\/people)/
+- key: team::people::remove
+  type: edit
+  name: 移除了团队成员
+  method: [ DELETE ]
+  url: /api/team/people
+  regexp: !!js/regexp /^(/\api\/team\/people)/
+- key: team::owner
+  type: edit
+  name: 设置了团队管理员
+  method: [ PUT ]
+  url: /api/team/owner
+  regexp: !!js/regexp /^(/\api\/team\/owner)/

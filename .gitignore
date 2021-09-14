@@ -46,6 +46,7 @@ dist/
 config/**/*.yaml
 !config/**/*.default.yaml
 uploadfiles/
+project/
 
 # TypeScript v1 declaration files
 typings/
@@ -107,6 +108,9 @@ typings/
 
 # TernJS port file
 .tern-port
+
+# VsCode
+.vscode/
 
 # Deploy
 deploy.config.*

@@ -1,0 +1,38 @@
+
+
+# 频道 key
+key: !!str 3
+# 频道 名称
+name: 系统工具
+# 频道标识
+label: system
+# 频道描述
+description: 系统工具
+# 路由入口
+route: /system
+# 图标
+icon: iconfont icon-system
+# 选项
+options: {}
+# 展现条件
+conditions: |-
+  auth.group.level:
+    $gte: 9998
+# 分栏页面
+children:
+  # 帐户管理
+  - key: 3-3
+    name: 日志管理
+    children:
+      - key: 3-3-1
+        name: 运行日志
+        description: 系统运行日志
+        keywords: [ 系统工具, 日志管理, 运行日志, system, log, xt, rz ]
+        route: /system/log
+        configuration: /data/pages/system/log.yml
+        refresh: true
+      - key: 3-3-2
+        name: API日志
+        description: API日志管理
+        keywords: [ 系统工具, 日志管理, API日志, system, log, xt, rz, api ]
+        route: /system/oplog

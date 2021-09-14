@@ -1,0 +1,97 @@
+
+- key: account::login
+  type: login
+  name: 账号登录
+  method: [ POST ]
+  url: /api/account/login
+  regexp: !!js/regexp /^(/\api\/account\/login)/
+- key: account::accesstoken
+  type: accesstoken
+  name: 获取令牌
+  method: [ GET ]
+  url: /api/account/accesstoken
+  regexp: !!js/regexp /^(/\api\/account\/accesstoken)/
+- key: account::logout
+  type: logout
+  name: 账号登出
+  method: [ GET ]
+  url: /api/account/logout
+  regexp: !!js/regexp /^(/\api\/account\/logout)/
+- key: account::baseinfo
+  type: edit
+  name: 修改了个人信息
+  method: [ POST, PUT ]
+  url: /api/account/baseinfo
+  regexp: !!js/regexp /^(/\api\/account\/baseinfo)/
+- key: account::check
+  type: find
+  name: 验证用户名/邮箱/手机号是否占用
+  method: [ PUT ]
+  url: /api/account/check
+  regexp: !!js/regexp /^(/\api\/account\/check\/)(username|email|mobile)/
+- key: account::email_verify
+  type: verify
+  name: 发送激活邮件
+  method: [ GET ]
+  url: /api/account/email_verify
+  regexp: !!js/regexp /^(\/api\/account\/email\_verify)/
+- key: account::sendcode
+  type: verify
+  name: 发送验证码
+  method: [ PUT ]
+  url: /api/account/sendcode
+  regexp: !!js/regexp /^(/\api\/account\/sendcode\/)(email|mobile)/
+- key: account::verifycode
+  type: verify
+  name: 校验验证码
+  method: [ POST ]
+  url: /api/account/verifycode
+  regexp: !!js/regexp /^(/\api\/account\/verifycode)/
+- key: account::upinfo::email
+  type: edit
+  name: 修改了电子邮箱
+  method: [ POST ]
+  url: /api/account/upinfo/email
+  regexp: !!js/regexp /^(/\api\/account\/upinfo\/email)/
+- key: account::upinfo::mobile
+  type: edit
+  name: 修改了手机号
+  method: [ POST ]
+  url: /api/account/upinfo/mobile
+  regexp: !!js/regexp /^(/\api\/account\/upinfo\/mobile)/
+- key: account::upinfo::password
+  type: edit
+  name: 修改了登录密码
+  method: [ POST ]
+  url: /api/account/upinfo/password
+  regexp: !!js/regexp /^(/\api\/account\/upinfo\/password)/
+- key: account::upinfo::remove
+  type: remove
+  name: 注销了账号
+  method: [ POST ]
+  url: /api/account/upinfo/remove
+  regexp: !!js/regexp /^(/\api\/account\/upinfo\/remove)/
+- key: account::resetpwd
+  type: lostpass
+  name: 重置了密码（找回密码用）
+  method: [ PUT ]
+  url: /api/account/resetpwd
+  regexp: !!js/regexp /^(/\api\/account\/resetpwd\/)(email|mobile)/
+- key: account::register
+  type: register
+  name: 注册了账号
+  method: [ POST ]
+  url: /api/account/register
+  regexp: !!js/regexp /^(/\api\/account\/register)/
+- key: account::verify::email
+  type: verify
+  name: 激活了电子邮箱
+  method: [ PUT ]
+  url: /api/account/verify/email
+  regexp: !!js/regexp /^(/\api\/account\/verify\/email)/
+- key: account::verify::mobile
+  type: verify
+  name: 验证了手机号
+  method: [ PUT ]
+  url: /api/account/verify/mobile
+  regexp: !!js/regexp /^(/\api\/account\/verify\/mobile)/

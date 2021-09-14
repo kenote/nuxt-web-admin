@@ -177,7 +177,6 @@ export default class WebVditor extends Vue {
       }
     }
 
-
     let contentEditor = new Vditor('vditor', {
       ...options,
       after: () => {
@@ -191,12 +190,15 @@ export default class WebVditor extends Vue {
       },
       
     })
-    if (getBoolean(this.disabled)) {
-      contentEditor.disabled()
-    }
-    else {
-      contentEditor.enable()
-    }
+    setTimeout(() => {
+      if (getBoolean(this.disabled)) {
+        contentEditor.disabled()
+      }
+      else {
+        contentEditor.enable()
+      }
+    }, 300)
+    
     this.contentEditor = contentEditor
   }
 }

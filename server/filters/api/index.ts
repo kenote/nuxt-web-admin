@@ -1,5 +1,7 @@
 export * as group from './group'
 export * as account from './account'
+export * as oplog from './oplog'
+export * as project from './project'
 export * as team from './team'
 export * as ticket from './ticket'
 export * as user from './user'

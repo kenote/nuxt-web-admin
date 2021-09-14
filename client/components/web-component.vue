@@ -107,6 +107,15 @@
     @get-data="getData"
     @submit="submit"
     />
+  <!-- 预览视图 -->
+  <web-preview v-else-if="type === 'web-preview'"
+    :title="options && options.title"
+    :request="options && options.request"
+    :close-after="options && options.closeAfter"
+    :env="env"
+    @get-data="getData"
+    @submit="submit"
+    />
   <!-- 按钮 -->
   <el-button v-else-if="type === 'web-button'"
     :size="options && options.size"
@@ -258,7 +267,7 @@ export default class WebComponent extends mixins(EnvironmentMixin) {
   @Prop({ default: 1 })
   pageno!: number
 
-  @Prop({ default: 0 })
+  @Prop({ default: -1 })
   counts!: number
 
   @Prop({ default: false })

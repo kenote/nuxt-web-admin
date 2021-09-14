@@ -137,6 +137,8 @@ display:
           - key: chengdu
             label: 成都
       value: [ shanghai, beijing, shenzhen ]
+      props:
+        label: name
       callback: true
 # 参数说明
 attributes:

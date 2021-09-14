@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongoose'
+import { FilterQuery, Model, Document } from 'mongoose'
 import { modelDao } from '@kenote/mongoose'
 import { models } from '~/models'
 import { UserDocument, SafeUserDocument, RegisterDocument, CreateUserDocument, VerifyDocument, EditUserDocument, TicketDocument } from '@/types/services/db'
@@ -15,7 +15,7 @@ import ruleJudgment from 'rule-judgment'
 import { CheckWarning, VerifyWarning } from '@/types/services/db/user'
 import * as ticketDB from './ticket'
 
-export const Dao = modelDao<UserDocument>(models.User, {
+export const Dao = modelDao<UserDocument>(models.User as unknown as Model<Document, {}>, {
   populate: [
     {
       path: 'group',

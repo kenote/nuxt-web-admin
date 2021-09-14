@@ -52,3 +52,5 @@ configure({
 })
 
 export default getLogger(env)
+
+export const rootDir = path.resolve(logDir, env)

@@ -140,6 +140,23 @@ function getBoolean (value: boolean) {
 </script>
 
 <style lang="scss">
+.container {
+  position: relative;
+  height: inherit;
+
+  .tools {
+    position: absolute;
+    z-index: 4;
+    bottom: 10px;
+    right: 10px;
+
+    .el-button--mini {
+      padding: 7px 9px;
+      background: transparent;
+      border: 0;
+    }
+  }
+}
 .vue-codemirror {
   border: 1px solid #DCDFE6;
   height: inherit;

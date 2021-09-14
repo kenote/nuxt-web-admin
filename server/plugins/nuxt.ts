@@ -28,7 +28,7 @@ const nuxtPulgin: IModule.ssrPlugin = {
       if (isNuxtPage) {
         ctx.payload = {
           site_url: siteUrl,
-          baseHost: `http://${host ?? '0.0.0.0'}:${port}`,
+          baseHost: `http://127.0.0.1:${port}`,
           dashboard: loadConfig<NavMenu.Configure>('config/dashboard', { mode: 'merge' }),
           channels: loadConfig<Channel.DataNode[]>('config/channels', { type: 'array' }),
           editorConfig: loadConfig<EditorConfig>('config/editor', { mode: 'merge' }),

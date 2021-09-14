@@ -61,6 +61,7 @@
         </perfect-scrollbar>
       </div>
     </web-drawer>
+    <!--  -->
   </dashboard>
 </template>
 
@@ -74,6 +75,9 @@ import jsYaml from 'js-yaml'
 import { PutResult } from '@kenote/upload'
 import { UserDocument } from '@/types/services/db'
 import { ElMessageBoxOptions } from 'element-ui/types/message-box'
+import isBolb from 'is-blob'
+import { readTextFile } from '@/utils/file'
+import vm from 'vm'
 
 interface DrawerOptions {
   key         : string
@@ -94,7 +98,7 @@ interface DrawerOptions {
     }
   },
   mounted () {
-    
+    console.log(vm.runInNewContext('vm = (function () { return 9 })()'))
   }
 })
 export default class AutoPage extends mixins(PageMixin) {
@@ -127,7 +131,7 @@ export default class AutoPage extends mixins(PageMixin) {
   pageno: number = 1
 
   @Provide()
-  counts: number = 0
+  counts: number = -1
 
   @Provide()
   pagination: number | false = false
@@ -146,6 +150,9 @@ export default class AutoPage extends mixins(PageMixin) {
 
   @Provide()
   actionOptions: Record<string, Channel.ActionOptions> = {}
+
+  @Provide()
+  downloads: any[] = []
 
   @Watch('refresh')
   onrefreshChange (val: boolean, oldVal: boolean) {
@@ -246,8 +253,15 @@ export default class AutoPage extends mixins(PageMixin) {
   /**
    * 获取单项数据
    */
-  handleGetData (request: Channel.RequestConfig, options: Record<string, any> | null, next: (data: Channel.FormItemData[]) => void) {
+  handleGetData (request: Channel.RequestConfig, options: Record<string, any> | null, next: (data: any) => void) {
     let { method, url, conditions, params, saveEnvkey } = request
+    if (options?.download) {
+      console.log(this.env)
+      setTimeout(async() => {
+        await this.downloadFile(request, { ...options?.download, env: this.env, next })
+      }, 300)
+      return
+    }
     let httpClient = this.$httpClient(this.httpOptions)
     if (request.loading) {
       this.loading = true
@@ -353,6 +367,41 @@ export default class AutoPage extends mixins(PageMixin) {
     
   }
 
+  async downloadFile (request: Channel.RequestConfig, options?: Channel.DownloadOptions) {
+    let { type, filename, env, next } = options ?? { type: 'savefile', env: {} }
+    let { method, url, headers } = request
+    let Iurl = parseTemplate(url ?? '', env)
+    let httpOptions: HttpClientOptions = {
+      ...this.httpOptions,
+      download: (info) => {
+        console.log(info)
+      },
+      // total: 100
+    }// merge(this.httpOptions, { headers })
+    try {
+      let result = await this.$httpClient(httpOptions).DOWNLOAD<Blob | HttpResult>(Iurl)
+      if (isBolb(result)) {
+        console.log(type)
+        if (type === 'preview') {
+
+          let data =  await readTextFile(result)
+          next && next(data)
+        }
+        else {
+          console.log(filename)
+          let Filename = parseTemplate(filename ?? '', env)
+          this.$fileSave(result, Filename)
+        }
+      }
+      else if (result?.error) {
+        this.$message.error(result.error)
+      }
+      
+    } catch (error) {
+      this.$message.error(error.message)
+    }
+  }
+
   /**
    * 上传文件
    */
@@ -400,13 +449,16 @@ export default class AutoPage extends mixins(PageMixin) {
    */
   handleCommand (value: string, row?: Record<string, any>, component?: Vue | Record<string, any>) {
     return runCommand(this, {
-      action: async (type: string, row: Record<string, any> | null, a) => {
+      action: async (type: string, row: Record<string, any> | null) => {
         // console.log(type, row, component)
         let action = get(this.actionOptions, type)
         if (action) {
-          let { request, confirm, method, submitOptions } = action as Channel.ActionOptions
+          let { request, confirm, method, submitOptions, download } = action as Channel.ActionOptions
           if (confirm) {
             await this.actionConfirm(action, row!)
+          }
+          else if (download) {
+            await this.downloadFile(request!, { ...download, env: { row } })
           }
           else if (submitOptions) {
             if (component && !component?.$el) {

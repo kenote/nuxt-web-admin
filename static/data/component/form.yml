@@ -1,0 +1,207 @@
+
+
+
+# 查询验证接口
+uniqueOptions:
+  url: /api/account/check/{{type}}
+  params: |-
+    name: {{ name }}
+    _id: {{ _id }}
+# 界面组件
+components:
+  - key: !!str 1
+    name: web-container
+    options:
+      layout: vertical
+      maxWidth: 1200px
+      minHeight: 180px
+      margin: 20px auto 0
+      content: |-
+        <h2>Form 表单</h2>
+        <p>由输入框、选择器、单选框、多选框等控件组成，用以收集、校验、提交数据</p>
+  - key: !!str 2
+    name: web-container
+    options:
+      layout: vertical
+      maxWidth: 1200px
+      minHeight: 300px
+      margin: 20px auto 0
+      padding: 0 20px 20px
+      border: '1px solid #e4e4e4'
+      children:
+        - key: 2-1
+          name: web-container
+          options:
+            content: |-
+              <h4>典型表单</h4>
+        - key: 2-2
+          name: web-form
+          options:
+            columns:
+              - key: name
+                name: 活动名称
+                type: input
+              - key: region
+                name: 活动区域
+                type: select
+                placeholder: 请选择活动区域
+                data:
+                  - key: shanghai
+                    name: 区域一
+                  - key: beijing
+                    name: 区域二
+              - key: date
+                name: 活动时间
+                type: datetime
+                placeholder: 选择时间
+              - key: delivery
+                name: 即时配送
+                type: switch
+              - key: type
+                name: 活动性质
+                type: checkbox
+                data:
+                  - key: '1'
+                    name: 美食/餐厅线上活动
+                  - key: '2'
+                    name: 地推活动
+                  - key: '3'
+                    name: 线下主题活动
+                  - key: '4'
+                    name: 单纯品牌曝光
+              - key: resource
+                name: 特殊资源
+                type: radio
+                data:
+                  - key: '1'
+                    name: 线上品牌商赞助
+                  - key: '2'
+                    name: 线下场地免费
+              - key: desc
+                name: 活动形式
+                type: textarea
+                options:
+                  rows: 2
+            submitName: 立即创建
+            defaultValues: |-
+              type: []
+        - key: 2-3
+          name: web-container
+          options:
+            content: |-
+              <h4>表单验证</h4>
+        - key: 2-4
+          name: web-form
+          options:
+            name: 活动
+            columns:
+              - key: name
+                name: 活动名称
+                type: input
+              - key: region
+                name: 活动区域
+                type: select
+                placeholder: 请选择活动区域
+                data:
+                  - key: shanghai
+                    name: 区域一
+                  - key: beijing
+                    name: 区域二
+              - key: date
+                name: 活动时间
+                type: datetime
+                placeholder: 选择时间
+              - key: delivery
+                name: 即时配送
+                type: switch
+              - key: type
+                name: 活动性质
+                type: checkbox
+                data:
+                  - key: '1'
+                    name: 美食/餐厅线上活动
+                  - key: '2'
+                    name: 地推活动
+                  - key: '3'
+                    name: 线下主题活动
+                  - key: '4'
+                    name: 单纯品牌曝光
+              - key: resource
+                name: 特殊资源
+                type: radio
+                data:
+                  - key: '1'
+                    name: 线上品牌商赞助
+                  - key: '2'
+                    name: 线下场地免费
+              - key: desc
+                name: 活动形式
+                type: textarea
+                options:
+                  rows: 2
+              - key: password
+                name: 密码
+                type: input-password
+                options:
+                  showPassword: true
+              - key: passed
+                name: 确认密码
+                type: input-password
+                options:
+                  showPassword: true
+            rules:
+              name:
+                - required: true
+                  message: 请输入活动名称
+                # - min: 3
+                #   max: 5
+                #   message: 长度在 3 到 5 个字符
+                - validator: [ validateUsername, username, null ]
+              region:
+                - required: true
+                  message: 请选择活动区域
+              date:
+                - required: true
+                  message: 请选择时间
+              type:
+                - required: true
+                  message: 请至少选择一个活动性质
+              resource:
+                - required: true
+                  message: 请选择活动资源
+              desc:
+                - required: true
+                  message: 请填写活动形式
+              password:
+                - required: true
+                  message: 请输入密码
+                - validator: [ validatePassword ]
+              passed:
+                - required: true
+                  message: 请输入确认密码
+                - validator: [ validaterRepassed, password ]
+            submitName: 立即创建
+            submitOptions:
+              reset: 重 置
+            defaultValues: |-
+              type: []
+  - key: !!str 3
+    name: web-container
+    options:
+      layout: vertical
+      maxWidth: 1200px
+      minHeight: 180px
+      margin: 20px auto 0
+      content: |-
+        <h3>rules 规则验证器</h3>
+        <p>基于 async-validator 第三方表单验证库</p>
+
+# 定义工具
+tools:
+  - key: 1-1
+    name: 查看配置
+    icon: el-icon-setting
+    command: command:view
+
+
+

@@ -1,0 +1,31 @@
+
+- key: user::create
+  type: create
+  name: 创建了用户账号
+  method: [ POST ]
+  url: /api/user/create
+  regexp: !!js/regexp /^(/\api\/user\/create)/
+- key: user::edit
+  type: edit
+  name: 编辑了用户信息
+  method: [ POST ]
+  url: /api/user/edit
+  regexp: !!js/regexp /^(/\api\/user\/edit)/
+- key: user::remove
+  type: remove
+  name: 删除了用户账号
+  method: [ DELETE ]
+  url: /api/user
+  regexp: !!js/regexp /^(/\api\/user)/
+- key: user::switch-group
+  type: edit
+  name: 切换了用户账号的用户组
+  method: [ PUT ]
+  url: /api/user/switch-group
+  regexp: !!js/regexp /^(/\api\/user\/switch\-group)/
+- key: user
+  type: find
+  name: 查询了用户账号
+  method: [ POST ]
+  url: /api/user
+  regexp: !!js/regexp /^(/\api\/user)/

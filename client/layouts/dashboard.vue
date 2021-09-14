@@ -99,6 +99,10 @@
       <web-drawer placement="right" width="260" :lock="editMode" :visible="drawerType === 'bookmark'" @close="handleCloseDrawer">
 
       </web-drawer>
+      <!--  -->
+      <task-poller>
+
+      </task-poller>
     </div>
   </client-only>
 </template>

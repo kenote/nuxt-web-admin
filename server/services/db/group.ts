@@ -1,13 +1,13 @@
-import { FilterQuery, UpdateQuery } from 'mongoose'
+import { FilterQuery, UpdateQuery, Model, Document } from 'mongoose'
 import { modelDao } from '@kenote/mongoose'
 import { models } from '~/models'
 import { GroupDocument, CreateGroupDocument } from '@/types/services/db'
 import { isArray, merge, cloneDeep } from 'lodash'
-import Group from '~/models/group'
+// import Group from '~/models/group'
 import { RemoveOptions } from '@/types/services/db/group'
 import * as userDB from './user'
 
-export const Dao = modelDao<GroupDocument>(models.Group, {
+export const Dao = modelDao<GroupDocument>(models.Group as unknown as Model<Document, {}>, {
 
 })
 
@@ -60,8 +60,8 @@ export function create (docs: CreateGroupDocument | CreateGroupDocument[]) {
  * @param conditions 
  * @param doc 
  */
-export function update (conditions: FilterQuery<Group>, doc: UpdateQuery<Group>) {
-  let _doc = cloneDeep(doc) as unknown as Group
+export function update (conditions: FilterQuery<GroupDocument> | null, doc: UpdateQuery<GroupDocument>) {
+  let _doc = cloneDeep(doc) as GroupDocument
   if (doc.store) {
     _doc.store = merge({ download_type: [], upload_type: [] }, doc.store)
   }
@@ -72,7 +72,7 @@ export function update (conditions: FilterQuery<Group>, doc: UpdateQuery<Group>)
  * 删除用户组
  * @param conditions 
  */
-export async function remove (conditions: FilterQuery<Group>, options?: RemoveOptions) {
+export async function remove (conditions: FilterQuery<GroupDocument>, options?: RemoveOptions) {
   let group = await Dao.findOne(conditions)
   if (group) {
     if (options?.move) {

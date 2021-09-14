@@ -57,6 +57,7 @@
           <web-table 
             :columns="attribute.columns"
             :data="attribute.data"
+            :pagination="false"
             />
         </fragment>
       </template>

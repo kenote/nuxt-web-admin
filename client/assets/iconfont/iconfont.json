@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "13487409",
+      "name": "cloud upload",
+      "font_class": "upload",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "19588934",
+      "name": "Cloud download - Filled",
+      "font_class": "Clouddownload-Filled",
+      "unicode": "e6bd",
+      "unicode_decimal": 59069
+    },
+    {
       "icon_id": "10802538",
       "name": "play",
       "font_class": "play1",

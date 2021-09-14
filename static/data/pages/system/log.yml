@@ -1,0 +1,183 @@
+
+# 设置环境变量
+env:
+  display: list
+  dialog: none
+
+# 页面分页大小
+pageSize: false
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    conditions: |-
+      display: list
+    options:
+      layout: vertical
+      alignItems: flex-start
+      children:
+        - key: 1-1-2
+          name: web-form
+          options:
+            inline: true
+            columns:
+              - key: day
+                name: 选择日期
+                type: date
+                placeholder:  请选择日期
+                options:
+                  clearable: true
+            # 规则验证
+            rules:
+              day:
+                - required: true
+                  message: 请选择日期
+            # 请求地址
+            action:
+              method: POST
+              url: /api/oplog/system
+            # 提交按钮名称
+            submitName: 搜 索
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: download
+                  name: 打包下载
+                  type: button
+                  style: success
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:package
+                - key: deletes
+                  name: 删除选中
+                  type: button
+                  style: danger
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:deletes
+              success: 新数据已拉取
+              assignment:
+                data: data
+              #   counts: data.counts
+              #   pagination: data.limit
+              # pagination: remote
+            # 设置默认值
+            defaultValues: {}
+        - key: 1-1-3
+          name: web-table
+          options:
+            selection: true
+            # sorter:
+            #   request:
+            #     method: POST
+            #     url: /api/team
+            #   submitOptions:
+            #     success: 新数据已拉取
+            #     assignment:
+            #       data: data.data
+            #       counts: data.counts
+            #       pagination: data.limit
+            #     pagination: remote
+            columns:
+              - key: filename
+                name: 文件名
+                width: 300
+                align: left
+                click: dialog:preview
+              - key: $space
+                minWidth: 10 
+              - key: size
+                name: 大小
+                width: 120
+                format:
+                  - type: number
+                    func: bytes
+              - key: start
+                name: 开始时间
+                width: 240
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+                sortable: true
+              - key: end
+                name: 结束时间
+                width: 240
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+                sortable: true
+              - key: actions
+                name: 操作
+                fixed: right
+                align: left
+                width: 240
+                emit:
+                  - key: download
+                    name: 下载
+                    type: dropdown
+                    command: action:download
+                    options:
+                      - key: preview
+                        name: 在线查看
+                        command: dialog:preview
+                  - key: delete
+                    name: 删除
+                    type: button
+                    style: danger
+                    command: action:remove
+  - key: 1-7
+    name: web-preview
+    conditions: |-
+      dialog: preview
+    options:
+      key: dialog-preview
+      title: '{{selected.filename}}'
+      # 获取数据
+      request:
+        method: GET
+        url: /api/oplog/system/{{selected.filename}}
+      # 关闭后命令
+      closeAfter: 
+        - dialog:none
+
+# 初始化数据
+# initialData:
+#   request:
+#     method: POST
+#     url: /api/oplog/system
+#     params: |-
+#       day: 2021-07-26
+#   submitOptions:
+#     success: 新数据已拉取
+#     assignment:
+#       data: data
+
+# 定义 Action
+actions:
+  # 下载
+  download:
+    request:
+      method: GET
+      url: /api/oplog/system/{{row.filename}}
+    download: 
+      type: savefile
+      filename: '{{row.filename}}'
+  # 删除操作
+  remove:
+    request:
+      method: DELETE
+      url: |-
+        /api/oplog/system/{{row.filename}}
+    confirm:
+      message: 确认要永久删除该用户, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 用户已删除
+      # afterCommand: 
+      #   - action:refresh

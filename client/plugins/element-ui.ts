@@ -39,6 +39,7 @@ import {
   Option,
   OptionGroup,
   Pagination,
+  Popover,
   Radio,
   RadioButton,
   RadioGroup,
@@ -102,6 +103,7 @@ export default () => {
   Vue.use(Option)
   Vue.use(OptionGroup)
   Vue.use(Pagination)
+  Vue.use(Popover)
   Vue.use(Radio)
   Vue.use(RadioButton)
   Vue.use(RadioGroup)

@@ -2,6 +2,8 @@ import { Module } from '@kenote/core'
 import AccountController from './account'
 import ChannelController from './channel'
 import GroupController from './group'
+import OplogController from './oplog'
+import ProjectController from './project'
 import TeamController from './team'
 import TicketController from './ticket'
 import UserController from './user'
@@ -17,6 +19,10 @@ import UserController from './user'
     ChannelController, 
     // 用户组相关
     GroupController, 
+    // 日志相关
+    OplogController,
+    // 项目相关
+    ProjectController,
     // 团队相关
     TeamController, 
     // 票据相关

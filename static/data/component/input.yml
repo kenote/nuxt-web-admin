@@ -1,0 +1,15 @@
+
+
+
+# 界面组件
+components:
+  - key: !!str 1
+    name: web-container
+    options:
+      layout: vertical
+      maxWidth: 1200px
+      minHeight: 180px
+      margin: 20px auto 0
+      content: |-
+        <h2>Input 输入框</h2>
+        <p>通过鼠标或键盘输入字符</p>

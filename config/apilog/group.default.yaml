@@ -1,0 +1,25 @@
+
+- key: group::create
+  type: create
+  name: 创建了用户组
+  method: [ POST ]
+  url: /api/group/create
+  regexp: !!js/regexp /^(/\api\/group\/create)/
+- key: group::edit
+  type: edit
+  name: 编辑了用户组信息
+  method: [ POST ]
+  url: /api/group/edit
+  regexp: !!js/regexp /^(/\api\/group\/edit)/
+- key: group::remove
+  type: remove
+  name: 删除了用户组
+  method: [ DELETE ]
+  url: /api/group
+  regexp: !!js/regexp /^(/\api\/group)/
+- key: group::authority
+  type: edit
+  name: 编辑了用户组权限
+  method: [ POST ]
+  url: /api/group
+  regexp: !!js/regexp /^(/\api\/group\/)(platform|access)/

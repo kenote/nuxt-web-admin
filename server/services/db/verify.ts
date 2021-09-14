@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongoose'
+import { FilterQuery, Model, Document } from 'mongoose'
 import { modelDao } from '@kenote/mongoose'
 import { models } from '~/models'
 import { VerifyDocument, CreateVerifyDocument, EditVerifyDocument, UserDocument } from '@/types/services/db'
@@ -8,7 +8,7 @@ import { ErrorCode, httpError } from '~/services/error'
 import mailer, { mailSender, parseMailUser, siteName, sendMailNext } from '~/services/mailer'
 import Mail from 'nodemailer/lib/mailer'
 
-export const Dao = modelDao<VerifyDocument>(models.Verify, {
+export const Dao = modelDao<VerifyDocument>(models.Verify as unknown as Model<Document, {}>, {
   populate: {
     path: 'user',
     select: [ 'id', 'username', 'email', 'mobile', 'nickname', 'avatar', 'sex', 'binds', 'group', 'teams', 'access', 'create_at', 'update_at', 'jw_token' ]
@@ -110,7 +110,7 @@ export function sendMail (title: string, user: UserDocument, code: string, tpl: 
  */
 export async function check (doc: Partial<Record<'code' | 'user' | 'verify_id', string>>, step: number, verify_id?: string | null) {
   let { code, user } = doc
-  let conditions: FilterQuery<EditVerifyDocument> = { type: 'code', user }
+  let conditions: FilterQuery<EditVerifyDocument & Document> = { type: 'code', user }
   if (verify_id) {
     conditions._id = verify_id
   }

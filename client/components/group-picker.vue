@@ -325,15 +325,6 @@ export default class WebSelect extends mixins(Emitter) {
    * 格式化显示
    */
   toFormatString (data: Record<string, any>, format: string = '{label}') {
-    if (this.props) {
-      let { key, label } = this.props
-      if (key) {
-        format = format.replace(/{key}/g, `{${key}}`)
-      }
-      if (label) {
-        format = format.replace(/{label}/g, `{${label}}`)
-      }
-    }
     return template(format, { interpolate: /{([\s\S]+?)}/g })(data)
   }
 

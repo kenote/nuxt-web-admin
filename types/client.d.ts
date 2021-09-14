@@ -125,6 +125,14 @@ export declare namespace Channel {
     confirm       ?: ConfirmOptions
     method        ?: string
     submitOptions ?: SubmitOptions
+    download      ?: DownloadOptions
+  }
+
+  interface DownloadOptions {
+    type           : 'savefile' | 'preview'
+    filename      ?: string
+    env            : object
+    next          ?: (values: any) => void
   }
 
   interface Sorter {

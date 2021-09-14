@@ -72,9 +72,14 @@
           <template v-else-if="column.template">
             <span>{{ parseTemplate(column.template, scope.row) }}</span>
           </template>
+          <!-- 可拷贝文件 -->
           <el-tooltip v-else-if="column.clipboard" content="点击复制" placement="top">
             <el-link v-clipboard="handleClipboard(getValues(scope.row, column.key))" >{{ getValues(scope.row, column.key) }}</el-link>
           </el-tooltip>
+          <!-- 带点击事件 -->
+          <template v-else-if="column.click">
+            <el-link @click="command(column.click, scope.row)" >{{ getValues(scope.row, column.key) }}</el-link>
+          </template>
           
           <span v-else>{{ getValues(scope.row, column.key) }}</span>
         </template>

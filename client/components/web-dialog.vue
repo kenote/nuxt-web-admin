@@ -5,12 +5,14 @@
       :fullscreen="fullscreen" 
       :visible="visible" 
       :append-to-body="true"
+      :close-on-click-modal="closeOnClickModal"
+      :close-on-press-escape="closeOnPressEscape"
       @close="handleClose">
       <div slot="title" class="el-dialog__header_left">
         <span class="el-dialog__title">{{ title }}</span>
         <el-button :icon="fullscreen ? 'el-icon-copy-document' : 'el-icon-full-screen'" style="float:right" @click="fullscreen = !fullscreen"></el-button>
       </div>
-      <section :style="bodyStyles" ref="theInput">
+      <section :style="bodyStyles" ref="theInput" class="page-main">
         <slot></slot>
       </section>
       <span slot="footer" class="dialog-footer">
@@ -18,7 +20,7 @@
           <slot name="tools"></slot>
         </div>
         <el-button @click="handleClose">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit" v-loading="loading">确 定</el-button>
+        <el-button v-if="isSubmit" type="primary" @click="handleSubmit" v-loading="loading">确 定</el-button>
       </span>
   </el-dialog>
 </template>
@@ -46,6 +48,15 @@ export default class WebDialog extends Vue {
 
   @Prop({ default: '960px' })
   width!: string
+
+  @Prop({ default: false })
+  isSubmit!: boolean
+
+  @Prop({ default: true })
+  closeOnClickModal!: boolean
+
+  @Prop({ default: true })
+  closeOnPressEscape!: boolean
 
   @Provide()
   fullscreen: boolean = false

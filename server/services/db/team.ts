@@ -1,4 +1,4 @@
-import { FilterQuery, UpdateQuery } from 'mongoose'
+import { FilterQuery, UpdateQuery, Model, Document } from 'mongoose'
 import { modelDao } from '@kenote/mongoose'
 import { models } from '~/models'
 import { TeamDocument, CreateTeamDocument } from '@/types/services/db'
@@ -6,7 +6,7 @@ import { isArray, merge, cloneDeep } from 'lodash'
 import Team from '~/models/team'
 import * as userDB from './user'
 
-export const Dao = modelDao<TeamDocument>(models.Team, {
+export const Dao = modelDao<TeamDocument>(models.Team as unknown as Model<Document, {}>, {
   populate: [
     {
       path: 'owner',
@@ -43,7 +43,7 @@ export async function peoples (_id: string) {
  * 删除团队
  * @param conditions 
  */
-export function remove (conditions: FilterQuery<Team>) {
+export function remove (conditions: FilterQuery<TeamDocument>) {
   // 先移除团队用户
   let { _id } = conditions
   return Dao.remove(conditions)

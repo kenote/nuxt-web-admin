@@ -8,7 +8,8 @@ import path from 'path'
 import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 import ruleJudgment from 'rule-judgment'
-import { merge } from 'lodash'
+import { merge, get } from 'lodash'
+import { Readable } from 'stream'
 
 @Middleware({
   // HTTP 头信息
@@ -38,7 +39,7 @@ export default class Restful {
         ctx.json({ error: message })
       }
       else {
-        ctx.service.apilog({ data: JSON.stringify(info, null, 2) }, ctx)
+        ctx.service.apilog({ data: info }, ctx)
         ctx.json({ data: info })
       }
     }
@@ -60,6 +61,18 @@ export default class Restful {
         throw httpError(ErrorCode.ERROR_BYLOND_LEVEL_OPERATE)
       }
     }
+  }
+
+  /**
+   * 获取客户端 IP
+   */
+  @Property()
+  clientIP (ctx: Context) {
+    return get(ctx.headers, 'x-forwarded-for') 
+      ?? get(ctx.headers, 'x-real-ip') 
+      ?? ctx.connection.remoteAddress 
+      ?? ctx.req.socket.remoteAddress 
+      ?? ctx.ip
   }
 
   /**
@@ -127,14 +140,25 @@ export default class Restful {
    */
   @Action()
   downloadFile (ctx: Context) {
-    return (filePath: string) => {
-      if (!fs.existsSync(filePath)) {
+    return (filePath: string, type: 'file' | 'stream' | 'download' = 'file') => {
+      if (!fs.existsSync(filePath) && ['file', 'download'].includes(type)) {
         return ctx.notfound()
       }
-      let fileStream = fs.readFileSync(filePath)
-      let extname = path.extname(filePath)
-      let { previewTypes } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
-      let contentType = previewTypes?.find( ruleJudgment({ extname: { $_in: extname } }) )?.type ?? 'application/octet-stream'
+      let fileStream: Buffer | Readable | null = null
+      let contentType = 'application/octet-stream'
+      if (type === 'stream') {
+        fileStream = new Readable()
+        fileStream.push(filePath)
+        fileStream.push(null)
+      }
+      else {
+        fileStream = fs.readFileSync(filePath)
+        let extname = path.extname(filePath)
+        let { previewTypes } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
+        if (type === 'file') {
+          contentType = previewTypes?.find( ruleJudgment({ extname: { $_in: extname } }) )?.type ?? contentType
+        }
+      }
       ctx.setHeader('Content-Type', contentType)
       return ctx.send(fileStream)
     }
@@ -158,6 +182,10 @@ declare module '@kenote/core' {
      * 过滤用户等级
      */
     filterUserLevel (level: number, minLevel: number): void
+    /**
+     * 获取客户端 IP
+     */
+    clientIP: string
     /**
      * 调用 Services 接口
      */
@@ -185,6 +213,6 @@ declare module '@kenote/core' {
     /**
      * 下载文件
      */
-     downloadFile (filePath: string): Context
+    downloadFile (filePath: string, type?: 'file' | 'stream' | 'download'): Context
   }
 }

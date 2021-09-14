@@ -1,0 +1,9 @@
+
+# 获取运行日志列表
+system:
+  - key: day
+    type: string
+    rules:
+      - required: true
+        message: 日期不能为空
+        code: 1000

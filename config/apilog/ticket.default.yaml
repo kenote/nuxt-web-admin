@@ -1,0 +1,36 @@
+
+- key: ticket::create
+  type: create
+  name: 创建了票据
+  method: [ POST ]
+  url: /api/ticket/create
+  regexp: !!js/regexp /^(/\api\/ticket\/create)/
+- key: ticket::edit
+  type: edit
+  name: 编辑了票据信息
+  method: [ POST ]
+  url: /api/ticket/edit
+  regexp: !!js/regexp /^(/\api\/ticket\/edit)/
+- key: ticket::remove
+  type: remove
+  name: 删除了票据
+  method: [ DELETE ]
+  url: /api/ticket
+  regexp: !!js/regexp /^(/\api\/ticket)/
+- key: ticket::verify
+  type: verify
+  name: 验证了票据
+  method: [ PUT ]
+  url: /api/ticket/verify
+  regexp: !!js/regexp /^(/\api\/ticket\/verify)/
+- key: ticket
+  type: find
+  name: 查询了票据
+  method: [ POST ]
+  url: /api/ticket
+  regexp: !!js/regexp /^(/\api\/ticket)/
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { FilterQuery, UpdateQuery } from 'mongoose'
+import { FilterQuery, UpdateQuery, Model, Document } from 'mongoose'
 import { modelDao } from '@kenote/mongoose'
 import { models } from '~/models'
 import { TicketDocument, CreateTicketDocument, TicketOptions } from '@/types/services/db'
@@ -7,7 +7,7 @@ import { merge, pick } from 'lodash'
 import { filterData, FilterData } from 'parse-string'
 import { ErrorCode, httpError, ErrorMessage } from '~/services/error'
 
-export const Dao = modelDao<TicketDocument>(models.Ticket, {
+export const Dao = modelDao<TicketDocument>(models.Ticket as unknown as Model<Document, {}>, {
   
 })
 

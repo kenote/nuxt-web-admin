@@ -3,11 +3,11 @@
 # 频道 key
 key: !!str 5
 # 频道 名称
-name: 系统工具
+name: 常用工具
 # 频道标识
 label: tools
 # 频道描述
-description: 系统工具
+description: 常用工具
 # 路由入口
 route: /tools
 # 图标
@@ -27,5 +27,5 @@ children:
       - key: 5-1-1
         name: 人民币转换
         description: 转换人民币大写
-        keywords: [ 系统工具, 人民币转换, 人民币大写, daxie, dx, rmb ]
+        keywords: [ 常用工具, 人民币转换, 人民币大写, daxie, dx, rmb ]
         route: /tools/rmb
