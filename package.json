@@ -21,6 +21,7 @@
     "dayjs": "^1.10.5",
     "element-ui": "^2.15.3",
     "file-saver": "^2.0.5",
+    "gbk.js": "^0.3.0",
     "is-blob": "^2.1.0",
     "koa-redis": "^4.0.1",
     "lodash": "^4.17.20",
@@ -32,13 +33,16 @@
     "parse-string": "^1.2.4",
     "passport-jwt": "^4.0.0",
     "query-string": "^6.14.1",
+    "runscript": "^1.5.1",
+    "unzipper": "^0.10.11",
     "url-parse": "^1.5.1",
     "v-clipboard": "^2.2.3",
     "vditor": "^3.8.4",
     "vue-codemirror": "^4.0.6",
     "vue-cropperjs": "^4.2.0",
     "vue-fragment": "1.5.1",
-    "vue2-perfect-scrollbar": "^1.5.0"
+    "vue2-perfect-scrollbar": "^1.5.0",
+    "xlsx": "^0.17.1"
   },
   "devDependencies": {
     "@nuxt/components": "^1.2.6",
@@ -51,6 +55,7 @@
     "@types/node": "^14.14.25",
     "@types/nunjucks": "^3.1.4",
     "@types/passport-jwt": "^3.0.4",
+    "@types/unzipper": "^0.10.4",
     "@types/url-parse": "^1.4.3",
     "@types/uuid": "^3.4.9",
     "@types/vue-cropperjs": "^4.1.1",
@@ -75,7 +80,10 @@
   "engines": {
     "node": ">=12.0.0"
   },
-  "os": ["darwin", "linux"],
+  "os": [
+    "darwin",
+    "linux"
+  ],
   "keywords": [
     "kenote",
     "nuxtjs",

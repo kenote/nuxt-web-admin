@@ -27,6 +27,7 @@ export { toValue } from 'parse-string'
 export { isDateString } from 'rule-judgment'
 export * as protobuf from './protobuf'
 export * as http from './http'
+export { default as qqwry, QQwry, int2ip, ip2int } from './qqwry'
 
 export { inspect }
 
