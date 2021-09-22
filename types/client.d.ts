@@ -5,6 +5,8 @@ import { Method } from 'axios'
 import { IncomingHttpHeaders } from 'http'
 import { AxiosRequestConfig } from 'axios'
 import { Account } from './account'
+import { BookType } from 'xlsx/types'
+import xlsx from 'xlsx';
 
 export type HttpClientOptions = HeaderOptions<AxiosRequestConfig>
 
@@ -601,5 +603,26 @@ export declare namespace Verify {
     type          ?: 'string' | 'number' | 'boolean' | 'method' | 'regexp' | 'integer' | 'float' | 'array' | 'object' | 'enum' | 'data' | 'url' | 'hex' | 'email'
     trigger       ?: 'blur' | 'change' | Array<'blur' | 'change'>
     validator     ?: Validator | PromiseValidtor | Array<string | number | boolean>
+  }
+}
+
+export declare namespace Xlsx {
+
+  interface Options<T = any> {
+    bookType      ?: BookType
+    filename      ?: string
+    sheets         : Sheet<T>[]         
+  }
+
+  interface Sheet<T = any> {
+    name           : string
+    data           : T[]
+    opts          ?: xlsx.JSON2SheetOpts
+  }
+
+  interface FileType {
+    key            : BookType
+    name           : string
+    suffix         : '.xlsx' | '.xlsm' | '.xlsb' | '.xls' | '.csv' | '.txt' | '.html'
   }
 }

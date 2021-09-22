@@ -3,7 +3,6 @@ import { httpClient, getEscode } from '@/utils/http-client'
 import FileSaver from 'file-saver'
 
 
-
 const httpClientPlugin: Plugin = (ctx, inject) => {
   inject('httpClient', httpClient)
   inject('getEscode', getEscode)

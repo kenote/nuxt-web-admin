@@ -11,9 +11,6 @@ import Vue from 'vue'
 import ruleJudgment, { FilterQuery, emit } from 'rule-judgment'
 import dayjs from 'dayjs'
 import { ParseData, formatData, toValue } from 'parse-string'
-import { httpClient } from './http-client'
-import * as esprima from 'esprima'
-import escodegen from 'escodegen'
 import bytes from 'bytes'
 
 export const customize = {
@@ -33,27 +30,6 @@ export function formatString (value: any, format?: ParseData.format | ParseData.
   if (!format) return value
   return formatData(format, customize)(value)
 }
-
-// export async function asyncRequire (url: string) {
-//   try {
-//     let result = await httpClient().GET<string>(url)
-//     let escode = readEscode(result ?? '') 
-//     return escode
-//   } catch (error) {
-//     return undefined
-//   }
-// }
-
-// /**
-//  * 运行Js代码
-//  * @param code 
-//  */
-//  export function readEscode (source: string) {
-//   let ast = esprima.parseModule(source)
-//   let result = escodegen.generate(ast)
-//   // tslint:disable-next-line: no-eval
-//   return eval(result)
-// }
 
 /**
  * 解析模版
