@@ -2,6 +2,7 @@ import { Document } from 'mongoose'
 import { ObjectId } from 'bson'
 import { Method } from '@kenote/common'
 import { IncomingHttpHeaders } from 'http'
+import { UserDocument } from './user'
 
 export declare interface OplogDocument extends Document {
   /**

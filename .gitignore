@@ -48,6 +48,7 @@ config/**/*.yaml
 uploadfiles/
 project/
 qqwry.dat
+backup/
 
 # TypeScript v1 declaration files
 typings/
