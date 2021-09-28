@@ -36,3 +36,5 @@ children:
         description: API日志管理
         keywords: [ 系统工具, 日志管理, API日志, system, log, xt, rz, api ]
         route: /system/oplog
+        configuration: /data/pages/system/oplog.yml
+        refresh: true

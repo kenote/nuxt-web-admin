@@ -7,3 +7,20 @@ system:
       - required: true
         message: 日期不能为空
         code: 1000
+
+# 获取票据列表
+list:
+  - key: create_at
+    type: date[]
+  - key: types
+    type: string[]
+  - key: ip
+    type: string
+  - key: user
+    type: string
+  - key: page
+    type: number
+  - key: size
+    type: number
+  - key: sort
+    type: string[]

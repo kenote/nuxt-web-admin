@@ -99,6 +99,7 @@ interface DrawerOptions {
   },
   mounted () {
     console.log(vm.runInNewContext('vm = (function () { return 9 })()'))
+    console.log(this)
   }
 })
 export default class AutoPage extends mixins(PageMixin) {
@@ -530,8 +531,8 @@ export default class AutoPage extends mixins(PageMixin) {
     try {
       await this.$confirm(confirm?.message!, confirm?.title ?? '提示', options)
       let { method, url, params  } = request!
-      let Iurl = parseTemplate(url ?? '', this.env)
-      let IParams = parseParams(params ?? {})(this.env)
+      let Iurl = parseTemplate(url ?? '', { ...this.env, row })
+      let IParams = parseParams(params ?? {})({ ...this.env, row })
       let result = await this.$httpClient(this.httpOptions)[method ?? 'POST'](Iurl, IParams) as HttpResult<any>
       if (result.error) {
         this.$message.error(result.error)

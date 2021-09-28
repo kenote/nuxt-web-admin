@@ -66,6 +66,7 @@ export default class TaskPoller extends Vue {
   padding: 0 10px;
   justify-content: center;
   align-items: center;
+  z-index: 4;
 
   .el-link {
     font-size: 10px;

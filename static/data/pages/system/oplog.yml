@@ -1,0 +1,264 @@
+
+# 设置环境变量
+env:
+  display: list
+  dialog: none
+  groups: []
+
+# 页面分页大小
+pageSize: 15
+
+#定义类型
+types: &types
+  - key: find
+    name: 查询
+  - key: create
+    name: 创建
+  - key: edit
+    name: 编辑
+  - key: remove
+    name: 删除
+  - key: login
+    name: 登录
+  - key: logout
+    name: 登出
+  - key: register
+    name: 注册
+  - key: verify
+    name: 验证
+  - key: lostpass
+    name: 密码找回
+  - key: accesstoken
+    name: 获取令牌
+
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    conditions: |-
+      display: list
+    options:
+      layout: vertical
+      alignItems: flex-start
+      children:
+        - key: 1-1-2
+          name: web-form
+          options:
+            inline: true
+            columns:
+              - key: create_at
+                name: 产生时间
+                type: datetimerange
+                placeholder: [ 选择开始时间, 选择结束时间 ]
+                options:
+                  clearable: true
+              - key: ip
+                name: IP地址
+                type: input
+                placeholder: IP地址，支持正则检索
+                options:
+                  clearable: true
+              - key: types
+                name: 接口类型
+                type: select
+                placeholder: 请选择类型
+                multiple: true
+                data: *types
+                format: '{name} - {key}'
+                options:
+                  clearable: true
+              - key: user
+                name: 操作用户
+                type: input
+                placeholder: 检索用户名/昵称/邮箱/手机号
+                options:
+                  clearable: true
+            # 规则验证
+            rules:
+            # 请求地址
+            action:
+              method: POST
+              url: /api/oplog
+            # 提交按钮名称
+            submitName: 搜 索
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: deletes
+                  name: 删除选中
+                  type: button
+                  style: danger
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:deletes
+              success: 新数据已拉取
+              assignment:
+                data: data.data
+                counts: data.counts
+                pagination: data.limit
+              pagination: remote
+            # 设置默认值
+            defaultValues: |-
+              create_at: []
+            # 对提交值格式化
+            valueFormat:
+        - key: 1-1-3
+          name: web-table
+          options:
+            selection: true
+            sorter:
+              request:
+                method: POST
+                url: /api/oplog
+              submitOptions:
+                success: 新数据已拉取
+                assignment:
+                  data: data.data
+                  counts: data.counts
+                  pagination: data.limit
+                pagination: remote
+            columns:
+              - key: id
+                name: ID
+                width: 80
+                fixed: left
+              - key: user
+                name: 用户
+                width: 120
+                align: left
+                format:
+                  - type: map
+                    maps: username
+                defaultValue: --
+              - key: type
+                name: 类型
+                align: left
+                width: 150
+              - key: content
+                name: 描述
+                align: left
+                width: 300
+                defaultValue: --
+              - key: ip
+                name: IP
+                align: left
+                width: 150
+              - key: create_at
+                name: 产生时间
+                width: 180
+                align: left
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+                sortable: true
+              - key: $space
+                minWidth: 10 
+              - key: actions
+                name: 操作
+                fixed: right
+                align: left
+                width: 200
+                emit:
+                  - key: preview
+                    name: 查看
+                    type: dropdown
+                    options:
+                      - key: request
+                        name: 请求数据
+                        command: dialog:previewRequest
+                      - key: response
+                        name: 返回数据
+                        command: dialog:previewResponse
+                  - key: delete
+                    name: 删除
+                    type: button
+                    style: danger
+                    command: action:remove
+            # 展开信息；支持 Markdown
+            # expand: |-
+  - key: 1-2
+    name: web-preview
+    conditions: |-
+      dialog: previewRequest
+    options:
+      key: dialog-preview
+      title: '{{selected.id}} -- 请求数据'
+      # 获取数据
+      content: '{{selected.api.request}}'
+      # 关闭后命令
+      closeAfter: 
+        - dialog:none
+  - key: 1-3
+    name: web-preview
+    conditions: |-
+      dialog: previewResponse
+    options:
+      key: dialog-preview
+      title: '{{selected.id}} -- 返回数据'
+      # 获取数据
+      content: '{{selected.api.response}}'
+      # 关闭后命令
+      closeAfter: 
+        - dialog:none
+
+
+# 初始化数据
+initialData:
+  request:
+    method: POST
+    url: /api/oplog
+  submitOptions:
+    success: 新数据已拉取
+    assignment:
+      data: data.data
+      counts: data.counts
+      pagination: data.limit
+    pagination: remote
+
+
+# 定义 Action
+actions:
+  # 刷新
+  refresh:
+    request:
+      method: POST
+      url: /api/oplog
+    submitOptions:
+      success: 新数据已拉取
+      assignment:
+        data: data.data
+        counts: data.counts
+        pagination: data.limit
+      pagination: remote
+  # 删除操作
+  remove:
+    request:
+      method: DELETE
+      url: |-
+        /api/oplog/{{row._id}}
+    confirm:
+      message: 确认要永久删除该条日志, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 日志已删除
+      afterCommand: 
+        - action:refresh
+  # 多选删除
+  deletes:
+    request:
+      method: DELETE
+      url: |-
+        /api/oplog
+      params: |-
+        ids: [{% for item in selection %} {{item._id}}, {% endfor %}]
+    confirm:
+      message: 确认要永久删除所选日志, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 日志已删除
+      afterCommand: 
+        - action:refresh

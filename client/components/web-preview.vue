@@ -9,7 +9,7 @@
     @submit="submit(null, null, { afterCommand: closeAfter })"
     >
     <web-codemirror
-      :value="content"
+      :value="contentText"
       theme="nord"
       :line-numbers="true"
       :read-only="true"
@@ -25,6 +25,7 @@ import { Component, Vue, mixins, Prop, Emit, Provide } from 'nuxt-property-decor
 import EnvironmentMixin from '~/mixins/environment'
 import { Channel, Command } from '@/types/client'
 import { parseTemplate } from '@/utils'
+import { isPlainObject, get } from 'lodash'
 
 @Component<WebPreview>({
   name: 'web-preview',
@@ -32,8 +33,20 @@ import { parseTemplate } from '@/utils'
     this.titlename = parseTemplate(this.title, this.env)
     if (this.request) {
       this.getData(this.request, { download: { type: 'preview' } }, data => {
-        this.content = data
+        this.contentText = data
       })
+    }
+    if (this.content) {
+      let regx = /^(\{+){2}(\S+)(\}+){2}$/
+      if (regx.test(this.content)) {
+        let key = this.content.replace(regx, '$2')
+        let val = get(this.env, key)
+        let content = isPlainObject(val) ? JSON.stringify(val, null, 2) : String(val)
+        this.contentText = content
+      }
+      else {
+        this.contentText = String(this.content)
+      }
     }
   }
 })
@@ -41,6 +54,9 @@ export default class WebPreview extends mixins(EnvironmentMixin) {
 
   @Prop({ default: '' })
   title!: string
+
+  @Prop({ default: undefined })
+  content!: any
 
   @Prop({ default: undefined })
   request!: Channel.RequestConfig
@@ -56,7 +72,7 @@ export default class WebPreview extends mixins(EnvironmentMixin) {
   titlename: string = ''
 
   @Provide()
-  content: string = ''
+  contentText: string = ''
 
   @Emit('get-data')
   getData (request: Channel.RequestConfig, options: Record<string,any> | null, next: (data: string) => void) {}

@@ -43,14 +43,6 @@ components:
             submitOptions:
               reset: 重置
               emit:
-                - key: download
-                  name: 打包下载
-                  type: button
-                  style: success
-                  disabled: |-
-                    selection:
-                      $size: 0
-                  command: action:package
                 - key: deletes
                   name: 删除选中
                   type: button
@@ -62,26 +54,12 @@ components:
               success: 新数据已拉取
               assignment:
                 data: data
-              #   counts: data.counts
-              #   pagination: data.limit
-              # pagination: remote
             # 设置默认值
             defaultValues: {}
         - key: 1-1-3
           name: web-table
           options:
             selection: true
-            # sorter:
-            #   request:
-            #     method: POST
-            #     url: /api/team
-            #   submitOptions:
-            #     success: 新数据已拉取
-            #     assignment:
-            #       data: data.data
-            #       counts: data.counts
-            #       pagination: data.limit
-            #     pagination: remote
             columns:
               - key: filename
                 name: 文件名
@@ -160,6 +138,17 @@ components:
 
 # 定义 Action
 actions:
+  # 刷新
+  refresh:
+    request:
+      method: POST
+      url: /api/oplog/system
+      params: |-
+        day: {{conditions.day}}
+    submitOptions:
+      success: 新数据已拉取
+      assignment:
+        data: data
   # 下载
   download:
     request:
@@ -175,9 +164,24 @@ actions:
       url: |-
         /api/oplog/system/{{row.filename}}
     confirm:
-      message: 确认要永久删除该用户, 是否继续?
+      message: 确认要永久删除该文件, 是否继续?
       cancel: 您已取消删除操作！
     submitOptions:
-      success: 用户已删除
-      # afterCommand: 
-      #   - action:refresh
+      success: 日志文件已删除
+      afterCommand: 
+        - action:refresh
+  # 多选删除
+  deletes:
+    request:
+      method: DELETE
+      url: |-
+        /api/oplog/system
+      params: |-
+        files: [{% for item in selection %} {{item.filename}}, {% endfor %}]
+    confirm:
+      message: 确认要永久删除所选文件, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 日志文件已删除
+      afterCommand: 
+        - action:refresh

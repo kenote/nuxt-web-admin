@@ -1,6 +1,6 @@
 import { HttpError } from 'http-errors'
 import { Context, NextHandler } from '@kenote/core'
-import { isSafeInteger, toSafeInteger, isPlainObject, isBoolean, isArray, flattenDeep, cloneDeep, get, omit } from 'lodash'
+import { toSafeInteger, isPlainObject, isBoolean, isArray, flattenDeep, cloneDeep, get, omit } from 'lodash'
 import validator from 'validator'
 import { Oplog } from '@/types/services/db'
 import { APIConfigure } from '@/types/config'
@@ -8,12 +8,10 @@ import { loadConfig } from '@kenote/config'
 import ruleJudgment, { isDateString } from 'rule-judgment'
 import glob from 'glob'
 import async from 'async'
-import days from 'dayjs'
 import mime from 'mime-types'
 import fs from 'fs'
 import { toValue } from 'parse-string'
 import inspect from 'object-inspect'
-import nunjucks from 'nunjucks'
 import vm from 'vm'
 
 export { ErrorCode, ErrorMessage, httpError } from './error'
@@ -47,18 +45,13 @@ export function apilog (response: Oplog.Response, ctx: Context) {
   let APINodes = flattenDeep(loadConfig<APIConfigure.NodeItem[][]>('config/apilog', { type: 'array' }))
   let filter = ruleJudgment<APIConfigure.NodeItem>({ $where: item => item.method.includes(ctx.method) && item.regexp.test(ctx.originalUrl) })
   let APINode = APINodes.find(filter)
+  let Iresponse = cloneDeep(response)
   if (APINode) {
     setTimeout(async () => {
-      await db.oplog.create(cloneDeep(response), APINode!, ctx)
+      await db.oplog.create(Iresponse, APINode!, ctx)
     }, 300)
   }
   let info = getAPIInfo(response, ctx)
-  if (info.response.data) {
-    info.response.data = JSON.stringify(info.response.data, null, 2)
-  }
-  if (info.request.body) {
-    info.request.body = JSON.stringify(info.request.body, null, 2)
-  }
   logger.info(info)
 }
 
@@ -168,11 +161,8 @@ export const customize = {
     return new Date(new Date(value).setHours(hours, min, sec, ms))
   },
   formatDate: value => {
-    console.log(value)
     return value
   }
-  
-  
 }
 
 /**

@@ -58,7 +58,7 @@ components:
                 format: '[{id}] {name}'
                 options:
                   clearable: true
-                width: 200
+                width: 210
             # 规则验证
             rules:
             # 请求地址
@@ -105,7 +105,7 @@ components:
             sorter:
               request:
                 method: POST
-                url: /api/ticket
+                url: /api/user
               submitOptions:
                 success: 新数据已拉取
                 assignment:

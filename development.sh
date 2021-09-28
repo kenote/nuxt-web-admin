@@ -19,6 +19,7 @@ start(){
     ;;
     dist)
       rsync -av $development/config/ .deploy/dist/config/ 
+      rsync -av $development/project/ .deploy/dist/project/ 
     ;;
     *)
     exit;;

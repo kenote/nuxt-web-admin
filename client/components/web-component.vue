@@ -110,6 +110,7 @@
   <!-- 预览视图 -->
   <web-preview v-else-if="type === 'web-preview'"
     :title="options && options.title"
+    :content="options && options.content"
     :request="options && options.request"
     :close-after="options && options.closeAfter"
     :env="env"
