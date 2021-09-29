@@ -27,5 +27,10 @@ children:
       - key: 5-1-1
         name: 人民币转换
         description: 转换人民币大写
-        keywords: [ 常用工具, 人民币转换, 人民币大写, daxie, dx, rmb ]
+        keywords: [ 常用工具, 人民币转换, 人民币大写, daxie, dx, rmb, tools ]
         route: /tools/rmb
+      - key: 5-1-2
+        name: IP地址查询
+        description: IP归属地查询
+        keywords: [ 常用工具, IP地址, 归属地, ip, gsd, tools ]
+        route: /tools/ip

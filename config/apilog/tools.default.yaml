@@ -1,0 +1,7 @@
+
+- key: tools::ip
+  type: find
+  name: 查询了IP
+  method: [ GET ]
+  url: /api/tools/ip
+  regexp: !!js/regexp /^(/\api\/tools\/ip)/

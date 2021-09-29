@@ -49,12 +49,12 @@ interface Values {
   digits   ?: string
 }
 
-@Component<HomePage>({
-  name: 'homepage',
+@Component<RMBPage>({
+  name: 'rmb-page',
   middleware: [ 'authenticated' ],
   layout: 'dashboard',
 })
-export default class HomePage extends mixins(PageMixin) {
+export default class RMBPage extends mixins(PageMixin) {
   
   @Provide()
   columns: Channel.FormItem[] = [

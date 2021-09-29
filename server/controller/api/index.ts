@@ -6,6 +6,7 @@ import OplogController from './oplog'
 import ProjectController from './project'
 import TeamController from './team'
 import TicketController from './ticket'
+import ToolsController from './tools'
 import UserController from './user'
 
 @Module({
@@ -27,6 +28,8 @@ import UserController from './user'
     TeamController, 
     // 票据相关
     TicketController, 
+    // 工具相关
+    ToolsController,
     // 用户相关
     UserController 
   ],
