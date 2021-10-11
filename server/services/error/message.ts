@@ -19,6 +19,7 @@ export default {
   ERROR_MISSING_CONFIG_PARAMETER   : '缺少配置参数 %s',
   ERROR_NOT_REMOVE_CREATOR         : '无法移除创建者',
   ERROR_REPEAT_ADDTO               : '请不要重复添加%s',
+  ERROR_NOTIN_WHITELIST            : '服务器拒绝了访问，您的IP 不在白名单中',
   
   ERROR_UPLOAD_FILE_MIMETYPE       : '上传文件类型不许可. [%s]',
   ERROR_UPLOAD_FILESIZE_LARGEMAX   : '上传文件超过最大值 %s.',

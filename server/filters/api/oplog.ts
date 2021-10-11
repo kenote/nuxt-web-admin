@@ -26,7 +26,7 @@ export async function list (ctx: Context, next: NextHandler) {
       pageInfo: toPageInfo(page ?? 1, size ?? 15),
       query: omit(document, ['page', 'size']),
       options: {
-        sort: toSortOptions(sort) ?? { create_at: -1 }
+        sort: toSortOptions(sort) ?? { create_at: -1, id: -1 }
       }
     }
     ctx.filterUserLevel(0, 9998)

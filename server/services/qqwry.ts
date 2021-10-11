@@ -1,11 +1,11 @@
 import path from 'path'
 import fs from 'fs'
 import GBK from 'gbk.js'
-import unzipper from 'unzipper'
 import validator from 'validator'
 import { httpError, ErrorCode } from './error'
-import { IPInfo, InfoBase, IPInfoArea } from '@/types/services/qqwry'
+import { IPInfo, InfoBase, IPInfoArea, IPInfoResponse } from '@/types/services/qqwry'
 import { merge } from 'lodash'
+import dns from 'dns'
 
 const IP_RECORD_LENGTH = 7
 const REDIRECT_MODE_1 = 1
@@ -252,6 +252,31 @@ export function setIPLocation(offset: number, buffer: Buffer) {
     loc.info = ''
   }
   return loc
+}
+
+/**
+ * 搜索IP/域名
+ * @param ips 
+ */
+export async function searchIP (ips: string[]) {
+  let info: IPInfo[] = []
+  for (let ip of ips) {
+    if (validator.isFQDN(ip)) {
+      let dips = await dns.promises.resolve4(ip)
+      for (let item of dips) {
+        info.push(QQwry.getInstance().searchIP(item))
+      }
+    }
+    else {
+      info.push(QQwry.getInstance().searchIP(ip))
+    }
+  }
+  let ipInfoResponse: IPInfoResponse = {
+    name: QQwry.getInstance().name,
+    version: QQwry.getInstance().version,
+    info
+  }
+  return ipInfoResponse
 }
 
 export default QQwry.getInstance()

@@ -75,7 +75,7 @@
                 :type="item.style"
                 :disabled="isDisabled(item.disabled, { values })"
                 @click="command(item.command, {})" plain>
-                {{ item.name }}
+                {{ parseTemplate(item.name, env) }}
               </el-button>
             </template>
             
@@ -93,7 +93,7 @@ import { Verify, Channel } from '@/types/client'
 import { Form as ElForm, FormItem as ElFormItem } from 'element-ui'
 import { zipObject, unset, isEqual, map, pick, assign, cloneDeep, merge, omit, isArray, get, set, identity, isUndefined, omitBy } from 'lodash'
 import { formatData, ParseData } from 'parse-string'
-import { parseRules, parseParams } from '@/utils'
+import { parseRules, parseParams, parseTemplate } from '@/utils'
 import EnvironmentMixin from '~/mixins/environment'
 import ruleJudgment from 'rule-judgment';
 
@@ -216,6 +216,8 @@ export default class WebForm extends mixins(EnvironmentMixin) {
 
   @Emit('reset')
   reset (values: Record<string, any>) {}
+
+  parseTemplate = parseTemplate
 
   handleSubmit () {
     let theForm = this.$refs['theForm'] as ElForm

@@ -108,7 +108,7 @@ export default class Restful {
       let payload = verifyJwToken(ctx.jwToken)
       if (payload) {
         let user = await ctx.db.user.Dao.findOne({ _id: payload._id, jw_token: ctx.jwToken })
-        return toUser(user)
+        return user ? toUser(user) : user
       }
       return null
     }

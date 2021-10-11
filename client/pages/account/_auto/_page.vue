@@ -77,7 +77,6 @@ import { UserDocument } from '@/types/services/db'
 import { ElMessageBoxOptions } from 'element-ui/types/message-box'
 import isBolb from 'is-blob'
 import { readTextFile } from '@/utils/file'
-import vm from 'vm'
 
 interface DrawerOptions {
   key         : string
@@ -98,8 +97,7 @@ interface DrawerOptions {
     }
   },
   mounted () {
-    console.log(vm.runInNewContext('vm = (function () { return 9 })()'))
-    console.log(this)
+    
   }
 })
 export default class AutoPage extends mixins(PageMixin) {

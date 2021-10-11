@@ -1,7 +1,6 @@
 <template>
   <dashboard v-loading="initinal">
     <web-form v-if="defaultValues.ips"
-      name="IP地址查询"
       :columns="columns"
       :rules="rules"
       :default-values="defaultValues"
@@ -10,6 +9,8 @@
       @submit="handleSubmit"
       @reset="handleSubmit"
       :loading="loading"
+      :inline="true"
+      :env="env"
       />
     
     <web-table
@@ -26,7 +27,7 @@ import { Component, mixins, Provide } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Channel, HttpResult, Verify } from '@/types/client'
 import { IPInfo, IPInfoResponse } from '@/types/services/qqwry'
-import { get } from 'lodash'
+import { get, merge } from 'lodash'
 
 interface Values {
   ips   ?: string
@@ -67,8 +68,25 @@ export default class IPPage extends mixins(PageMixin) {
   }
 
   @Provide()
+  name: string = ''
+
+  @Provide()
   submitOptions: Channel.SubmitOptions = {
-    reset: '重置'
+    reset: '重置',
+    emit: [
+      {
+        key: 'name',
+        name: '{{name}}',
+        type: 'button',
+        style: 'success'
+      },
+      {
+        key: 'version',
+        name: '{{version}}',
+        type: 'button',
+        style: 'warning'
+      }
+    ]
   }
 
   @Provide()
@@ -119,7 +137,6 @@ export default class IPPage extends mixins(PageMixin) {
   ]
 
   handleSubmit (values: Values) {
-    console.log(values)
     this.getIPInfo(values.ips)
   }
 
@@ -133,10 +150,11 @@ export default class IPPage extends mixins(PageMixin) {
           this.$message.error(result.error)
         }
         else {
-          let { info } = result?.data!
+          let { info, name, version } = result?.data!
           if  (!value) {
             this.defaultValues = { ips: get(info, ['0', 'ip'], '') }
           }
+          this.env = merge(this.env, { name, version })
           this.ipInfo = info
         }
       } catch (error) {
@@ -144,7 +162,6 @@ export default class IPPage extends mixins(PageMixin) {
       }
       this.loading = false
     }, 500)
-    
   }
   
 }

@@ -309,11 +309,9 @@ export function getUrl (url: string, params?: Record<string, string>) {
  */
  export function parseParams (params: any) {
   return (data?: Record<string, any>) => {
-    let parseData = merge(data, {
-      // now: parseDate('{now}')
-    })
+    let parseData = merge(data, {})
     let str = isString(params) ? params : jsYaml.safeDump(params)
-    let val = nunjucks.renderString(str, parseData)
+    let val = parseTemplate(str, parseData)
     return jsYaml.load(val)
   }
 }

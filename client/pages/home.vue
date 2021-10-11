@@ -1,9 +1,6 @@
 <template>
   <page>
-    Home Page 
-    <p>site_url: {{ site_url }}</p>
-    <el-button>TEST</el-button>
-    <nuxt-link to="/panel">Panel</nuxt-link>
+    
   </page>
 </template>
 
@@ -14,7 +11,8 @@ import BaseMixin from '~/mixins/base'
 @Component<HomePage>({
   name: 'home-page',
   // middleware: [ 'authenticated' ],
-  layout: 'panel'
+  // layout: 'panel'
+  layout: 'account',
 })
 export default class HomePage extends mixins(BaseMixin) {
   

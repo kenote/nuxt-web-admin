@@ -12,6 +12,10 @@ export interface Configure {
    * 服务器列表
    */
   Server: Array<TcpSocketConnectOpts & { key: string }>
+  /**
+   * 设置白名单
+   */
+  whitelist?: string
 }
 
 /**

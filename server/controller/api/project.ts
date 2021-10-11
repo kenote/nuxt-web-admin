@@ -4,6 +4,7 @@ import * as filter from '~/filters/api'
 import { Project } from '@/types/services/project'
 import { get, merge } from 'lodash'
 import { parseBody } from 'parse-string'
+import { HttpRequest } from '@/types/services/http'
 
 @Controller('project')
 export default class ProjectController {
@@ -16,19 +17,41 @@ export default class ProjectController {
   @Put('/:channel/:tag', { filters: [ filter.project.request ] })
   @Delete('/:channel/:tag', { filters: [ filter.project.request ] })
   async request (ctx: Context, next: NextHandler) {
-    let { nextError, db, protobuf, http } = ctx.service
+    let { nextError, httpError, ErrorCode, protobuf, http, searchIP, db } = ctx.service
     let { options, payload, tcpSocket } = ctx.payload as Project.NextPayload
     try {
       let result
       // 处理 Http 代理
       if (options.proxy) {
-        let { method, url } = options.proxy
-        result = await http.httpClient(options.proxy.options)[method ?? 'GET'](url, payload)
+        let requestOptions: HttpRequest = options.proxy
+        if (requestOptions.method.toUpperCase() === 'GET') {
+          requestOptions.params = merge(requestOptions.params, payload)
+        }
+        else {
+          requestOptions.body = merge(requestOptions.body, payload)
+        }
+        let ret = await http.shellAsCurl(requestOptions)
+        let [ , code ] = ret.status?.split(/\s+/)
+        if (code != '200') {
+          throw httpError(ErrorCode.ERROR_CUSTOMIZE_DATA, [ 'Proxy:', ret.status?.replace('404 OK', '404 Not Found')! ])
+        }
+        result = ret.body
       }
       // 处理 TcpSocket
       else if (options.message) {
         let { msgtype, requestType, serverTag } = options.message
         result = await protobuf.request(msgtype, payload!, requestType)(merge(tcpSocket, { TcpSocket: options.tcpSocket }), serverTag)
+      }
+      // 处理内部服务代理
+      else if (options.service) {
+        let proxys = {
+          searchIP: async (payload: { ips: [] }) => searchIP(payload.ips)
+        }
+        let func = get(proxys, options.service.name)
+        if (!func) {
+          throw httpError(ErrorCode.ERROR_CUSTOMIZE_DATA, [`[${options.service.name}] 内部服务不存在`])
+        }
+        result = await func(payload, options.service.options)
       }
       // 解析数据
       if (options.parse) {

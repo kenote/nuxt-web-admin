@@ -3,7 +3,7 @@ import { filterData, validSign } from 'parse-string'
 import { loadConfig } from '@kenote/config'
 import ruleJudgment from 'rule-judgment'
 import { Project } from '@/types/services/project'
-import { omit, get } from 'lodash'
+import { omit, get, compact, uniq, concat } from 'lodash'
 import { Configure } from '~/services/protobuf'
 
 export async function request (ctx: Context, next: NextHandler) {
@@ -14,21 +14,32 @@ export async function request (ctx: Context, next: NextHandler) {
     let allAPIOptions = loadConfig<Project.API[]>(`project/${channel}/api`, { type: 'array' })
     let apiOptions  = allAPIOptions?.find( v => !!v.router.find( ruleJudgment({ method: ctx.method, path: tag }) ) )
     if (!apiOptions) return await ctx.notfound()
-    let { name, description, router, message, proxy, tcpSocket, props } = apiOptions
+    let tcpSocketOptions = loadConfig<Configure>(`project/${channel}/setting`, { mode: 'merge' })
+    let { props } = apiOptions
+    let whitelist = uniq(compact(concat(tcpSocketOptions.whitelist, apiOptions.whitelist)))
+    // 检查白名单
+    if (whitelist.length > 0 && !whitelist.find( v => new RegExp(v).test(ctx.clientIP) )) {
+      throw httpError(ErrorCode.ERROR_NOTIN_WHITELIST)
+    }
     let nextPayload: Project.NextPayload = { 
       options: apiOptions, 
-      tcpSocket: loadConfig<Configure>(`project/${channel}/setting`, { mode: 'merge' })
+      tcpSocket: tcpSocketOptions
     }
     let authenticationState: Project.Authentication | null = null
-    let isUser: boolean = false
+    let isUser: true | false | 'Unauthorized' = false
     // 鉴权判断
     if (apiOptions.authentication) {
       for (let authentication of apiOptions.authentication) {
         authenticationState = authentication
         if (authentication.type === 'jwt') {
-          let user = await ctx.jwtUser()
-          isUser = ruleJudgment({ ...authentication.jwt })(user)
-          if (isUser) break
+          let user = await ctx.jwtUser() 
+          if (user) {
+            isUser = ruleJudgment({ ...authentication.jwt })(user)
+            if (isUser) break
+          }
+          else {
+            isUser = 'Unauthorized'
+          }
         }
         else if (authentication.type === 'sign') {
           apiOptions.payload?.push({
@@ -57,11 +68,13 @@ export async function request (ctx: Context, next: NextHandler) {
       nextPayload.payload = payload
     }
     // 如果使用 JWT 方式鉴权
-    if (authenticationState?.type === 'jwt' && !isUser) {
-      throw httpError(ErrorCode.ERROR_AUTH_FLAG_ACCESS)
-    }
-
-    if (authenticationState?.type == 'jwt') {
+    if (authenticationState?.type === 'jwt') {
+      if (isUser === 'Unauthorized') {
+        return await ctx.status(401).send('Unauthorized')
+      }
+      else if (isUser === false) {
+        throw httpError(ErrorCode.ERROR_AUTH_FLAG_ACCESS)
+      }
       let serverTag = String(get(ctx.query, 't'))
       // 检查 serverTag 使用权限
       if (nextPayload.options.message) {

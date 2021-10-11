@@ -3,6 +3,7 @@ import { HttpClientOptions } from '@/types/client'
 import { Configure } from '@/server/services/protobuf'
 import { TCPSocket } from '@kenote/protobuf'
 import { filterData, FilterData, ParseData } from 'parse-string'
+import { HttpRequest } from './http'
 
 export declare namespace Project {
 
@@ -28,11 +29,15 @@ export declare namespace Project {
     /**
      * HTTP代理设置
      */
-    proxy               ?: HttpProxy
+    proxy               ?: HttpRequest
     /**
      * TCPSocket设置
      */
     tcpSocket           ?: TCPSocket.Configure
+    /**
+     * 内部服务代理
+     */
+    service             ?: ServiceProxy
     /**
      * 消息体选项
      */
@@ -61,24 +66,24 @@ export declare namespace Project {
      * 使用原生模式
      */
     native              ?: boolean
+    /**
+     * IP白名单
+     */
+    whitelist           ?: string[]
   }
 
   /**
-   * HTTP代理设置
+   * 内部服务代理
    */
-  interface HttpProxy {
+  interface ServiceProxy {
     /**
-     * 请求 Method
+     * 名称
      */
-    method              ?: Method
+    name                 : string
     /**
-     * 请求 URL
+     * 选项
      */
-    url                  : string
-    /**
-     * Http 选项
-     */
-    options             ?: HttpClientOptions
+    options             ?: Record<string, any>
   }
 
   /**
