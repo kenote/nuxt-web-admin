@@ -5,6 +5,7 @@ import { Project } from '@/types/services/project'
 import { get, merge } from 'lodash'
 import { parseBody } from 'parse-string'
 import { HttpRequest } from '@/types/services/http'
+import path from 'path'
 
 @Controller('project')
 export default class ProjectController {
@@ -62,6 +63,21 @@ export default class ProjectController {
         return ctx.send(result)
       }
       return ctx.api(result)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 获取页面配置
+   */
+  @Get('/configuration/:channel/:name')
+  async page (ctx: Context, next: NextHandler) {
+    let { nextError } = ctx.service
+    let { channel, name } = ctx.params
+    try {
+      let filePath = path.resolve(process.cwd(), 'project', channel, 'pages', name)
+      return ctx.downloadFile(filePath)
     } catch (error) {
       nextError(error, ctx, next)
     }

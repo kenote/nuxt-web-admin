@@ -1,0 +1,61 @@
+
+
+# 验证参数
+filter:
+  # 页码
+  - key: page
+    type: number
+    defaultValue: 1
+  # 分页大小
+  - key: size
+    type: number
+    defaultValue: 10
+  # 排序
+  - key: sort
+    type: string[]
+  # 域名搜索，可在域名列表中搜索该域名。
+  - key: DomainName
+    type: string
+    defaultValue: ''
+  # 域名注册时间
+  - key: RegistrationDate
+    type: string[]
+    format:
+      - type: date
+        func: getTime
+  # 域名到期时间
+  - key: ExpirationDate
+    type: string[]
+    format:
+      - type: date
+        func: getTime
+
+# 参数映射
+props:
+  PageNum: payload.page
+  PageSize: payload.size
+  StartRegistrationDate: payload.RegistrationDate[0] || ''
+  EndRegistrationDate: payload.RegistrationDate[1] || ''
+  StartExpirationDate: payload.ExpirationDate[0] || ''
+  EndExpirationDate: payload.ExpirationDate[1] || ''
+
+# Sort 排序
+sortOptions:
+  name: sort
+  fields: 
+    - key: orderByKey
+      name: OrderKeyType
+    - key: orderByType
+      name: OrderByType
+      format:
+        - type: string
+          regexp: !!js/regexp /^(desc|asc)(\S+)$/i
+          substr: '$1'
+        - type: string
+          func: toUpperCase
+
+# 映射返回字段
+resultProps:
+  data: Data.Domain
+  counts: TotalItemNum
+  limit: PageSize

@@ -49,19 +49,19 @@ previewTypes:
     extname: [ .gif ]
   - type: image/jpeg
     extname: [ .jpg, .jpeg ]
-  - type: application/json
+  - type: application/json; charset=utf-8
     extname: [ .json ]
-  - type: text/yaml
+  - type: text/yaml; charset=utf-8
     extname: [ .yml, .yaml ]
-  - type: text/html
+  - type: text/html; charset=utf-8
     extname: [ .htm, .html ]
   - type: image/webp
     extname: [ .webp ]
-  - type: text/css
+  - type: text/css; charset=utf-8
     extname: [ .css ]
   - type: image/vnd.microsoft.icon
     extname: [ .ico ]
-  - type: application/javascript
+  - type: application/javascript; charset=utf-8
     extname: [ .js ]
   - type: font/woff
     extname: [ .woff ]

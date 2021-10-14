@@ -29,7 +29,7 @@ children:
         description: 管理用户组/角色配置
         keywords: [ 用户中心, 用户管理, 角色, yonghu, yh, jiaose, juese, js ]
         route: /ucenter/group
-        configuration: /data/pages/ucenter/group.yml
+        configuration: /api/project/configuration/ucenter/group.yaml
         refresh: true
         disabled: |-
           auth.group.level:
@@ -39,7 +39,7 @@ children:
         description: 查询/管理用户信息
         keywords: [ 用户中心, 用户管理, yonghu, yh ]
         route: /ucenter/user
-        configuration: /data/pages/ucenter/user.yml
+        configuration: /api/project/configuration/ucenter/user.yaml
         refresh: true
         disabled: |-
           auth.group.level:
@@ -49,7 +49,7 @@ children:
         description: 创建、设置团队权限
         keywords: [ 用户中心, 团队管理, yonghu, yh, tuandui, td, team ]
         route: /ucenter/team
-        configuration: /data/pages/ucenter/team.yml
+        configuration: /api/project/configuration/ucenter/team.yaml
         refresh: true
         disabled: |-
           auth.group.level:
@@ -63,7 +63,7 @@ children:
         description: 管理用户组/角色配置
         keywords: [ 用户中心, 票据管理, 票据列表, yonghu, yh, piaoju, ticket, pj ]
         route: /ucenter/ticket
-        configuration: /data/pages/ucenter/ticket.yml
+        configuration: /api/project/configuration/ucenter/ticket.yaml
         refresh: true
         disabled: |-
           auth.group.level:

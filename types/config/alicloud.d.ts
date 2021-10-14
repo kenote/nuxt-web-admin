@@ -1,5 +1,6 @@
 import RPCClient from '@alicloud/pop-core'
 import { BaseInfo } from '.'
+import { FilterData } from 'parse-string'
 
 export interface AlicloudConfigure {
   /**
@@ -40,4 +41,34 @@ export namespace AlicloudConfigure {
     accessKeyId       : string
     accessKeySecret   : string
   }
+}
+
+export interface APIOptions {
+  filter            : FilterData.options[]
+  props            ?: Record<string, string>
+  sortOptions      ?: SortOptions
+  resultProps      ?: Record<string, string>
+}
+
+interface SortOptions {
+  name              : string
+  fields            : SortField[]
+}
+
+interface SortField {
+  key               : 'orderByKey' | 'orderByType'
+  name              : string
+  format           ?: ParseData.format[]
+}
+
+export interface NextPayload {
+  accessKey         : string
+  sdk               : string
+  action            : string
+  options           : ResponseOptions
+  payload          ?: Record<string, any>
+}
+
+interface ResponseOptions {
+  resultProps      ?: Record<string, string>
 }

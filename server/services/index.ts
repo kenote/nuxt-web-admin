@@ -28,6 +28,7 @@ export * as http from './http'
 export { default as qqwry, QQwry, int2ip, ip2int, searchIP } from './qqwry'
 export * as xlsx from './xlsx'
 export * as archiver from './archiver'
+export * as alicloud from './alicloud'
 
 export { inspect }
 

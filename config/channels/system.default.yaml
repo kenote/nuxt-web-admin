@@ -29,12 +29,12 @@ children:
         description: 系统运行日志
         keywords: [ 系统工具, 日志管理, 运行日志, system, log, xt, rz ]
         route: /system/log
-        configuration: /data/pages/system/log.yml
+        configuration: /api/project/configuration/system/log.yaml
         refresh: true
       - key: 3-3-2
         name: API日志
         description: API日志管理
         keywords: [ 系统工具, 日志管理, API日志, system, log, xt, rz, api ]
         route: /system/oplog
-        configuration: /data/pages/system/oplog.yml
+        configuration: /api/project/configuration/system/oplog.yaml
         refresh: true

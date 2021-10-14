@@ -46,7 +46,12 @@ dist/
 config/**/*.yaml
 !config/**/*.default.yaml
 uploadfiles/
-project/
+project/**/*.*
+!project/account/**/*.*
+!project/ucenter/**/*.*
+!project/system/**/*.*
+!project/alicloud/**/*.*
+!project/readme.md
 qqwry.dat
 backup/
 

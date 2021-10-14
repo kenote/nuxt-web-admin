@@ -25,7 +25,7 @@ children:
         description: 用户基础数据修改
         keywords: [ 我的帐户, 帐户管理, 我的, 帐户, 账号, 账户, 帐号, ziliao, zl, zhanghu, zhanghao, wode, wd ]
         route: /account/baseinfo
-        configuration: /data/pages/account/baseinfo.yml
+        configuration: /api/project/configuration/account/baseinfo.yaml
         refresh: true
       - key: 1-1-2
         name: 安全设置

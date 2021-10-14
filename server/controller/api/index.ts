@@ -1,5 +1,6 @@
 import { Module } from '@kenote/core'
 import AccountController from './account'
+import AlicloudController from './alicloud';
 import ChannelController from './channel'
 import GroupController from './group'
 import OplogController from './oplog'
@@ -16,6 +17,8 @@ import UserController from './user'
   controller: [ 
     // 账号相关
     AccountController, 
+    // 阿里云相关
+    AlicloudController,
     // 频道相关
     ChannelController, 
     // 用户组相关
