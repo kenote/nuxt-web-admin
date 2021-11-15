@@ -98,10 +98,10 @@ module.exports = {
         path: '/',
         component: resolve(__dirname, 'client/pages/home.vue')
       }, {
-        path: '/(ucenter|component|system|tools)',
+        path: '/(ucenter|system|tools)',
         component: resolve(__dirname, 'client/pages/account/_auto/_page.vue')
       }, {
-        path: '/(ucenter|component|system|tools)/*',
+        path: '/(ucenter|system|tools)/*',
         component: resolve(__dirname, 'client/pages/account/_auto/_page.vue')
       })
     }

@@ -75,5 +75,5 @@ export const verifyJwToken = (token: string, options?: jwt.VerifyOptions) => tok
  * @param data 
  */
 export function toUser (data: UserDocument) {
-  return omit(JSON.parse(JSON.stringify(data)), ['salt', 'encrypt'])
+  return omit(JSON.parse(JSON.stringify(data)), ['salt', 'encrypt']) as UserDocument
 }

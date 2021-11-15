@@ -61,7 +61,7 @@ export default class TaskPoller extends Vue {
   border-radius: 2px;
   position: fixed;
   bottom: 10px;
-  right: 10px;
+  right: 20px;
   // width: 100px;
   padding: 0 10px;
   justify-content: center;

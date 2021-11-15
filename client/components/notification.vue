@@ -13,7 +13,7 @@
         <h3><span>{{ name }}</span></h3>
         <el-dropdown-item v-for="item in data" :key="item.key" :command="item.command">
           <span>{{ item.title }}</span>
-          <time>{{ item.time }}</time>
+          <time>{{ parseDate(item.time, dateFormat) }}</time>
         </el-dropdown-item>
       </div>
       <el-dropdown-item divided class="end" :command="moreInfo('link')">{{ moreInfo('name') }}</el-dropdown-item>
@@ -25,7 +25,7 @@
 import { Component, mixins, Prop, Provide, Emit, Watch } from 'nuxt-property-decorator'
 import BaseMixin from '~/mixins/base'
 import { NavMenu } from '@/types/client'
-
+import { customize } from '@/utils'
 
 interface DataItem {
   key         ?: string
@@ -54,6 +54,9 @@ export default class Notification extends mixins(BaseMixin) {
   @Prop({ default: undefined })
   more!: NavMenu.MoreItem
 
+  @Prop({ default: 'YYYY-MM-DD HH:mm:ss' })
+  dateFormat!: string
+
   @Provide()
   visible: boolean = false
 
@@ -63,6 +66,8 @@ export default class Notification extends mixins(BaseMixin) {
 
   @Emit('command')
   handleCommand (value: string) {}
+
+  parseDate = customize.dateFormat
 
   moreInfo (tag: 'name' | 'link') {
     // { name: 'More', link: 'command:notification/list' }

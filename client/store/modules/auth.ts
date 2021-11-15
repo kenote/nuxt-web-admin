@@ -1,6 +1,8 @@
 import { ActionTree, MutationTree, GetterTree, ActionContext } from 'vuex'
 import { RootState } from '~/store'
-import { UserDocument } from '@/types/services/db'
+import { UserDocument, AccoutNotificationDocument } from '@/types/services/db'
+
+
 
 export const name = 'auth'
 
@@ -10,18 +12,24 @@ export const types = {
   AVATAR          : 'AVATAR',
   EMAIL           : 'EMAIL',
   MOBILE          : 'MOBILE',
+  NOTIFICATION    : 'NOTIFICATION',
+  UNREAD          : 'UNREAD'
 }
 
 export interface State {
   auth            : UserDocument | null
   timestamp       : number
+  notification    : Array<AccoutNotificationDocument & { link?: string }>
+  unread          : number
 }
 
 export const namespaced: boolean = true
 
 export const state: () => State = () => ({
   auth            : null,
-  timestamp       : 0
+  timestamp       : 0,
+  notification    : [],
+  unread          : 0
 })
 
 export const getters: GetterTree<State, RootState> = {
@@ -61,5 +69,14 @@ export const mutations: MutationTree<State> = {
     state.auth.mobile = mobile
     state.auth.binds = Array.from(new Set([ ...state.auth.binds, 'mobile' ]))
     state.timestamp = Date.now() 
+  },
+  [types.NOTIFICATION] (state: State, notification: Array<AccoutNotificationDocument & { link?: string }>) {
+    
+    state.notification = notification.map( r => {
+      return { ...r, link: `router:/account/notification/all?detail=${r._id}` }
+    })
+  },
+  [types.UNREAD] (state: State, unread: number) {
+    state.unread = unread
   }
 }

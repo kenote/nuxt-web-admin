@@ -54,6 +54,16 @@ children:
         disabled: |-
           auth.group.level:
             $lt: 9998
+      - key: 2-1-4
+        name: 消息管理
+        description: 发送消息通知
+        keywords: [ 用户中心, 消息通知, yonghu, yh, message, msg, notify ]
+        route: /ucenter/notification
+        configuration: /api/project/configuration/ucenter/notification.yaml
+        refresh: true
+        disabled: |-
+          auth.group.level:
+            $lt: 9998
   # 票据管理
   - key: 2-2
     name: 票据管理

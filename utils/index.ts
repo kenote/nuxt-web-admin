@@ -37,8 +37,9 @@ export function formatString (value: any, format?: ParseData.format | ParseData.
  * @param context 
  */
 export function parseTemplate (tpl: string, context: object) {
-  let env = new nunjucks.Environment()
+  let env = new nunjucks.Environment(null, { autoescape: false })
   env.addFilter(parseDate.name, value => String(parseDate(value))) // 解析时间字面量
+  env.addFilter(parseContent.name, value => String.raw`${parseContent(value, context)}` ) // 解析时间字面量
   return env.renderString(tpl, context)
 }
 
@@ -175,6 +176,11 @@ export function isYaml (str: string): boolean {
   } catch (error) {
     return false
   }
+}
+
+export function parseContent (path: string, env: Record<string, any>) {
+  let val = get(env, path, '')
+  return val.split('\n').join('\n\n').replace(/\"/g, '\\"')
 }
 
 /**

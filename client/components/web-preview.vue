@@ -8,7 +8,7 @@
     @close="submit(null, null, { afterCommand: closeAfter })"
     @submit="submit(null, null, { afterCommand: closeAfter })"
     >
-    <web-codemirror
+    <web-codemirror v-if="mode === 'codemirror'"
       :value="contentText"
       theme="nord"
       :line-numbers="true"
@@ -16,6 +16,16 @@
       :is-copy="true"
       :line-wrapping="true"
       />
+
+    <perfect-scrollbar v-else-if="mode === 'markdown'" 
+      :options="{ suppressScrollX: true }" 
+      :style="{ height: 'inherit', padding: '0 15px', marginTop: 0 }" >
+      <web-markdown
+        :style="{ maxWidth: maxWidth }"
+        :content="contentText"
+        :disabled-click="true"
+        />
+    </perfect-scrollbar>
     
   </web-dialog>
 </template>
@@ -57,6 +67,12 @@ export default class WebPreview extends mixins(EnvironmentMixin) {
 
   @Prop({ default: undefined })
   content!: any
+
+  @Prop({ default: 'codemirror' })
+  mode!: string
+
+  @Prop({ default: undefined })
+  maxWidth!: string
 
   @Prop({ default: undefined })
   request!: Channel.RequestConfig

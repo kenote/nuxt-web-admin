@@ -5,6 +5,8 @@ import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 import logger from '~/services/logger'
 import { connect } from './models'
+import http from 'http'
+import { createWebsocketServer } from '~/plugins/websocket'
 
 async function bootstrap () {
   let { host, port, secretKey, mongoOpts } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
@@ -20,9 +22,11 @@ async function bootstrap () {
   // 监听服务到指定端口
   let Port = port ?? process.env.HTTP_PORT ?? 4000
   let Host = host ?? 'localhost'
-  server.app.listen(Port, Host, () => {
+  let IServer = http.createServer(server.app?.callback() ?? server.app)
+  IServer.listen(Port, Host, () => {
     logger.info(`Http Server Running to http://localhost:%d`, Port)
   })
+  createWebsocketServer(IServer)
 }
 
 // 启动服务

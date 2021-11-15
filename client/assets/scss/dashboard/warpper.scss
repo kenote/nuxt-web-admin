@@ -291,6 +291,22 @@
     z-index: 5;
   }
 
+  .vditor-reset {
+    // margin: auto;
+    p {
+      font-size: 16px !important;
+      margin: 0 0 16px 0 !important;
+    }
+
+    a {
+      color: #409eff;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
   .vditor-reset .language-abc {
     text-align: center;
   }

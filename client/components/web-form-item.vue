@@ -267,6 +267,17 @@
     :delimiter="options && options.delimiter"
     :style="{ width: `450px`, height: `300px`, ...styles }"
     />
+  <!-- Vditor -->
+  <web-vditor v-else-if="type === 'vditor'"
+    v-model="values"
+    :placeholder="placeholder" 
+    :width="width" 
+    :min-height="options && options.minHeight" 
+    :height="height" 
+    :upload="options && options.upload"
+    :counter="options && options.counter"
+    :disabled="disabled"
+    />
   <!-- 验证码 -->
   <verify-code v-else-if="type === 'verify-code'"
     v-model="values"

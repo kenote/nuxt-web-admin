@@ -1,0 +1,33 @@
+
+
+name: &name notification
+
+request:
+  headers:
+    path: *name
+
+response:
+  data:
+    service: db.notification.find
+    args:
+      - $or:
+          - receiver: []
+          - receiver:
+              $eq: '{{auth._id}}'
+        release: true
+        readed:
+          $ne: '{{auth._id}}'
+      - limit: 5
+        sort:
+          update_at: -1
+        select: [ 'id', 'title', 'update_at' ]
+  counts:
+    service: db.notification.counts
+    args:
+      - $or:
+          - receiver: []
+          - receiver:
+              $eq: '{{auth._id}}'
+        release: true
+        readed:
+          $ne: '{{auth._id}}'

@@ -24,7 +24,7 @@
                 size="small"
                 :class="isDisabled(item.disabled, { row: scope.row }) ? 'el-dropdown-disabled' : ''"
                 :trigger="isDisabled(item.disabled, { row: scope.row }) ? '--' : 'hover'"
-                @click="command(item.command, scope.row)"
+                @click="!isDisabled(item.disabled, { row: scope.row }) && command(item.command, scope.row)"
                 @command="value => command(value, scope.row, $parent.$children[0])"
                 split-button >
                 <span>{{ item.name }}</span>
@@ -70,18 +70,23 @@
           </template>
           <!-- 处理模版 -->
           <template v-else-if="column.template">
-            <span>{{ parseTemplate(column.template, scope.row) }}</span>
+            <span :style="getAlpha(column.alpha, { row: scope.row })">{{ parseTemplate(column.template, scope.row) }}</span>
           </template>
           <!-- 可拷贝文件 -->
           <el-tooltip v-else-if="column.clipboard" content="点击复制" placement="top">
-            <el-link v-clipboard="handleClipboard(getValues(scope.row, column.key))" >{{ getValues(scope.row, column.key) }}</el-link>
+            <el-link v-clipboard="handleClipboard(getValues(scope.row, column.key))" :style="getAlpha(column.alpha, { row: scope.row })">{{ getValues(scope.row, column.key) }}</el-link>
           </el-tooltip>
           <!-- 带点击事件 -->
           <template v-else-if="column.click">
-            <el-link @click="command(column.click, scope.row)" >{{ getValues(scope.row, column.key) }}</el-link>
+            <el-link @click="command(column.click, scope.row)" :style="getAlpha(column.alpha, { row: scope.row })">{{ getValues(scope.row, column.key) }}</el-link>
           </template>
-          
-          <span v-else>{{ getValues(scope.row, column.key) }}</span>
+          <!-- 处理圆点 -->
+          <template v-else-if="column.dots">
+            <template v-for="item in column.dots">
+              <span :key="item.key" v-if="isFilter(item.conditions, { row: scope.row })" class="dot" :style="item.style">{{ item.name || '●' }}</span>
+            </template>
+          </template>
+          <span v-else :style="getAlpha(column.alpha, { row: scope.row })">{{ getValues(scope.row, column.key) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -304,6 +309,11 @@ export default class WebTable extends mixins(EnvironmentMixin) {
       // console.log(format, is)
     }
     return formatString(value, format, defaultValue)
+  }
+
+  getAlpha (conditions: FilterQuery<any> | string, scope: Record<string, any>) {
+    let isFilter = this.isFilter(conditions, scope)
+    return isFilter ? '' : 'opacity:.7'
   }
 
   /**

@@ -42,13 +42,19 @@ children:
         description: 查看全部系统消息
         keywords: [ 我的帐户, 消息中心, 我的, 帐户, 账号, 账户, 帐号, 中心, xiaoxi, tongzhi, zhanghu, zhanghao, wode, wd, xx, zh, tz ]
         route: /account/notification/all
+        configuration: /api/project/configuration/account/notification.yaml
+        refresh: true
       - key: 1-2-2
         name: 未读消息
         description: 查看全部未读消息
         keywords: [ 我的帐户, 消息中心, 我的, 帐户, 账号, 账户, 帐号, 中心, xiaoxi, tongzhi, zhanghu, zhanghao, wode, wd, xx, zh, tz ]
         route: /account/notification/unread
+        configuration: /api/project/configuration/account/notification.yaml
+        refresh: true
       - key: 1-2-3
         name: 已读消息
         description: 查看全部已读消息
         keywords: [ 我的帐户, 消息中心, 我的, 帐户, 账号, 账户, 帐号, 中心, xiaoxi, tongzhi, zhanghu, zhanghao, wode, wd, xx, zh, tz ]
         route: /account/notification/read
+        configuration: /api/project/configuration/account/notification.yaml
+        refresh: true

@@ -3,6 +3,7 @@ import AccountController from './account'
 import AlicloudController from './alicloud';
 import ChannelController from './channel'
 import GroupController from './group'
+import NotificationController from './notification'
 import OplogController from './oplog'
 import ProjectController from './project'
 import TeamController from './team'
@@ -23,6 +24,8 @@ import UserController from './user'
     ChannelController, 
     // 用户组相关
     GroupController, 
+    // 消息通知相关
+    NotificationController,
     // 日志相关
     OplogController,
     // 项目相关

@@ -24,6 +24,7 @@
           <navmenu
             classname="header-link"
             :data="dashboard.navmenu"
+            :notification="notification"
             @command="handleCommand" >
             <search-bar 
               v-model="search" 
@@ -117,11 +118,12 @@ import { NavMenu, Channel, HttpResult } from '@/types/client'
 import { Route } from 'vue-router'
 import { getChannelKey, dataNodeProxy } from '@kenote/common'
 import { MetaInfo } from 'vue-meta'
-import { UserDocument } from '@/types/services/db'
-import { isEqual } from 'lodash'
+import { UserDocument, AccoutNotificationDocument } from '@/types/services/db'
+import { isEqual, get } from 'lodash'
 import { getUserArrayInfo } from '@/utils/user'
 import { AccountConfigure } from '@/types/config'
 import { FilterQuery } from 'rule-judgment'
+import ruleJudgment from 'rule-judgment';
 
 @Component<DashboardLayout>({
   name: 'dashboard-layout',
@@ -141,7 +143,22 @@ import { FilterQuery } from 'rule-judgment'
   async mounted () {
     document.body.className = 'dashboard-body'
     await this.updateChannel(this.$route.path)
-    // console.log(getUserArrayInfo(this.auth!, 'platform'), this.accountOptions.platform)
+    // 订阅通知
+    let pubsub  = this.dashboard.pubsub?.find(ruleJudgment({ key: 'dashboard' }))
+    if (pubsub) {
+      let socket = this.$websocket(pubsub?.url ?? '')
+      socket.send('notification', {})
+      socket.onMessage = response => {
+        let { headers, body } = response
+        let map = new Map()
+        // 获取消息通知
+        map.set('notification', () => {
+          this.$store.commit(this.types.auth.NOTIFICATION, body.data)
+          this.$store.commit(this.types.auth.UNREAD, body.counts)
+        })
+        map.get(headers.path)?.call(this)
+      }
+    }
   }
 })
 export default class DashboardLayout extends mixins(BaseMixin) {
@@ -160,6 +177,12 @@ export default class DashboardLayout extends mixins(BaseMixin) {
 
   @Store.Setting.State
   accountOptions!: AccountConfigure
+
+  @Store.Auth.State
+  notification!: Array<AccoutNotificationDocument & { link?: string }>
+
+  @Store.Auth.State
+  unread!: number
 
   @Provide()
   env: Record<string, any> = {}
@@ -234,6 +257,16 @@ export default class DashboardLayout extends mixins(BaseMixin) {
       this.platform = null
       this.access = null
     }
+  }
+
+  @Watch('unread')
+  onUnreadChange (val: number, oldVal: number) {
+    if (val === oldVal) return
+    let node = dataNodeProxy(this.channels)
+    if (this.dashboard.notification) {
+      node.update(this.dashboard.notification, { tag: val > 0 ? String(val) : '' })
+    }
+    this.$store.commit(this.types.setting.CHANNELS, get(node, 'data'))
   }
 
   handleVisible (visible: boolean) {
@@ -338,7 +371,7 @@ export default class DashboardLayout extends mixins(BaseMixin) {
           return
         }
       } catch (error) {
-        this.$notify.error({ title: '错误', message: error.message })
+        this.$notify.error({ title: '错误', message: get(error, 'message') })
       }
     }, 300)
   }
@@ -358,7 +391,7 @@ export default class DashboardLayout extends mixins(BaseMixin) {
         }
       }
     } catch (error) {
-      this.$message.error(error.message)
+      this.$message.error(get(error, 'message'))
     }
   }
   

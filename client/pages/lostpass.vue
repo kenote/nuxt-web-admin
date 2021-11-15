@@ -34,6 +34,7 @@ import { Component, mixins, Provide } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Account } from '@/types/account'
 import { HttpResult } from '@/types/client'
+import { get } from 'lodash'
 
 @Component<LostpassPage>({
   name: 'lostpass-page',
@@ -67,7 +68,7 @@ export default class LostpassPage extends mixins(PageMixin) {
           this.sendWait(this.accountOptions.mailphoneStep)
         }
       } catch (error) {
-        this.$message.warning(error?.message)
+        this.$message.warning(get(error, 'message'))
       }
     }, 300)
   }
@@ -87,7 +88,7 @@ export default class LostpassPage extends mixins(PageMixin) {
           this.handleGotoLogin(3000)
         }
       } catch (error) {
-        this.$message.error(error.message)
+        this.$message.error(get(error, 'message'))
       }
       this.loading = false
     }, 300)

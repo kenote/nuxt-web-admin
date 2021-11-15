@@ -42,12 +42,15 @@ export declare namespace NavMenu {
     props         ?: Record<string, string>
     trigger       ?: 'hover' | 'click'
     more          ?: MoreItem
+    dateFormat    ?: string
   }
 
   interface Configure {
     navmenu        : NavMenu.RootDataItem[]
     authpanel      : AuthPanel
     avatar         : AvatarOptions
+    notification  ?: string
+    pubsub        ?: Array<{ key: string, url: string }>
   }
 
   interface AvatarOptions {
@@ -104,6 +107,7 @@ export declare namespace Channel {
     configuration ?: Configuration | string
     conditions    ?: FilterQuery<any> | string
     disabled      ?: boolean | FilterQuery<any> | string
+    tag           ?: string
   }
 
   interface Configuration {
@@ -128,6 +132,7 @@ export declare namespace Channel {
     method        ?: string
     submitOptions ?: SubmitOptions
     download      ?: DownloadOptions
+    selected      ?: string
   }
 
   interface DownloadOptions {
@@ -500,9 +505,39 @@ export declare namespace Channel {
      */
     emit          ?: EmitOptions[]
     /**
+     * 点击选项
+     */
+    click         ?: string
+    /**
+     * 圆点选项
+     */
+    dots          ?: DotOptions[]
+    /**
      * 列排序
      */
     sortable      ?: boolean | 'custem'
+    /**
+     * 文字淡化条件设置
+     */
+    alpha         ?: FilterQuery<any> | string
+  }
+
+  /**
+   * 圆点选项
+   */
+  interface DotOptions {
+    /**
+     * 名称
+     */
+    name          ?: string
+    /**
+     * 样式
+     */
+    style         ?: string | Record<string, any>
+    /**
+     * 显示条件
+     */
+    conditions    ?: FilterQuery<any> | string
   }
 
   /**
@@ -555,6 +590,10 @@ export declare namespace Channel {
      * 选择下拉时的选项
      */
     options       ?: EmitDropdownOption[]
+    /**
+     * 显示条件
+     */
+    conditions    ?: FilterQuery<any> | string
   }
 
   /**

@@ -8,6 +8,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
+  ButtonGroup,
   Card,
   Carousel,
   CarouselItem,
@@ -19,6 +20,7 @@ import {
   ColorPicker,
   DatePicker,
   Dialog,
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -74,6 +76,7 @@ export default () => {
   Vue.use(Breadcrumb)
   Vue.use(BreadcrumbItem)
   Vue.use(Button)
+  Vue.use(ButtonGroup)
   Vue.use(Card)
   Vue.use(Carousel)
   Vue.use(CarouselItem)
@@ -86,6 +89,7 @@ export default () => {
   Vue.use(ColorPicker)
   Vue.use(DatePicker)
   Vue.use(Dialog)
+  Vue.use(Divider)
   Vue.use(Dropdown)
   Vue.use(DropdownItem)
   Vue.use(DropdownMenu)

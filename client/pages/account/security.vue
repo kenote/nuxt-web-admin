@@ -122,7 +122,7 @@ export default class SecurityPage extends mixins(PageMixin) {
         this.$message.success('验证码已发送')
       }
     } catch (error) {
-      this.$message.error(error.message)
+      this.$message.error(get(error, 'message'))
     }
   }
 
@@ -142,7 +142,7 @@ export default class SecurityPage extends mixins(PageMixin) {
           this.active = 1
         }
       } catch (error) {
-        this.$message.error(error.message)
+        this.$message.error(get(error, 'message'))
       }
       this.loading = false
     }, 300)
@@ -167,7 +167,7 @@ export default class SecurityPage extends mixins(PageMixin) {
           this.sendWait(this.accountOptions.mailphoneStep)
         }
       } catch (error) {
-        this.$message.error(error.message)
+        this.$message.error(get(error, 'message'))
       }
       this.loading = false
     }, 300)
@@ -188,7 +188,7 @@ export default class SecurityPage extends mixins(PageMixin) {
         }
       }
     } catch (error) {
-      this.$message.error(error.message)
+      this.$message.error(get(error, 'message'))
     }
   }
 
@@ -215,7 +215,7 @@ export default class SecurityPage extends mixins(PageMixin) {
           this.active = 3
         }
       } catch (error) {
-        this.$message.error(error.message)
+        this.$message.error(get(error, 'message'))
       }
       this.loading = false
     }, 300)
@@ -244,7 +244,7 @@ export default class SecurityPage extends mixins(PageMixin) {
       }
       return true
     } catch (error) {
-      this.$message.warning(error.message)
+      this.$message.warning(get(error, 'message'))
     }
   }
 }

@@ -1,13 +1,14 @@
 <template>
-  <div id="vditor" v-bind:class="disabled ? 'disabled' : ''" />
+  <div id="vditor" ref="vditor" v-bind:class="disabled ? 'disabled' : ''" />
 </template>
 
 <script lang="ts">
-import { Component, Vue, Model, Watch , Emit, Prop, Provide, mixins } from 'nuxt-property-decorator'
+import { Component, Model, Watch , Emit, Prop, Provide, mixins } from 'nuxt-property-decorator'
 import Vditor from 'vditor'
 import { isBoolean, isEmpty, zipObject, map, merge, get } from 'lodash'
 import { getHeaders } from '@/utils/http-client'
-import { EditorConfig, HttpClientOptions, HttpResult } from '@/types/client'
+import { HttpClientOptions } from '@/types/client'
+import BaseMixin from '~/mixins/base'
 
 @Component<WebVditor>({
   name: 'web-vditor',
@@ -18,7 +19,7 @@ import { EditorConfig, HttpClientOptions, HttpResult } from '@/types/client'
     this.contentEditor?.destroy()
   }
 })
-export default class WebVditor extends Vue {
+export default class WebVditor extends mixins(BaseMixin) {
 
   @Prop({ default: undefined })
   placeholder!: string
@@ -58,12 +59,6 @@ export default class WebVditor extends Vue {
     }): void
   }
 
-  @Prop({ default: undefined })
-  httpOptions!: HttpClientOptions
-
-  @Prop({ default: undefined })
-  editorConfig!: EditorConfig
-
   @Provide()
   contentEditor?: Vditor
 
@@ -93,7 +88,11 @@ export default class WebVditor extends Vue {
   getHtml (value: string) {}
 
   initialEditor () {
-    let headers = getHeaders(this.httpOptions) as IObject
+    let httpOptions: HttpClientOptions = {}
+    if (this.token) {
+      httpOptions.token = this.token
+    }
+    let headers = getHeaders(httpOptions) as IObject
     let { emoji } = this.editorConfig ?? {}
 
     let options: IOptions = {
@@ -135,7 +134,15 @@ export default class WebVditor extends Vue {
       {
         name: 'more',
         toolbar: [
-          'both', 'code-theme', 'content-theme', 'export', 'outline', 'preview', 'devtools', 'info', 'help'
+          'both', 
+          // 'code-theme', 
+          // 'content-theme', 
+          // 'export', 
+          // 'outline', 
+          // 'preview',
+          // 'devtools', 
+          'info', 
+          'help'
         ]
       }
     ]
@@ -186,9 +193,12 @@ export default class WebVditor extends Vue {
         this.update(value)
         this.getValue(contentEditor.vditor.lute.Md2HTML(value))
         this.getHtml(contentEditor.getHTML())
-        
       },
-      
+      preview: {
+        markdown: {
+          paragraphBeginningSpace: true
+        },
+      }
     })
     setTimeout(() => {
       if (getBoolean(this.disabled)) {

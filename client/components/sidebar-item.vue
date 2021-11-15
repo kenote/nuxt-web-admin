@@ -9,6 +9,7 @@
         :key="key"
         :name="item.name"
         :icon="item.icon"
+        :tag="item.tag"
         :index="item.route || item.key"
         :disabled="item.disabled"
         :children="item.children"
@@ -24,6 +25,7 @@
     <div slot="title">
       <span>{{ name }}</span>
     </div>
+    <el-tag v-if="tag" style="float:right;margin-top:9px" effect="dark">{{ tag }}</el-tag>
   </el-menu-item>
 </template>
 
@@ -44,6 +46,9 @@ export default class SidebarItem extends mixins(EnvironmentMixin) {
 
   @Prop({ default: '' })
   icon!: string
+
+  @Prop({ default: '' })
+  tag!: string
 
   @Prop({ default: '' })
   index!: string 

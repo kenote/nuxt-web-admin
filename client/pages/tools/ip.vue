@@ -158,7 +158,7 @@ export default class IPPage extends mixins(PageMixin) {
           this.ipInfo = info
         }
       } catch (error) {
-        this.$message.error(error.message)
+        this.$message.error(get(error, 'message'))
       }
       this.loading = false
     }, 500)

@@ -2,21 +2,21 @@
 # 导航菜单
 navmenu:
   # 文字链接
-  - key: app
-    name: APP
-    type: link
-    link: command:app
+  # - key: app
+  #   name: APP
+  #   type: link
+  #   link: command:app
   # 下拉链接
-  - key: workorder
-    name: 工单
-    type: dropdown
-    data:
-      - key: create
-        name: 提交工单
-        link: command:create
-      - key: ticket
-        name: 我的工单
-        link: command:ticket
+  # - key: workorder
+  #   name: 工单
+  #   type: dropdown
+  #   data:
+  #     - key: create
+  #       name: 提交工单
+  #       link: command:create
+  #     - key: ticket
+  #       name: 我的工单
+  #       link: command:ticket
   # 消息通知
   - key: notification
     name: 消息通知
@@ -27,13 +27,17 @@ navmenu:
         description: '2021-03-17 12:02:00'
         link: command:notification/id
     props:
-      key: key
-      title: name
-      time: description
+      key: _id
+      title: title
+      time: update_at
       command: link
     more:
       name: 查看更多
-      link: command:notification/more
+      link: router:/account/notification/all
+    dateFormat: YYYY-MM-DD
+
+# 绑定未读消息通知
+notification: 1-2-2
 
 # 账号面板
 authpanel:
@@ -82,3 +86,8 @@ avatar:
     url: /api/account/baseinfo/avatar
     params: |-
       avatar: '{{ url }}'
+
+# 订阅接口
+pubsub:
+  - key: dashboard
+    url: ws://localhost:4000/dashboard

@@ -1,0 +1,276 @@
+
+# 设置环境变量
+env:
+  display: list
+  dialog: none
+  types: &types
+    - key: notice 
+      name: 系统公告
+
+# 页面分页大小
+pageSize: 10
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    conditions: |-
+      display: list
+    options:
+      layout: vertical
+      alignItems: flex-start
+      children:
+        - key: 1-1-2
+          name: web-form
+          options:
+            inline: true
+            columns:
+              - key: update_at
+                name: 创建时间
+                type: datetimerange
+                placeholder: [ 选择开始时间, 选择结束时间 ]
+                options:
+                  clearable: true
+              - key: findname
+                name:  查询内容
+                type: input
+                placeholder: 请输入查询内容
+                label:
+                  key: findtype
+                  options:
+                    title: 标题
+                    content: 内容
+                options:
+                  clearable: true
+                width: 300
+            # 规则验证
+            rules:
+            # 请求地址
+            action:
+              method: POST
+              url: /api/account/notification/{{$route.params.page}}
+            # 提交按钮名称
+            submitName: 搜 索
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: deletes
+                  name: 删除选中
+                  type: button
+                  style: danger
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:deletes
+                - key: readed
+                  name: 标记已读
+                  type: button
+                  conditions:
+                    $route.params.page: 
+                      $ne: read
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:readed
+                - key: readall
+                  name: 全部已读
+                  type: button
+                  conditions:
+                    $route.params.page: 
+                      $ne: read
+                  command: action:readall
+                - key: deleteall
+                  name: 全部删除
+                  type: button
+                  style: danger
+                  command: action:deleteall
+              success: 新数据已拉取
+              assignment:
+                data: data.data
+                counts: data.counts
+                pagination: data.limit
+                prev: data.prev
+                next: data.next
+              pagination: remote
+            # 设置默认值
+            defaultValues: |-
+              findtype: title
+            # 对提交值格式化
+            valueFormat:
+        - key: 1-1-3
+          name: web-table
+          options:
+            selection: true
+            sorter:
+              request:
+                method: POST
+                url: /api/account/notification/{{$route.params.page}}
+              submitOptions:
+                success: 新数据已拉取
+                assignment:
+                  data: data.data
+                  counts: data.counts
+                  pagination: data.limit
+                  prev: data.prev
+                  next: data.next
+                pagination: remote
+            columns:
+              - key: id
+                name: ID
+                width: 80
+                fixed: left
+              - key: readed
+                # name: Read
+                width: 40
+                align: center
+                dots:
+                  - key: dot1
+                    name: ●
+                    conditions: |-
+                      row.readed: false
+              - key: title
+                name: 标题名称
+                minWidth: 300
+                align: left
+                click: action:detail
+                # click: router:{{$route.path}}?detail={{row._id}}
+                alpha: |-
+                  row.readed: false
+              - key: type
+                name: 类型
+                width: 120
+                format:
+                  - type: string
+                    maps: 
+                      notice: 系统公告
+              - key: update_at
+                name: 发布时间
+                width: 180
+                align: left
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+
+  - key: 1-7
+    name: web-preview
+    conditions: |-
+      dialog: preview
+    options:
+      key: dialog-preview
+      title: '{{selected.title}}'
+      mode: markdown
+      maxWidth: 800px
+      # 获取数据
+      content: '{{selected.content}}'
+      # 关闭后命令
+      closeAfter: 
+        - dialog:none
+  - key: 1-8
+    name: web-detail
+    conditions: |-
+      display: detail
+    options:
+      request:
+        method: GET
+        url: /api/account/notification/{{selected._id}}
+      type: markdown
+      props:
+        title: item.title
+        content: item.content
+        date: item.update_at
+      dateFormat: 'YYYY-MM-DD HH:mm:ss'
+      afterCommand:
+        - action:refresh
+
+# 初始化数据
+initialData:
+  request:
+    method: POST
+    url: /api/account/notification/{{$route.params.page}}
+  submitOptions:
+    success: 新数据已拉取
+    assignment:
+      data: data.data
+      counts: data.counts
+      pagination: data.limit
+      prev: data.prev
+      next: data.next
+    pagination: remote
+  defaultValues: |-
+
+
+
+# 定义 Action
+actions:
+  # 刷新
+  refresh:
+    request:
+      method: POST
+      url: /api/account/notification/{{$route.params.page}}
+    submitOptions:
+      success: 新数据已拉取
+      assignment:
+        data: data.data
+        counts: data.counts
+        pagination: data.limit
+        prev: data.prev
+        next: data.next
+      pagination: remote
+  # 多选删除
+  deletes:
+    request:
+      method: DELETE
+      url: |-
+        /api/account/notification
+      params: |-
+        ids: [{% for item in selection %} {{item._id}}, {% endfor %}]
+    confirm:
+      message: 确认要删除所选消息通知, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 消息通知已删除
+      afterCommand: 
+        - action:refresh
+  # 全部删除
+  deleteall:
+    request:
+      method: DELETE
+      url: |-
+        /api/account/notification/all
+    confirm:
+      message: 确认要删除全部消息通知, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 消息通知已删除
+      afterCommand: 
+        - action:refresh
+  # 标记已读
+  readed:
+    request:
+      method: PUT
+      url: |-
+        /api/account/notification/read
+      params: |-
+        ids: [{% for item in selection %} {{item._id}}, {% endfor %}]
+    confirm:
+      message: 确认要标记所选消息为已读, 是否继续?
+      cancel: 您已取消标记操作！
+    submitOptions:
+      success: 所选消息已标记为已读
+      afterCommand: 
+        - action:refresh
+  # 全部已读
+  readall:
+    request:
+      method: PUT
+      url: |-
+        /api/account/notification/read/all
+    confirm:
+      message: 您确定要标记全部消息为已读吗？
+      cancel: 您已取消标记操作！
+    submitOptions:
+      success: 全部消息已标记为已读
+      afterCommand: 
+        - action:refresh

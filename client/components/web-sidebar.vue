@@ -19,6 +19,7 @@
             :key="key"
             :name="item.name"
             :icon="item.icon"
+            :tag="item.tag"
             :index="item.route || item.key"
             :disabled="item.disabled"
             :access="access"
@@ -86,6 +87,10 @@ export default class Sidebar extends mixins(EnvironmentMixin) {
   .el-menu-item.is-active {
     background-color: #373d41!important;
     font-weight: 600;
+  }
+
+  .el-submenu .el-menu-item {
+    padding: 0 20px;
   }
 }
 .header {

@@ -46,6 +46,7 @@ import { Form as ElForm } from 'element-ui'
 import { HttpResult } from '@/types/client'
 import { UserDocument } from '@/types/services/db'
 import { Account } from '@/types/account'
+import { get } from 'lodash'
 
 @Component<LoginPage>({
   name: 'login-page',
@@ -109,7 +110,7 @@ export default class LoginPage extends mixins(PageMixin) {
               theForm.resetFields()
             }
           } catch (error) {
-            this.$notify.error({ title: '错误', message: error.message })
+            this.$notify.error({ title: '错误', message: get(error, 'message') })
           }
           this.loading = false
         }, 300)

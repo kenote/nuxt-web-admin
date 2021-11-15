@@ -70,13 +70,16 @@
             <el-button v-if="submitOptions && submitOptions.goback" plain @click="command('action:goback')">{{ submitOptions.goback }}</el-button>
             <template v-for="item in (submitOptions && submitOptions.emit) || []">
               <!-- <div :key="item.key">{{ item.name }}</div> -->
-              <el-button v-if="item.type === 'button'" 
-                :key="item.key"
-                :type="item.style"
-                :disabled="isDisabled(item.disabled, { values })"
-                @click="command(item.command, {})" plain>
-                {{ parseTemplate(item.name, env) }}
-              </el-button>
+              
+              <template v-if="isFilter(item.conditions, env)">
+                <el-button v-if="item.type === 'button'" 
+                  :key="item.key"
+                  :type="item.style"
+                  :disabled="isDisabled(item.disabled, { values })"
+                  @click="command(item.command, {})" plain>
+                  {{ parseTemplate(item.name, env) }}
+                </el-button>
+              </template>
             </template>
             
           </div>

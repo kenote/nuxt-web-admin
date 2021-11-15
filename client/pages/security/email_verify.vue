@@ -19,6 +19,7 @@ import { Component, mixins, Provide } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Account } from '@/types/account'
 import { HttpResult } from '@/types/client'
+import { get } from 'lodash'
 
 const icons = {
   success   : 'el-icon-success',
@@ -61,7 +62,7 @@ export default class EmailVerifyPage extends mixins(PageMixin) {
           this.icon = icons['success']
         }
       } catch (error) {
-        this.message = error?.message
+        this.message = get(error, 'message')
         this.status = 'error'
         this.icon = icons['error']
       }

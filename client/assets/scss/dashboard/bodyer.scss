@@ -140,6 +140,25 @@
           color: #428bca;
           line-height: 16px;
         }
+
+        .el-link {
+          display: unset;
+
+          span {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+        }
+
+        .el-button+.el-button {
+          margin-left: 0;
+        }
+
+        .dot {
+          font-size: 12px;
+          color: #428bca;
+        }
       }
   
       &.http-keymap td>.cell {

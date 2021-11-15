@@ -1,5 +1,6 @@
 export * as group from './group'
 export * as account from './account'
+export * as notification from './notification'
 export * as oplog from './oplog'
 export * as project from './project'
 export * as team from './team'

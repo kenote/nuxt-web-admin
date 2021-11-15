@@ -1,6 +1,6 @@
 import RPCClient from '@alicloud/pop-core'
 import { BaseInfo } from '.'
-import { FilterData } from 'parse-string'
+import { FilterData, ParseData } from 'parse-string'
 
 export interface AlicloudConfigure {
   /**

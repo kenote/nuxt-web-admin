@@ -76,7 +76,7 @@ interface DialogOptions {
   value     ?: any
 }
 
-@Component<WebSelect>({
+@Component<GroupPicker>({
   name: 'group-picker',
   created () {
     this.values = (this.multiple && !this.value) ? [] : this.value
@@ -88,7 +88,7 @@ interface DialogOptions {
     }
   }
 })
-export default class WebSelect extends mixins(Emitter) {
+export default class GroupPicker extends mixins(Emitter) {
 
   @Inject({ default: '' })
   readonly elFormItem!: string

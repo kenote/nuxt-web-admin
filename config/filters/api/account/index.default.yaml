@@ -185,3 +185,21 @@ verifyEmailMobile:
         message: 缺少 Token 凭证
   - key: _id
     type: string
+
+# 获取账号消息通知
+notification:
+  - key: findname
+    type: string
+  - key: findtype
+    type: string
+  - key: update_at
+    type: date[]
+  - key: page
+    type: number
+  - key: size
+    type: number
+  - key: sort
+    type: string[]
+    defaultValue:
+      - update_at
+      - desc

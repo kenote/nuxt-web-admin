@@ -64,12 +64,23 @@
     :upload="options && options.upload"
     :counter="options && options.counter"
     :disabled="options && options.disabled"
-    :http-options="httpOptions"
-    :editor-config="editorConfig"
     />
   <!-- MarkDown文档 -->
   <web-markdown v-else-if="type === 'web-markdown'" 
     :content="options && options.content" 
+    :outline="options && options.outline"
+    :disabled-click="options && options.disabledClick"
+    />
+  <!-- 详情 -->
+  <web-detail v-else-if="type === 'web-detail'"
+    :request="options && options.request"
+    :type="options && options.type"
+    :props="options && options.props"
+    :date-format="options && options.dateFormat"
+    :after-command="options && options.afterCommand"
+    @get-data="getData"
+    @command="command"
+    :env="env"
     />
   <!-- 表格 -->
   <web-table v-else-if="type === 'web-table'"
@@ -111,6 +122,8 @@
   <web-preview v-else-if="type === 'web-preview'"
     :title="options && options.title"
     :content="options && options.content"
+    :mode="options && options.mode"
+    :max-width="options && options.maxWidth"
     :request="options && options.request"
     :close-after="options && options.closeAfter"
     :env="env"
@@ -206,8 +219,6 @@
           :type="component.name"
           v-model="component.value"
           :options="getComponentOptions(component)"
-          :http-options="httpOptions"
-          :editor-config="editorConfig"
           @get-data="getData"
           @upload-file="uploadFile"
           @submit="submit"
@@ -232,7 +243,6 @@
 
 <script lang="ts">
 import { Component, Prop, Model, Provide, Emit, Watch, mixins } from 'nuxt-property-decorator'
-import { EditorConfig, HttpClientOptions } from '@/types/client'
 import { Channel, NavMenu } from '@/types/client'
 import { merge, get } from 'lodash'
 import { Store } from '~/store'
@@ -276,12 +286,6 @@ export default class WebComponent extends mixins(EnvironmentMixin) {
 
   @Prop({ default: undefined })
   options!: Record<string, any>
-
-  @Prop({ default: undefined })
-  httpOptions!: HttpClientOptions
-
-  @Prop({ default: undefined })
-  editorConfig!: EditorConfig
 
   @Prop({ default: undefined })
   defaultValues!: Record<string, any>

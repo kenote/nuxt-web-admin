@@ -12,6 +12,11 @@ start(){
   rsync -av ./views/ .deploy/dist/views/ --delete
 
   rsync -av ./config/ .deploy/dist/config/ --include='*.default.yml' --include='*.default.yaml' --exclude='*.yml' --exclude='*.yaml' --delete
+  mkdir -p .deploy/dist/project
+  rsync -av ./project/account/ .deploy/dist/project/account/ --delete
+  rsync -av ./project/ucenter/ .deploy/dist/project/ucenter/ --delete
+  rsync -av ./project/system/ .deploy/dist/project/system/ --delete
+  rsync -av ./project/alicloud/ .deploy/dist/project/alicloud/ --delete
 
   rsync -av ./nuxt.config.js .deploy/dist/nuxt.config.js --delete
   rsync -av ./package.json .deploy/dist/package.json --delete

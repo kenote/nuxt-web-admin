@@ -1,5 +1,6 @@
 
 export { GroupDocument, CreateGroupDocument, EditGroupDocument } from './group'
+export { NotificationDocument, CreateNotificationDocument, EditNotificationDocument, AccoutNotificationDocument } from './notification'
 export { OplogDocument, CreateOplogDocument, Oplog } from './oplog'
 export { TeamDocument, CreateTeamDocument, EditTeamDocument } from './team'
 export { TicketDocument, CreateTicketDocument, TicketOptions } from './ticket'

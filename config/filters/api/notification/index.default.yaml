@@ -1,0 +1,62 @@
+
+# 获取用户列表
+list:
+  - key: title
+    type: string
+  - key: type
+    type: string[]
+  - key: release
+    type: map
+  - key: create_at
+    type: date[]
+  - key: page
+    type: number
+  - key: size
+    type: number
+  - key: sort
+    type: string[]
+    defaultValue:
+      - _id
+      - desc
+
+# 添加消息通知
+create:
+  - key: type
+    type: string
+    rules:
+      - required: true
+        message: 类型不能为空
+        code: 1000
+  - key: title
+    type: string
+    rules:
+      - required: true
+        message: 标题名称不能为空
+        code: 1000
+  - key: content
+    type: string
+    rules:
+      - required: true
+        message: 正文内容不能为空
+        code: 1000
+
+# 编辑消息通知
+edit:
+  - key: type
+    type: string
+    rules:
+      - required: true
+        message: 类型不能为空
+        code: 1000
+  - key: title
+    type: string
+    rules:
+      - required: true
+        message: 标题名称不能为空
+        code: 1000
+  - key: content
+    type: string
+    rules:
+      - required: true
+        message: 正文内容不能为空
+        code: 1000

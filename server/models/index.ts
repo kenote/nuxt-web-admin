@@ -4,6 +4,7 @@ import { setGlobalOptions, Severity, getModelForClass } from '@typegoose/typegoo
 import logger from '~/services/logger'
 
 import Group from './group'
+import Notification from './notification'
 import Oplog from './oplog'
 import Team from './team'
 import Ticket from './ticket'
@@ -34,6 +35,7 @@ export async function connect (mongoOpts: ServerConfigure.mongodb) {
 
 export const models = {
   'Group'           : getModelForClass(Group),
+  'Notification'    : getModelForClass(Notification),
   'Oplog'           : getModelForClass(Oplog),
   'Team'            : getModelForClass(Team),
   'Ticket'          : getModelForClass(Ticket),

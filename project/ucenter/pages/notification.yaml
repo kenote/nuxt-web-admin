@@ -1,0 +1,528 @@
+
+# 设置环境变量
+env:
+  display: list
+  dialog: none
+  types: &types
+    - key: notice 
+      name: 系统公告
+
+# 页面分页大小
+pageSize: 15
+
+# 定义组件
+components:
+  - key: 1-1
+    name: web-container
+    conditions: |-
+      display: list
+    options:
+      layout: vertical
+      alignItems: flex-start
+      children:
+        - key: 1-1-2
+          name: web-form
+          options:
+            inline: true
+            columns:
+              - key: create_at
+                name: 创建时间
+                type: datetimerange
+                placeholder: [ 选择开始时间, 选择结束时间 ]
+                options:
+                  clearable: true
+              - key: title
+                name: 标题名称
+                type: input
+                placeholder: 请输入标题名称
+                options:
+                  clearable: true
+                width: 300
+              - key: type
+                name: 消息类型
+                type: select
+                placeholder: 请选择消息类型
+                multiple: true
+                data: *types
+                # request:
+                #   method: POST
+                #   url: /api/group/list
+                #   saveEnvkey: groups
+                # props:
+                #   key: _id
+                # format: '[{id}] {name}'
+                options:
+                  clearable: true
+                width: 210
+              - key: release
+                name: 发布状态
+                type: select
+                placeholder: 请选择发布状态
+                data: 
+                  - key: true
+                    name: 已发布
+                  - key: false
+                    name: 待发布
+                options:
+                  clearable: true
+                width: 160
+            # 规则验证
+            rules:
+            # 请求地址
+            action:
+              method: POST
+              url: /api/notification/list
+            # 提交按钮名称
+            submitName: 搜 索
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: create
+                  name: 创建消息/通知
+                  type: button
+                  style: success
+                  command: action:create
+                - key: deletes
+                  name: 删除选中
+                  type: button
+                  style: danger
+                  disabled: |-
+                    selection:
+                      $size: 0
+                  command: action:deletes
+              success: 新数据已拉取
+              assignment:
+                data: data.data
+                counts: data.counts
+                pagination: data.limit
+              pagination: remote
+            # 设置默认值
+            defaultValues: |-
+              create_at: []
+            # 对提交值格式化
+            valueFormat:
+        - key: 1-1-3
+          name: web-table
+          options:
+            selection: true
+            sorter:
+              request:
+                method: POST
+                url: /api/notification/list
+              submitOptions:
+                success: 新数据已拉取
+                assignment:
+                  data: data.data
+                  counts: data.counts
+                  pagination: data.limit
+                pagination: remote
+            columns:
+              - key: id
+                name: ID
+                width: 80
+                fixed: left
+              - key: title
+                name: 标题名称
+                minWidth: 300
+                align: left
+                fixed: left
+                click: dialog:preview
+              - key: type
+                name: 类型
+                width: 120
+                format:
+                  - type: string
+                    maps: 
+                      notice: 系统公告
+              - key: release
+                name: 状态
+                width: 120
+                status: 
+                  - key: release
+                    name: 已发布
+                    type: danger
+                    conditions: |-
+                      row.release: true
+                  - key: waiting
+                    name: 待发布
+                    type: successs
+                    conditions: |-
+                      row.release: false
+              - key: create_at
+                name: 创建时间
+                width: 180
+                align: left
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+                sortable: true
+              - key: update_at
+                name: 最后更新
+                width: 180
+                align: left
+                format:
+                  - type: date
+                    func: dateFormat
+                    options: [ 'YYYY-MM-DD HH:mm:ss' ]
+                sortable: true
+              - key: $space
+                minWidth: 10 
+              - key: actions
+                name: 操作
+                fixed: right
+                align: left
+                width: 250
+                emit:
+                  - key: edit
+                    name: 编辑
+                    type: dropdown
+                    command: action:edit
+                    # disabled: |-
+                    #   row.release: true
+                    options:
+                      - key: receiver
+                        name: 选择接收用户
+                        command: dialog:receiver
+                        disabled: |-
+                          row.release: true
+                  - key: release
+                    name: 发布
+                    type: button
+                    style: success
+                    command: action:release
+                    disabled: |-
+                      row.release: true
+                  - key: delete
+                    name: 删除
+                    type: button
+                    style: danger
+                    command: action:remove
+  - key: 1-2
+    name: web-container
+    conditions: |-
+      display: create
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-2-1
+          name: web-form
+          options:
+            name: 创建消息/通知
+            columns:
+              - key: type
+                name: 消息类型
+                type: select
+                placeholder: 请选择消息类型
+                data: *types
+              - key: title
+                name: 标题名称
+                type: input
+                placeholder: 请输入标题名称
+                width: 600
+              - key: content
+                name: 正文内容
+                type: vditor
+                placeholder: 请输入正文内容
+                height: 400
+                options: 
+                  upload:
+                    url: /upload
+                    accept: image/gif, image/jpeg, .png
+                    multiple: false
+            # 规则验证
+            rules:
+              type:
+                - required: true
+                  message: 请选择消息类型
+              title:
+                - required: true
+                  message: 请输入标题名称
+              content:
+                - required: true
+                  message: 请输入正文内容
+            # 请求地址
+            action:
+              method: POST
+              url: /api/notification/create
+            # 排除项
+            # exclude:
+            #   - group
+            # 合并项
+            # merge:
+            #   setting: [ group ]
+            # 提交按钮名称
+            submitName: 创 建
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 票据已创建
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            defaultValues: |-
+              title: ''
+              content: ''
+    
+  - key: 1-3
+    name: web-container
+    conditions: |-
+      display: edit
+    options:
+      layout: vertical
+      alignItems: center
+      children:
+        - key: 1-3-1
+          name: web-form
+          options:
+            name: 编辑消息/通知
+            columns:
+              - key: type
+                name: 消息类型
+                type: select
+                placeholder: 请选择消息类型
+                data: *types
+              - key: title
+                name: 标题名称
+                type: input
+                placeholder: 请输入标题名称
+                width: 600
+              - key: content
+                name: 正文内容
+                type: vditor
+                placeholder: 请输入正文内容
+                height: 400
+                options: 
+                  upload:
+                    url: /upload
+                    accept: image/gif, image/jpeg, .png
+                    multiple: false
+            # 规则验证
+            rules:
+              type:
+                - required: true
+                  message: 请选择消息类型
+              title:
+                - required: true
+                  message: 请输入标题名称
+              content:
+                - required: true
+                  message: 请输入正文内容
+            # 请求地址
+            action:
+              method: POST
+              url: /api/notification/edit/{{selected._id}}
+            # 排除项
+            # exclude:
+            #   - group
+            # 合并项
+            # merge:
+            #   setting: [ group ]
+            # 提交按钮名称
+            submitName: 修 改
+            # 提交选项
+            submitOptions:
+              reset: 重置
+              emit:
+                - key: cancel
+                  name: 取消
+                  type: button
+                  command: action:list
+              success: 用户信息已更新
+              changeSubmit: 数据好像没什么改变，无需提交!
+              afterCommand: 
+                - action:list
+                - action:refresh
+            # 设置默认值
+            defaultValues: |-
+              type: {{selected.type}}
+              title: {{selected.title}}
+              content: '{{ 'selected.content' | parseContent }}'
+          
+  - key: 1-7
+    name: web-preview
+    conditions: |-
+      dialog: preview
+    options:
+      key: dialog-preview
+      title: '{{selected.title}}'
+      mode: markdown
+      maxWidth: 800px
+      # 获取数据
+      content: '{{selected.content}}'
+      # 关闭后命令
+      closeAfter: 
+        - dialog:none      
+
+
+  - key: 1-8
+    name: web-people
+    conditions: |-
+      dialog: receiver
+    options:
+      title: 接收用户
+      columns:
+        - key: id
+          name: ID
+          width: 80
+          fixed: left
+        - key: username
+          name: 用户名
+          width: 120
+          align: left
+          fixed: left
+        - key: nickname
+          name: 昵称
+          width: 120
+          align: left
+          defaultValue: --
+        - key: sex
+          name: 性别
+          width: 90
+          format:
+            - type: number
+              maps: { 0: 未知, 1: 男, 2: 女 }
+        - key: group
+          name: 用户组/角色
+          width: 180
+          format:
+            - type: map
+              maps: name
+        - key: email
+          name: 电子邮箱
+          width: 240
+          align: left
+          format:
+            - type: string
+              regexp: !!js/regexp /\w{4}@/
+              substr: '****@'
+          defaultValue: --
+        - key: mobile
+          name: 手机号
+          width: 120
+          align: left
+          format:
+            - type: string
+              regexp: !!js/regexp /^(\d{3})\d+(\d{4})$/
+              substr: '$1****$2'
+          defaultValue: --
+        - key: $space
+          minWidth: 10 
+        - key: actions
+          name: 操作
+          fixed: right
+          align: left
+          width: 100
+          emit:
+            - key: delete
+              name: 移除
+              type: button
+              style: danger
+              command: people:remove
+              disabled: |-
+                row.owner: true
+      # 查询用户接口
+      invite:
+        method: PUT
+        url: /api/notification/invite_suggestions/{{selected._id}}
+        params: |-
+          name: '{{name}}'
+      # 获取接收用户接口
+      request:
+        method: GET
+        url: /api/notification/receiver/{{selected._id}}
+      # 添加成员接口
+      add:
+        method: PUT
+        url: /api/notification/receiver/{{selected._id}}
+        params: |-
+          user: '{{row._id}}'
+      # 移除成员接口
+      remove:
+        method: DELETE
+        url: /api/notification/receiver/{{selected._id}}
+        params: |-
+          user: '{{row._id}}'
+      # 关闭后命令
+      closeAfter: 
+        - dialog:none
+        - action:refresh
+
+# 初始化数据
+initialData:
+  request:
+    method: POST
+    url: /api/notification/list
+  submitOptions:
+    success: 新数据已拉取
+    assignment:
+      data: data.data
+      counts: data.counts
+      pagination: data.limit
+    pagination: remote
+  defaultValues: |-
+
+
+# 定义 Action
+actions:
+  # 刷新
+  refresh:
+    request:
+      method: POST
+      url: /api/notification/list
+    submitOptions:
+      success: 新数据已拉取
+      assignment:
+        data: data.data
+        counts: data.counts
+        pagination: data.limit
+      pagination: remote
+  # 删除操作
+  remove:
+    request:
+      method: DELETE
+      url: |-
+        /api/notification/{{row._id}}
+    confirm:
+      message: 确认要永久删除该消息通知, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 消息通知已删除
+      afterCommand: 
+        - action:refresh
+  # 多选删除
+  deletes:
+    request:
+      method: DELETE
+      url: |-
+        /api/notification
+      params: |-
+        ids: [{% for item in selection %} {{item._id}}, {% endfor %}]
+    confirm:
+      message: 确认要永久删除所选消息通知, 是否继续?
+      cancel: 您已取消删除操作！
+    submitOptions:
+      success: 消息通知已删除
+      afterCommand: 
+        - action:refresh
+  # 发布消息通知
+  release:
+    request:
+      method: PUT
+      url: |-
+        /api/notification/release/{{row._id}}
+    confirm:
+      message: 确认要发布该消息通知, 是否继续?
+      cancel: 您已取消发布操作！
+    submitOptions:
+      success: 消息通知已发布
+      afterCommand: 
+        - action:refresh

@@ -69,7 +69,7 @@
 import { Component, mixins, Provide, Watch, Vue } from 'nuxt-property-decorator'
 import PageMixin from '~/mixins/page'
 import { Channel, HttpResult, HttpClientOptions } from '@/types/client'
-import { isString, merge, get, set, cloneDeep, assign, omit, intersection, isEmpty } from 'lodash'
+import { isString, merge, get, set, cloneDeep, assign, omit, intersection, isEmpty, isArray, head, last, nth } from 'lodash'
 import { isYaml, parseParams, runCommand, getFilter, parseTemplate } from '@/utils'
 import jsYaml from 'js-yaml'
 import { PutResult } from '@kenote/upload'
@@ -77,6 +77,7 @@ import { UserDocument } from '@/types/services/db'
 import { ElMessageBoxOptions } from 'element-ui/types/message-box'
 import isBolb from 'is-blob'
 import { readTextFile } from '@/utils/file'
+import { Route } from 'vue-router'
 
 interface DrawerOptions {
   key         : string
@@ -93,7 +94,8 @@ interface DrawerOptions {
     this.env = {
       auth: this.auth,
       selected: this.selected,
-      selection: this.selection
+      selection: this.selection,
+      $route: this.$route
     }
   },
   mounted () {
@@ -131,6 +133,12 @@ export default class AutoPage extends mixins(PageMixin) {
 
   @Provide()
   counts: number = -1
+
+  @Provide()
+  prev: string | undefined = undefined
+
+  @Provide()
+  next: string | undefined = undefined
 
   @Provide()
   pagination: number | false = false
@@ -200,6 +208,37 @@ export default class AutoPage extends mixins(PageMixin) {
     this.env.selection = val
   }
 
+  @Watch('env', { deep: true, immediate: true })
+  onEnvChange (val: Record<string, any>, oldVal: Record<string, any>) {
+    if (val.display && val.display !== 'detail') {
+      let { path, query } = this.$route
+      if (query.detail) {
+        this.$router.push({ path, query: {} })
+      }
+    }
+  }
+
+  @Watch('$route')
+  onRouteChange (val: Route, oldVal: Route) {
+    if (val === oldVal) return
+    if (val.query.detail) {
+      let { detail } = val.query
+      if (detail) {
+        this.selected = { _id: detail }
+        this.handleCommand('action:detail')
+        
+      }
+    }
+    else {
+      this.handleCommand('action:list', {})
+    }
+  }
+
+  @Watch('data')
+  onDataChange (val: Record<string, any>[] | null, oldval: Record<string, any>[] | null) {
+    // this
+  }
+
   getComponentOptions (component: Channel.Component) {
     return merge(component.options, { 
       options: { avatar: this.avatarOptions },
@@ -227,7 +266,12 @@ export default class AutoPage extends mixins(PageMixin) {
         if (pageSize) {
           this.pagination = pageSize
         }
-        if (initialData) {
+        // 处理详情页
+        let { detail } = this.$route.query
+        if (detail) {
+          this.handleCommand('action:detail')
+        }
+        else if (initialData) {
           let defaultValues = initialData?.defaultValues ? parseParams(initialData?.defaultValues)(this.env) : this.conditions
           setTimeout(() => {
             this.handleSubmit(defaultValues, initialData?.request!, initialData?.submitOptions ?? {})
@@ -267,15 +311,24 @@ export default class AutoPage extends mixins(PageMixin) {
     }
     let Iurl = parseTemplate(url ?? '', this.env)
     let IParams = parseParams(params ?? {})(this.env)
-    // console.log(IParams)
     setTimeout(async () => {
-      let result = await httpClient[method!](Iurl, IParams) as HttpResult<any[]>
+      let result = await httpClient[method!](Iurl, isEmpty(IParams) ? null : IParams) as HttpResult<any[]>
       let filter = getFilter(conditions!, this.env)
-      let data = result.data?.filter(filter!) ?? []
+      let data = result.data
+      try {
+        data = result.data?.filter(filter!) ?? []
+      } catch (error) {
+        
+      }
       if (saveEnvkey) {
         set(this.env, saveEnvkey, cloneDeep(data))
       }
       next(data)
+      if (options?.afterCommand) {
+        for (let item of options?.afterCommand) {
+          this.handleCommand(item, {}, this.parent ?? undefined)
+        }
+      }
       if (request.loading) {
         this.loading = false
       }
@@ -356,7 +409,7 @@ export default class AutoPage extends mixins(PageMixin) {
           options.next && options.next(values)
         }
       } catch (error) {
-        this.$message.error(error.message)
+        this.$message.error(get(error, 'message'))
         if (failCommand) {
           this.handleCommand(failCommand, {}, this.parent ?? undefined)
         }
@@ -397,7 +450,7 @@ export default class AutoPage extends mixins(PageMixin) {
       }
       
     } catch (error) {
-      this.$message.error(error.message)
+      this.$message.error(get(error, 'message'))
     }
   }
 
@@ -411,7 +464,7 @@ export default class AutoPage extends mixins(PageMixin) {
         next(result)
       }
     } catch (error) {
-      next(null, error)
+      next(null, error as Error)
     }
   }
 
@@ -452,7 +505,7 @@ export default class AutoPage extends mixins(PageMixin) {
         // console.log(type, row, component)
         let action = get(this.actionOptions, type)
         if (action) {
-          let { request, confirm, method, submitOptions, download } = action as Channel.ActionOptions
+          let { request, confirm, method, submitOptions, download, selected } = action as Channel.ActionOptions
           if (confirm) {
             await this.actionConfirm(action, row!)
           }
@@ -512,7 +565,7 @@ export default class AutoPage extends mixins(PageMixin) {
           width: 960
         }
       }
-    })(value, row, component)
+    })(parseTemplate(value, this.env), row, component)
   }
 
   async actionConfirm (config: Channel.ActionOptions, row?: Record<string, any>) {

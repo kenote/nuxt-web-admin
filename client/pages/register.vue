@@ -44,6 +44,7 @@ import PageMixin from '~/mixins/page'
 import { Account } from '@/types/account'
 import { HttpResult } from '@/types/client'
 import { TicketDocument, UserDocument } from '@/types/services/db'
+import { get } from 'lodash'
 
 @Component<RegisterPage>({
   name: 'register-page',
@@ -81,7 +82,7 @@ export default class RegisterPage extends mixins(PageMixin) {
           this.steptag = 'submitinfo'
         }
       } catch (error) {
-        this.$message.warning(error?.message)
+        this.$message.warning(get(error, 'message'))
       }
       this.loading = false
     }, 300)
@@ -103,7 +104,7 @@ export default class RegisterPage extends mixins(PageMixin) {
           this.steptag = 'finished'
         }
       } catch (error) {
-        this.$message.warning(error?.message)
+        this.$message.warning(get(error, 'message'))
       }
       this.loading = false
     }, 300)

@@ -15,8 +15,9 @@
         :name="item.name"
         :trigger="item.trigger"
         :classname="classname"
-        :data="(item.data || []).map(parseProps(item.props))"
+        :data="(notification || item.data || []).map(parseProps(item.props))"
         :more="item.more"
+        :date-format="item.dateFormat"
         @command="handleCommand"
         />
       <div v-else 
@@ -46,6 +47,9 @@ export default class Navmenu extends mixins(BaseMixin) {
 
   @Prop({ default: 'header-link' })
   classname!: string
+
+  @Prop({ default: undefined })
+  notification!: Record<string, any>[]
 
   @Emit('command')
   handleCommand (value: string) {}

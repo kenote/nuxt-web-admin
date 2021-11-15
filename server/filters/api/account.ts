@@ -3,7 +3,7 @@ import { filterData, FilterData } from 'parse-string'
 import { loadConfig } from '@kenote/config'
 import { Account } from '@/types/account'
 import { EditUserDocument, UserDocument } from '@/types/services/db'
-import { intersection, map, pick, get } from 'lodash'
+import { intersection, map, pick, get, omit } from 'lodash'
 
 export async function login (ctx: Context, next: NextHandler) {
   let { nextError } = ctx.service
@@ -92,4 +92,25 @@ export function getUserDocument (body: EditUserDocument, auth: UserDocument) {
     }
   }
   return user
+}
+
+export async function notification (ctx: Context, next: NextHandler) {
+  let { nextError, customize, toPageInfo, toSortOptions } = ctx.service
+  let filters = loadConfig<Record<string, FilterData.options[]>>('config/filters/api/account', { mode: 'merge' })
+  try {
+    let document = filterData(filters.notification, customize)(ctx.body)
+    let { page, size, sort } = document
+    ctx.payload = {
+      pageInfo: toPageInfo(page ?? 1, size ?? 15),
+      query: omit(document, ['page', 'size']),
+      options: {
+        sort: toSortOptions(sort),
+        select: [ 'id', 'title', 'readed', 'type', 'update_at' ],
+        populate: []
+      }
+    }
+    return next()
+  } catch (error) {
+    nextError(error, ctx, next)
+  }
 }

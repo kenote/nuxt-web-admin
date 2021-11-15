@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Put, Context, NextHandler } from '@kenote/core'
+import { Controller, Get, Post, Put, Context, NextHandler, Delete } from '@kenote/core'
 import { authenticate } from '~/plugins/passport'
-import { UserDocument, RegisterDocument, TicketDocument } from '@/types/services/db'
-import { isArray, omit, pick, keys, get } from 'lodash'
+import { UserDocument, RegisterDocument, TicketDocument, NotificationDocument, AccoutNotificationDocument } from '@/types/services/db'
+import { isArray, omit, pick, keys, get, set, cloneDeep } from 'lodash'
 import * as filter from '~/filters/api'
 import { Account } from '@/types/account'
 import { FilterQuery } from 'mongoose'
@@ -10,6 +10,7 @@ import { toUser } from '~/middlewares/auth'
 import { loadConfig } from '@kenote/config'
 import { AccountConfigure } from '@/types/config'
 import ruleJudgment from 'rule-judgment'
+import { ListDataResult } from '@kenote/mongoose/types/dao'
 
 @Controller('/account')
 export default class AccountController {
@@ -325,4 +326,182 @@ export default class AccountController {
       nextError(error, ctx, next)
     }
   }
-} 
+
+  /**
+   * 获取账号消息通知
+   */
+  @Post('/notification/:mode(all|read|unread)', { filters: [ ...authenticate, filter.account.notification ] })
+  @Post('/notification/:mode(all|read|unread)/:type', { filters: [ ...authenticate, filter.account.notification ] })
+  async notification (ctx: Context, next: NextHandler) {
+    let { nextError, db } = ctx.service
+    let { mode, type } = ctx.params
+    let { pageInfo, query, options } = ctx.payload
+    let { limit, skip } = pageInfo
+    let { findtype, findname, update_at } = query
+    let conditions: FilterQuery<NotificationDocument> = {
+      $or: [
+        { receiver: [] },
+        { receiver: { $eq: ctx.user._id } }
+      ],
+      release: true,
+      removed: { $ne: ctx.user._id }
+    }
+    if (mode === 'read') {
+      conditions.readed = { $eq: ctx.user._id }
+    }
+    else if (mode === 'unread') {
+      conditions.readed = { $ne: ctx.user._id }
+    }
+    if (type) {
+      conditions.type = type
+    }
+    // 按名称查询
+    if (query.findname) {
+      conditions[findtype] = new RegExp(findname)
+    }
+    // 按发布时间
+    if (update_at?.length === 2) {
+      let [ begin, end ] = update_at
+      conditions.update_at = { $gte: begin, $lt: end }
+    }
+    try {
+      let result = await db.notification.Dao.list(conditions, { ...options, limit, skip }) as ListDataResult<NotificationDocument>
+      let listResult: ListDataResult<AccoutNotificationDocument> = { ...omit(result, ['data']), data: [] }
+      if (result.data) {
+        let data: AccoutNotificationDocument[] = []
+        for (let item of result.data) {
+          let info = formatAccoutNotification(item, ctx)!
+          data.push(info)
+        }
+        listResult.data = data
+      }
+      return ctx.api(listResult)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 读取账号消息通知详情
+   */
+  @Get('/notification/:_id', { filters: [ ...authenticate ] })
+  async notificationDetail (ctx: Context, next: NextHandler) {
+    let { nextError, db, PubSub } = ctx.service
+    let { _id } = ctx.params
+    let conditions: FilterQuery<NotificationDocument> = {
+      $or: [
+        { receiver: [] },
+        { receiver: { $eq: ctx.user._id } }
+      ],
+      release: true,
+      removed: { $ne: ctx.user._id }
+    }
+    try {
+      let result = await db.notification.Dao.findOne({ ...conditions, _id: { $eq: _id } })
+      if (!result) {
+        return ctx.api({ item: null, pervItem: null, nextItem: null })
+      }
+      let updateRead = await db.notification.Dao.updateOne({ ...conditions, _id: { $eq: _id } }, { $addToSet: { readed: ctx.user._id }})
+      if (updateRead.nModified && updateRead.nModified > 0) {
+        await PubSub.publish('notification', {
+          headers: {
+            path: 'notification'
+          }
+        })
+      }
+      let prevData = await db.notification.Dao.find({ ...conditions, update_at: { $gt: result.update_at } }, { sort: { update_at: 1 }, limit: 1 })
+      let nextData = await db.notification.Dao.find({ ...conditions, update_at: { $lt: result.update_at } }, { sort: { update_at: -1 }, limit: 1 })
+      let detailResult = {
+        item: formatAccoutNotification(result, ctx, ['content']),
+        pervItem: formatAccoutNotification(get(prevData, 0), ctx),
+        nextItem: formatAccoutNotification(get(nextData, 0), ctx)
+      }
+      return ctx.api(detailResult)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 标记账号消息通知为已读
+   */
+  @Put('/notification/read', { filters: [ ...authenticate ] })
+  @Put('/notification/read/:mode(all)', { filters: [ ...authenticate ] })
+  async notificationSetRead (ctx: Context, next: NextHandler) {
+    let { nextError, db, PubSub, toArray } = ctx.service
+    let { mode } = ctx.params
+    let { ids } = ctx.body
+    let conditions: FilterQuery<NotificationDocument> = {
+      $or: [
+        { receiver: [] },
+        { receiver: { $eq: ctx.user._id } }
+      ],
+      release: true,
+      removed: { $ne: ctx.user._id }
+    }
+    if (mode != 'all') {
+      conditions._id = { $in: toArray(ids) }
+    }
+    try {
+      let updateRead = await db.notification.Dao.updateMany(conditions, { $addToSet: { readed: ctx.user._id } })
+      if (updateRead.nModified && updateRead.nModified > 0) {
+        await PubSub.publish('notification', {
+          headers: {
+            path: 'notification'
+          }
+        })
+      }
+      return ctx.api(updateRead)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+
+  /**
+   * 移除账号消息通知
+   */
+  @Delete('/notification', { filters: [ ...authenticate ] })
+  @Delete('/notification/:mode(all)', { filters: [ ...authenticate ] })
+  async notificationRemove (ctx: Context, next: NextHandler) {
+    let { nextError, db, PubSub, toArray } = ctx.service
+    let { mode } = ctx.params
+    let { ids } = ctx.body
+    let conditions: FilterQuery<NotificationDocument> = {
+      $or: [
+        { receiver: [] },
+        { receiver: { $eq: ctx.user._id } }
+      ],
+      release: true,
+      removed: { $ne: ctx.user._id }
+    }
+    if (mode != 'all') {
+      conditions._id = { $in: toArray(ids) }
+    }
+    try {
+      let updateRemoved = await db.notification.Dao.updateMany(conditions, { $addToSet: { removed: ctx.user._id } })
+      if (updateRemoved.nModified && updateRemoved.nModified > 0) {
+        await PubSub.publish('notification', {
+          headers: {
+            path: 'notification'
+          }
+        })
+      }
+      return ctx.api(updateRemoved)
+    } catch (error) {
+      nextError(error, ctx, next)
+    }
+  }
+}
+
+/**
+ * 格式化消息通知
+ * @param data 
+ * @param ctx 
+ * @param detail 
+ */
+function formatAccoutNotification (data: NotificationDocument, ctx: Context, detail: string[] = []) {
+  if (!data) return null
+  let info = pick(data, ['_id', 'id', 'title', 'type', 'update_at', ...detail]) as AccoutNotificationDocument
+  info.readed = data.readed.includes(ctx.user._id)
+  return info
+}
