@@ -1,6 +1,7 @@
 export * as group from './group'
 export * as notification from './notification'
 export * as oplog from './oplog'
+export * as plan from './plan'
 export * as team from './team'
 export * as ticket from './ticket'
 export * as user from './user'

@@ -2,10 +2,10 @@
 # 导航菜单
 navmenu:
   # 文字链接
-  # - key: app
-  #   name: APP
-  #   type: link
-  #   link: command:app
+  - key: bookmark
+    name: el-icon-star-off
+    type: link
+    link: command:bookmark
   # 下拉链接
   # - key: workorder
   #   name: 工单
@@ -48,7 +48,7 @@ authpanel:
     - name: 安全设置
       link: router:/account/security
     - name: 我的收藏
-      link: router:/account/collect
+      link: command:bookmark
   main:
     - name: 基本资料
       link: router:/account/baseinfo
@@ -90,4 +90,4 @@ avatar:
 # 订阅接口
 pubsub:
   - key: dashboard
-    url: ws://localhost:4000/dashboard
+    url: '{{ wsurl }}/dashboard'

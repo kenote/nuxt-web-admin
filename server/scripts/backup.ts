@@ -2,7 +2,7 @@ import { loadConfig } from '@kenote/config'
 import { ServerConfigure } from '@/types/config'
 import path from 'path'
 import runscript from 'runscript'
-import { archiver } from '~/services'
+import * as archiver from '~/services/archiver'
 import dayjs from 'dayjs'
 import { rootDir, tempDir, getMongodbInfo } from '.'
 

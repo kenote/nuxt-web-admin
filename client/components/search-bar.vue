@@ -29,7 +29,7 @@
 <script lang="ts">
 import { Component, Prop, Provide, Emit, Watch, Model, mixins } from 'nuxt-property-decorator'
 import { Autocomplete } from 'element-ui'
-import { filterDataNode, parseProps } from '@/utils'
+import { filterChannelDataNode, parseProps } from '@/utils'
 import { CommonDataNode, initMaps, getChannelKey } from '@kenote/common'
 import { trim } from 'lodash'
 import ruleJudgment from 'rule-judgment'
@@ -91,7 +91,7 @@ export default class SearchBar extends mixins(EnvironmentMixin) {
 
   querySearch (queryString: string, cb: (info: Record<string, any>[]) => void) {
     let list: CommonDataNode[] = []
-    filterDataNode(this.restaurants, trim(queryString), list)
+    filterChannelDataNode(this.restaurants, trim(queryString), list)
     let filter = ruleJudgment({ 
       conditions: {
         $where: vulue => this.isFilter(vulue)

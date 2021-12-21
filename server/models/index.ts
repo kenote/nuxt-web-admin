@@ -6,6 +6,7 @@ import logger from '~/services/logger'
 import Group from './group'
 import Notification from './notification'
 import Oplog from './oplog'
+import Plan from './plan'
 import Team from './team'
 import Ticket from './ticket'
 import User from './user'
@@ -37,6 +38,7 @@ export const models = {
   'Group'           : getModelForClass(Group),
   'Notification'    : getModelForClass(Notification),
   'Oplog'           : getModelForClass(Oplog),
+  'Plan'            : getModelForClass(Plan),
   'Team'            : getModelForClass(Team),
   'Ticket'          : getModelForClass(Ticket),
   'User'            : getModelForClass(User),

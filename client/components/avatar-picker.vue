@@ -234,7 +234,7 @@ export default class AvatarPicker extends Vue {
       this.imgsrc = await readImageFile<string>(file)
       this.mode = 'cropp'
     } catch (error) {
-      this.$message.error(error)
+      this.$message.error((<Error>error)?.message)
     }
   }
 

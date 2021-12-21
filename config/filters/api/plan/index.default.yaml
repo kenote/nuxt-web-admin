@@ -1,0 +1,48 @@
+
+# 获取方案列表
+list:
+  - key: name
+    type: string
+  - key: type
+    type: string[]
+  - key: create_at
+    type: date[]
+  - key: page
+    type: number
+  - key: size
+    type: number
+  - key: sort
+    type: string[]
+    defaultValue:
+      - _id
+      - desc
+
+# 添加方案
+create:
+  - key: name
+    type: string
+    rules:
+      - required: true
+        message: 名称不能为空
+        code: 1000
+  - key: type
+    type: string
+    rules:
+      - required: true
+        message: 类型不能为空
+        code: 1000
+  - key: content
+    type: string
+    rules:
+      - required: true
+        message: 内容不能为空
+        code: 1000
+  - key: associate
+    type: string
+
+# 编辑
+edit:
+  - key: name
+    type: string
+  - key: content
+    type: string

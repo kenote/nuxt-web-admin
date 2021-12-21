@@ -1,10 +1,7 @@
 import { GetterTree, ActionContext, ActionTree, MutationTree } from 'vuex'
 import { RootState, Types } from './'
 import { HTTPServer } from '@/types/nuxtServer'
-import { compact, trim, fromPairs, get } from 'lodash'
-import { httpClient } from '@/utils/http-client'
-import { UserDocument } from '@/types/services/db'
-import { HttpClientOptions, HttpResult } from '@/types/client'
+import { compact, trim, fromPairs, get, isFunction } from 'lodash'
   
 export interface State extends Record<string, any> {}
 
@@ -20,7 +17,7 @@ export const mutations: MutationTree<State> = {}
 
 export const actions: Actions<State, RootState> = {
   async nuxtServerInit ({ commit }, { req }) {
-    let { site_url, baseHost, dashboard, channels, metaInfo, editorConfig, account } = req.$__payload ?? {}
+    let { site_url, dashboard, channels, metaInfo, editorConfig, account, getAuthInfo } = req.$__payload ?? {}
     commit(Types.setting.SITEURL, site_url)
     commit(Types.setting.DASHBOARD, dashboard)
     commit(Types.setting.CHANNELS, channels)
@@ -29,19 +26,15 @@ export const actions: Actions<State, RootState> = {
     commit(Types.setting.ACCOUNT, account)
     
     let jwtoken = getCookie('jwtoken', req.headers.cookie)
+    if (!isFunction(getAuthInfo)) return
     try {
-      let result = await httpClient({ token: jwtoken }).get<HttpResult<UserDocument>>(`${baseHost}/api/account/accesstoken`)
-      if (result?.data) {
-        commit(Types.auth.AUTH, result.data)
-        return
-      }
-      console.warn(result?.error)
+      let authInfo = await getAuthInfo(jwtoken)
+      commit(Types.auth.AUTH, authInfo?.user)
     } catch (error) {
-      console.log(error.message)
+      console.log(error)
     }
   }
 }
-
 
 function getCookie (name: string, cookie?: string) {
   return get(fromPairs(compact((cookie ?? '').split(/\;/))

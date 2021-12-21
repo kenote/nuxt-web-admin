@@ -1,8 +1,14 @@
-
 import jsYaml from 'js-yaml'
 import { IncomingHttpHeaders } from 'http'
 import { merge, isString } from 'lodash'
 import { WebSocketMessage } from '@/types/services/http'
+
+interface SendNode {
+  name      : string
+  payload  ?: Record<string, any>
+}
+
+type RequestNode = SendNode | string
 
 class WebSocketClient {
 
@@ -50,17 +56,27 @@ class WebSocketClient {
    * @param path 
    * @param data 
    */
-  send (path: string, data: Record<string, any>) {
+  send (path: string | RequestNode[], data: Record<string, any> = {}) {
     let client = this.__client
     client.onopen = evt => {
       // 连接成功
       if (client.readyState === client.OPEN) {
         // client.send
-        let info = jsYaml.dump({
-          headers: merge(this.__headers, { path }),
-          payload: data
-        })
-        client.send(info)
+        let requestArr: RequestNode[] = []
+        if (isString(path)) {
+          requestArr.push({ name: path, payload: data })
+        }
+        else {
+          requestArr = path
+        }
+        for (let item of requestArr) {
+          let node = isString(item) ? { name: item } : item
+          let info = jsYaml.dump({
+            headers: merge(this.__headers, { path: node.name }),
+            payload: node.payload
+          })
+          client.send(info)
+        }
       }
     }
   }
@@ -69,8 +85,8 @@ class WebSocketClient {
    * 接收数据
    * @param data 
    */
-  onMessage (data: WebSocketMessage.Response) {
-    // return data
+  onMessage (data: WebSocketMessage.Response | Buffer | ArrayBuffer | Buffer[]) {
+    
   }
 
   /**

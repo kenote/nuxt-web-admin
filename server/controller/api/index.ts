@@ -5,6 +5,7 @@ import ChannelController from './channel'
 import GroupController from './group'
 import NotificationController from './notification'
 import OplogController from './oplog'
+import PlanController from './plan'
 import ProjectController from './project'
 import TeamController from './team'
 import TicketController from './ticket'
@@ -28,6 +29,8 @@ import UserController from './user'
     NotificationController,
     // 日志相关
     OplogController,
+    // 方案相关
+    PlanController,
     // 项目相关
     ProjectController,
     // 团队相关

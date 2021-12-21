@@ -15,6 +15,9 @@ export default class ToolsController {
       let result = await searchIP(ctx.payload?.ips ?? [])
       return ctx.api(result)
     } catch (error) {
+      if (error?.message) {
+        return ctx.api(null, error)
+      }
       nextError(error, ctx, next)
     }
   }

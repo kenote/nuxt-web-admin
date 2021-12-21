@@ -1,8 +1,8 @@
 
 import nunjucks from 'nunjucks'
 import { Command, Channel, Verify } from '@/types/client'
-import { dataNodeProxy } from '@kenote/common'
-import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit, isNumber, toNumber, isNaN, isEmpty, isNull, compact } from 'lodash'
+import { dataNodeProxy, CommonDataNode } from '@kenote/common';
+import { map, get, template, isDate, isString, isArray, merge, isFunction, isPlainObject, omit, isNumber, toNumber, isNaN, isEmpty, isNull, compact, cloneDeep } from 'lodash'
 import jsYaml from 'js-yaml'
 import urlParse from 'url-parse'
 import qs from 'query-string'
@@ -80,12 +80,12 @@ export function parseProps (props?: Record<string, string>) {
 }
 
 /**
- * 检索数据节点，结果返回到列表
+ * 检索频道数据节点，结果返回到列表
  * @param data 
  * @param keywords 
  * @param list 
  */
-export function filterDataNode (data: Channel.DataNode[], keywords: string, list: Channel.DataNode[] = []) {
+export function filterChannelDataNode (data: Channel.DataNode[], keywords: string, list: Channel.DataNode[] = []) {
   if (!keywords) return
   let keys = map(list, 'key')
   let query: FilterQuery<Channel.DataNode> = {
@@ -97,9 +97,21 @@ export function filterDataNode (data: Channel.DataNode[], keywords: string, list
   let item = dataNodeProxy<Channel.DataNode>(data).find({ $and: [ { key: { $nin: keys } }, query, { children: { $exists: false } } ] })
   if (item) {
     list.push(item)
-    filterDataNode(data, keywords, list)
+    filterChannelDataNode(data, keywords, list)
   }
   return
+}
+
+/**
+ * 获取节点的目录结构
+ * @param data 
+ */
+export function getNodeFolders<T extends CommonDataNode> (data: T[]) {
+  let __data = cloneDeep(data.filter( r => !!r.children ))
+  __data.forEach( (node: T, __v: number) => {
+    __data[__v].children = getNodeFolders(node.children ?? [])
+  })
+  return __data
 }
 
 /**

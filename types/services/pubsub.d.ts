@@ -4,9 +4,11 @@ import { WebSocketMessage } from './http'
 export declare namespace PubsubConfigure {
 
   interface Service {
-    name       : string
-    service    : string
-    args      ?: any[]
+    name           : string
+    service        : string
+    args          ?: any[]
+    defaultValues ?: any
+    resultMaps    ?: string | Array<string | number>
   }
 }
 

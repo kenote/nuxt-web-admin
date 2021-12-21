@@ -97,8 +97,8 @@
         </perfect-scrollbar>
       </web-drawer>
       <!-- 收藏夹 -->
-      <web-drawer placement="right" width="260" :lock="editMode" :visible="drawerType === 'bookmark'" @close="handleCloseDrawer">
-
+      <web-drawer placement="right" width="420" :lock="editMode" :visible="drawerType === 'bookmark'" @close="handleCloseDrawer">
+        <bookmark :data="bookmarks" :mode="editMode ? 'edit' : ''" @command="handleCommand" @edit-mode="handleEditMode" />
       </web-drawer>
       <!--  -->
       <task-poller>
@@ -118,12 +118,11 @@ import { NavMenu, Channel, HttpResult } from '@/types/client'
 import { Route } from 'vue-router'
 import { getChannelKey, dataNodeProxy } from '@kenote/common'
 import { MetaInfo } from 'vue-meta'
-import { UserDocument, AccoutNotificationDocument } from '@/types/services/db'
+import { UserDocument, AccoutNotificationDocument, BookmarkDataNode } from '@/types/services/db'
 import { isEqual, get } from 'lodash'
 import { getUserArrayInfo } from '@/utils/user'
 import { AccountConfigure } from '@/types/config'
 import { FilterQuery } from 'rule-judgment'
-import ruleJudgment from 'rule-judgment';
 
 @Component<DashboardLayout>({
   name: 'dashboard-layout',
@@ -143,22 +142,6 @@ import ruleJudgment from 'rule-judgment';
   async mounted () {
     document.body.className = 'dashboard-body'
     await this.updateChannel(this.$route.path)
-    // 订阅通知
-    let pubsub  = this.dashboard.pubsub?.find(ruleJudgment({ key: 'dashboard' }))
-    if (pubsub) {
-      let socket = this.$websocket(pubsub?.url ?? '')
-      socket.send('notification', {})
-      socket.onMessage = response => {
-        let { headers, body } = response
-        let map = new Map()
-        // 获取消息通知
-        map.set('notification', () => {
-          this.$store.commit(this.types.auth.NOTIFICATION, body.data)
-          this.$store.commit(this.types.auth.UNREAD, body.counts)
-        })
-        map.get(headers.path)?.call(this)
-      }
-    }
   }
 })
 export default class DashboardLayout extends mixins(BaseMixin) {
@@ -183,6 +166,9 @@ export default class DashboardLayout extends mixins(BaseMixin) {
 
   @Store.Auth.State
   unread!: number
+
+  @Store.Auth.State
+  bookmarks!: BookmarkDataNode[]
 
   @Provide()
   env: Record<string, any> = {}
@@ -269,6 +255,12 @@ export default class DashboardLayout extends mixins(BaseMixin) {
     this.$store.commit(this.types.setting.CHANNELS, get(node, 'data'))
   }
 
+  @Watch('drawerType')
+  onDrawerTypeChange (val: string, oldVal: string) {
+    if (val === oldVal) return
+    this.editMode = false
+  }
+
   handleVisible (visible: boolean) {
     this.visible = visible
   }
@@ -326,6 +318,7 @@ export default class DashboardLayout extends mixins(BaseMixin) {
    * 运行指令集
    */
   handleCommand (value: string, row?: Record<string, any>) {
+    this.handleCloseDrawer()
     return runCommand(this, {
       fullscreen: () => {
         this.toggleFullScreen()
@@ -333,6 +326,10 @@ export default class DashboardLayout extends mixins(BaseMixin) {
       channels: () => {
         this.drawerVisible = true
         this.drawerType = 'channels'
+      },
+      bookmark: () => {
+        this.drawerVisible = true
+        this.drawerType = 'bookmark'
       },
       refresh: () => {
         this.$store.commit(Types.setting.REFRESH, true)

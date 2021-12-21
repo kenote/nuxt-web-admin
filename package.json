@@ -34,9 +34,11 @@
     "parse-string": "^1.2.4",
     "passport-jwt": "^4.0.0",
     "query-string": "^6.14.1",
+    "redis": "^3.1.2",
     "runscript": "^1.5.1",
     "unzipper": "^0.10.11",
     "url-parse": "^1.5.1",
+    "uuid": "^3.4.0",
     "v-clipboard": "^2.2.3",
     "vditor": "^3.8.4",
     "vue-codemirror": "^4.0.6",
@@ -46,7 +48,7 @@
     "xlsx": "^0.17.1"
   },
   "devDependencies": {
-    "@nuxt/components": "^1.2.6",
+    "@nuxt/components": "^2.2.1",
     "@nuxt/types": "^2.15.7",
     "@nuxt/typescript-build": "^2.1.0",
     "@types/archiver": "^5.1.1",
@@ -82,7 +84,7 @@
     "start": "cross-env NODE_ENV=production node ./dist/index.js"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14"
   },
   "os": [
     "darwin",

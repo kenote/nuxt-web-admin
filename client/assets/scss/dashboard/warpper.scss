@@ -467,5 +467,13 @@
       }
     }
   }
+
+  .el-message-box__input {
+
+    .el-input__inner {
+      border-radius: 0;
+    }
+    
+  }
 }
 

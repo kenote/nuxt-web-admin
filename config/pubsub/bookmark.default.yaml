@@ -1,0 +1,15 @@
+
+name: &name bookmark
+
+request:
+  headers:
+    path: *name
+
+response:
+  data:
+    service: db.plan.find
+    args:
+      - user: '{{auth._id}}'
+        type: bookmark
+    resultMaps: [ 0, 'content' ]
+    defaultValues: []

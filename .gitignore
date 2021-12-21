@@ -54,6 +54,7 @@ project/**/*.*
 !project/readme.md
 qqwry.dat
 backup/
+.DS_Store
 
 # TypeScript v1 declaration files
 typings/

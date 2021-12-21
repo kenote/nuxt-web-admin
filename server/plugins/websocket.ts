@@ -38,14 +38,19 @@ export function createWebsocketServer (server: http.Server) {
         for (let [key, res] of Object.entries(response)) {
           let func = get(service, res.service)
           if (func) {
-            let ret = await func(...res.args)
-                                    
-            body[key] = ret
+            let ret = await func(...res.args!)
+            body[key] = (res.resultMaps ? get(ret, res.resultMaps) : ret) ?? res.defaultValues
           }
         }
         socket.send(JSON.stringify(resultData(data, body)))
       }
     })
+  })
+  wss.on('close', (socket: Websocket) => {
+    console.log('close')
+  })
+  wss.on('error', (socket: Websocket, err) => {
+    console.log('error', err)
   })
 }
 
