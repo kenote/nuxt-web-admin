@@ -1,6 +1,6 @@
 import { ActionTree, MutationTree, GetterTree, ActionContext } from 'vuex'
 import { RootState } from '~/store'
-import { UserDocument, AccoutNotificationDocument, BookmarkDataNode } from '@/types/services/db'
+import { UserDocument, AccoutNotificationDocument, BookmarkDataNode, PlanDocument } from '@/types/services/db'
 import jsYaml from 'js-yaml'
 import { isString } from 'lodash'
 
@@ -14,7 +14,8 @@ export const types = {
   MOBILE          : 'MOBILE',
   NOTIFICATION    : 'NOTIFICATION',
   UNREAD          : 'UNREAD',
-  BOOKMARKS       : 'BOOKMARKS'
+  BOOKMARKS       : 'BOOKMARKS',
+  DRAFTS          : 'DRAFTS'
 }
 
 export interface State {
@@ -23,6 +24,7 @@ export interface State {
   notification    : Array<AccoutNotificationDocument & { link?: string }>
   unread          : number
   bookmarks       : BookmarkDataNode[]
+  drafts          : PlanDocument[]
 }
 
 export const namespaced: boolean = true
@@ -32,7 +34,8 @@ export const state: () => State = () => ({
   timestamp       : 0,
   notification    : [],
   unread          : 0,
-  bookmarks       : []
+  bookmarks       : [],
+  drafts          : []
 })
 
 export const getters: GetterTree<State, RootState> = {
@@ -84,5 +87,8 @@ export const mutations: MutationTree<State> = {
   },
   [types.BOOKMARKS] (state: State, bookmarks: string | BookmarkDataNode[]) {
     state.bookmarks = isString(bookmarks) ? jsYaml.load(bookmarks) : bookmarks
+  },
+  [types.DRAFTS] (state: State, drafts: PlanDocument[]) {
+    state.drafts = drafts
   }
 }

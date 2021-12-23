@@ -50,7 +50,7 @@ import { ElMessageBoxOptions } from 'element-ui/types/message-box'
     if (pubsub) {
       let url = parseTemplate(pubsub?.url, { wsurl })
       let socket = this.$websocket(url ?? '')
-      socket.send(['notification', 'bookmark'])
+      socket.send(['notification', 'bookmark', 'draft'])
       socket.onMessage = response => {
         let { headers, body } = response as WebSocketMessage.Response
         let map = new Map()
@@ -62,6 +62,10 @@ import { ElMessageBoxOptions } from 'element-ui/types/message-box'
         // 获取用户书签
         map.set('bookmark', () => {
           this.$store.commit(Types.auth.BOOKMARKS, body.data)
+        })
+        // 获取用户草稿
+        map.set('draft', () => {
+          this.$store.commit(Types.auth.DRAFTS, body.data)
         })
         map.get(headers.path)?.call(this)
       }

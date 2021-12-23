@@ -54,7 +54,18 @@
       </section>
       <span slot="footer" class="dialog-footer">
         <div class="dialog-footer-left">
-          
+          <!-- 草稿/方案 -->
+          <plan-picker v-if="plan"
+            v-model="selectedPlan"
+            :associate="plan.associate"
+            :placeholder="plan.placeholder"
+            :size="plan.size"
+            @create-data="handleUpdatePlan"
+            @update-data="handleUpdatePlan"
+            @remove-data="handleUpdatePlan"
+            @clear="handleRest"
+            @change="handleSetValues"
+            />
         </div>
         <el-button @click="handleCloseSelect(false)">取 消</el-button>
         <el-button type="primary" @click="handleCloseSelect(true)">确 定</el-button>
@@ -67,9 +78,10 @@
 import { Component, Vue, Prop, Provide, Model, Emit, Watch, mixins, Inject } from 'nuxt-property-decorator'
 import { Channel } from '@/types/client'
 import ruleJudgment from 'rule-judgment'
-import { map, remove, cloneDeep, template, get } from 'lodash'
+import { map, remove, cloneDeep, template, get, merge } from 'lodash'
 import { parseProps } from '@/utils'
 import Emitter from 'element-ui/lib/mixins/emitter'
+import jsYaml from 'js-yaml'
 
 interface DialogOptions {
   visible   ?: boolean
@@ -116,6 +128,9 @@ export default class GroupPicker extends mixins(Emitter) {
 
   @Prop({ default: undefined })
   width!: number | 'auto'
+
+  @Prop({ default: undefined })
+  plan!: Channel.PlanOptions
   
   @Provide()
   values: any = ''
@@ -147,6 +162,9 @@ export default class GroupPicker extends mixins(Emitter) {
   @Provide()
   initial: boolean = true
 
+  @Provide()
+  selectedPlan: string = ''
+
   @Model('update')
   value!: string | string[]
 
@@ -155,6 +173,9 @@ export default class GroupPicker extends mixins(Emitter) {
   
   @Emit('change')
   change (value: any) {}
+
+  @Emit('set-data')
+  setData (request: Channel.RequestConfig, options: any, next: (data: { key: number | string, name: string }[]) => void) {}
 
   @Watch('value')
   onValueChange (val: string | string[], oldVal: string | string[]) {
@@ -167,7 +188,7 @@ export default class GroupPicker extends mixins(Emitter) {
   }
 
   @Watch('values')
-  onCodeChange (val: string | string[], oldVal: string | string[]) {
+  onValuesChange (val: string | string[], oldVal: string | string[]) {
     if (val === oldVal) return
     let _data = this.data.map(parseProps(this.props))
     if (this.multiple) {
@@ -183,6 +204,16 @@ export default class GroupPicker extends mixins(Emitter) {
       this.name = item?.label ?? `点击选择${this.title}`
     }
     this.update(val)
+  }
+
+  @Watch('dialog.value')
+  onDialogValueChange (val: string | string[], oldVal: string | string[]) {
+    if (val === oldVal) return
+    if (this.multiple) {
+      let checkedCount = val.length
+      this.checkAll = checkedCount === this.data.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.data.length
+    }
   }
 
   @Watch('fullscreen')
@@ -208,6 +239,19 @@ export default class GroupPicker extends mixins(Emitter) {
   }
 
   parseProps = parseProps
+
+  handleUpdatePlan (options: Channel.RequestConfig, next: (data: any) => void) {
+    options.params = merge(options.params, { content: jsYaml.dump(this.dialog.value) })
+    this.setData(options, null, next)
+  }
+
+  handleSetValues (values: any) {
+    this.dialog.value = values
+  }
+
+  handleRest () {
+    this.dialog.value = this.multiple ? [] : ''
+  }
 
   /**
    * 打开选择器

@@ -452,6 +452,30 @@ export declare namespace Channel {
      * 分页模式
      */
     pagination    ?: string
+    /**
+     * 草稿选项
+     */
+    draft         ?: PlanOptions
+  }
+
+  // 草稿/方案选项
+  interface PlanOptions {
+    /**
+     * 关联标识
+     */
+    associate      : string
+    /**
+     * 占位描述
+     */
+    placeholder   ?: string
+    /**
+     * 样式大小
+     */
+    size          ?: 'medium' | 'small' | 'mini'
+    /**
+     * 接口选项
+     */
+    apiOptions    ?: Record<string, RequestConfig>
   }
 
   // 表格单元

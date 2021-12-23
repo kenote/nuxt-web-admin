@@ -69,7 +69,9 @@
     :width="width"
     :span="options && options.span"
     :title="options && options.title"
+    :plan="options && options.plan"
     :disabled="disabled"
+    @set-data="getData"
     />
   <!-- 节点选择器 -->
   <datanode-picker v-else-if="type === 'datanode-picker'"
@@ -79,7 +81,9 @@
     :width="width"
     :title="options && options.title"
     :node-key="options && options.nodeKey"
+    :plan="options && options.plan"
     :disabled="disabled"
+    @set-data="getData"
     />
   <!-- 头像选择器 -->
   <avatar-picker v-else-if="type === 'avatar-picker'"

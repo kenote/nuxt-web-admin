@@ -24,7 +24,7 @@ export async function request (ctx: Context, next: NextHandler) {
     if (!sdk) {
       throw httpError(ErrorCode.ERROR_CUSTOMIZE_DATA, ['Endpoint', `[${endpoint}]`, '不存在'])
     }
-    let apiOptions = loadConfig<APIOptions>(`project/alicloud/api/${sdk.key}/${action}.yaml`, { mode: 'merge' })
+    let apiOptions = loadConfig<APIOptions>(`project/alicloud/action/${sdk.key}/${action}.yaml`, { mode: 'merge' })
     if (!apiOptions) {
       throw httpError(ErrorCode.ERROR_CUSTOMIZE_DATA, ['Action', `[${action}]`, '不存在'])
     }

@@ -81,6 +81,19 @@
                 </el-button>
               </template>
             </template>
+            <!-- 草稿 -->
+            <plan-picker v-if="submitOptions && submitOptions.draft"
+              v-model="selectedDraft"
+              style="margin-left:10px"
+              :associate="submitOptions.draft.associate"
+              :placeholder="submitOptions.draft.placeholder"
+              :size="submitOptions.draft.size"
+              @create-data="handleUpdateDraft"
+              @update-data="handleUpdateDraft"
+              @remove-data="handleUpdateDraft"
+              @clear="handleRest"
+              @change="handleSetValues"
+              />
             
           </div>
         </el-col>
@@ -98,7 +111,8 @@ import { zipObject, unset, isEqual, map, pick, assign, cloneDeep, merge, omit, i
 import { formatData, ParseData } from 'parse-string'
 import { parseRules, parseParams, parseTemplate } from '@/utils'
 import EnvironmentMixin from '~/mixins/environment'
-import ruleJudgment from 'rule-judgment';
+import ruleJudgment from 'rule-judgment'
+import jsYaml from 'js-yaml'
 
 @Component<WebForm>({
   name: 'web-form',
@@ -199,11 +213,14 @@ export default class WebForm extends mixins(EnvironmentMixin) {
   @Provide()
   isSend: boolean = true
 
+  @Provide()
+  selectedDraft: string = ''
+
   @Emit('submit')
   submit (values: Record<string, any>, action: Channel.RequestConfig, options: Channel.SubmitOptions) {}
 
   @Emit('get-data')
-  getData (options: Channel.RequestConfig, next: (data: { key: number | string, name: string }[]) => void) {}
+  getData (request: Channel.RequestConfig, options: any, next: (data: { key: number | string, name: string }[]) => void) {}
 
   @Emit('upload-file')
   uploadFile (file: File, options: any, next: (doc: any, err?: Error) => void) {}
@@ -221,6 +238,15 @@ export default class WebForm extends mixins(EnvironmentMixin) {
   reset (values: Record<string, any>) {}
 
   parseTemplate = parseTemplate
+
+  handleUpdateDraft (options: Channel.RequestConfig, next: (data: any) => void) {
+    options.params = merge(options.params, { content: jsYaml.dump(this.values) })
+    this.getData(options, null, next)
+  }
+
+  handleSetValues (values: any) {
+    this.values = values
+  }
 
   handleSubmit () {
     let theForm = this.$refs['theForm'] as ElForm
@@ -277,6 +303,7 @@ export default class WebForm extends mixins(EnvironmentMixin) {
     theForm.resetFields()
     this.$emit('reset', this.DefaultValues)
     this.values = cloneDeep(this.DefaultValues)
+    this.selectedDraft = ''
   }
   
 }

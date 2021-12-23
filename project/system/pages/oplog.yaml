@@ -166,6 +166,7 @@ components:
                   - key: preview
                     name: 查看
                     type: dropdown
+                    command: dialog:previewResponse
                     options:
                       - key: request
                         name: 请求数据

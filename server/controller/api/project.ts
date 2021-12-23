@@ -32,7 +32,7 @@ export default class ProjectController {
           requestOptions.body = merge(requestOptions.body, payload)
         }
         let ret = await http.shellAsCurl(requestOptions)
-        let [ , code ] = ret.status?.split(/\s+/)
+        let [ , code ] = ret.status?.split(/\s+/) ?? []
         if (code != '200') {
           throw httpError(ErrorCode.ERROR_CUSTOMIZE_DATA, [ 'Proxy:', ret.status?.replace('404 OK', '404 Not Found')! ])
         }

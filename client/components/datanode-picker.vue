@@ -45,7 +45,18 @@
       </section>
       <span slot="footer" class="dialog-footer">
         <div class="dialog-footer-left">
-          
+          <!-- 草稿/方案 -->
+          <plan-picker v-if="plan"
+            v-model="selectedPlan"
+            :associate="plan.associate"
+            :placeholder="plan.placeholder"
+            :size="plan.size"
+            @create-data="handleUpdatePlan"
+            @update-data="handleUpdatePlan"
+            @remove-data="handleUpdatePlan"
+            @clear="handleRest"
+            @change="handleSetValues"
+            />
         </div>
         <el-button @click="handleCloseSelect(false)">取 消</el-button>
         <el-button type="primary" @click="handleCloseSelect(true)">确 定</el-button>
@@ -57,11 +68,13 @@
 
 <script lang="ts">
 import { Component, Model, Emit, Watch, Provide, Inject, Prop, mixins } from 'nuxt-property-decorator'
-import { get, cloneDeep, compact } from 'lodash'
+import { get, cloneDeep, compact, merge } from 'lodash'
 import Emitter from 'element-ui/lib/mixins/emitter'
 import { CommonDataNode, ChannelDataNode } from'@kenote/common'
 import { Tree as ElTree } from 'element-ui'
-import ruleJudgment from 'rule-judgment';
+import ruleJudgment from 'rule-judgment'
+import { Channel } from '@/types/client'
+import jsYaml from 'js-yaml'
 
 interface DialogOptions {
   visible   ?: boolean
@@ -121,6 +134,9 @@ export default class DataNodePicker extends mixins(Emitter) {
   @Provide()
   keywords: string = ''
 
+  @Provide()
+  selectedPlan: string = ''
+
   @Model('update')
   value!: string[]
 
@@ -129,6 +145,9 @@ export default class DataNodePicker extends mixins(Emitter) {
   
   @Emit('change')
   change (value: string[]) {}
+
+  @Emit('set-data')
+  setData (request: Channel.RequestConfig, options: any, next: (data: { key: number | string, name: string }[]) => void) {}
 
   @Watch('value')
   onValueChange (val: string[], oldVal: string[]) {
@@ -174,6 +193,19 @@ export default class DataNodePicker extends mixins(Emitter) {
      if (val === oldVal) return
      let theTree = this.$refs['theTree'] as ElTree
      theTree.filter(val)
+  }
+
+  handleUpdatePlan (options: Channel.RequestConfig, next: (data: any) => void) {
+    options.params = merge(options.params, { content: jsYaml.dump(this.dialog.value) })
+    this.setData(options, null, next)
+  }
+
+  handleSetValues (values: any) {
+    this.dialog.value = values
+  }
+
+  handleRest () {
+    this.dialog.value = []
   }
   
   /**

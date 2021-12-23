@@ -44,11 +44,18 @@ export default class PlanController {
    */
   @Post('/create', { filters: [ ...authenticate, filter.plan.create ] })
   async create (ctx: Context, next: NextHandler) {
-    let { nextError, db } = ctx.service
+    let { nextError, db, PubSub } = ctx.service
     try {
       let payload = ctx.payload as CreatePlanDocument
       payload.user = ctx.user._id
       let result = await db.plan.Dao.create(payload)
+      if (result) {
+        await PubSub.publish(result.type, {
+          headers: {
+            path: result.type
+          }
+        })
+      }
       return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)
@@ -60,7 +67,7 @@ export default class PlanController {
    */
   @Post('/edit/:_id', { filters: [ ...authenticate, filter.plan.edit ] })
   async edit (ctx: Context, next: NextHandler) {
-    let { nextError, db } = ctx.service
+    let { nextError, db, PubSub } = ctx.service
     let { _id } = ctx.params
     try {
       let conditions: FilterQuery<PlanDocument> = {
@@ -68,6 +75,11 @@ export default class PlanController {
         user: ctx.user._id
       }
       let result = await db.plan.Dao.updateOne(conditions, { ...ctx.payload, update_at: new Date() })
+      await PubSub.publish('draft', {
+        headers: {
+          path: 'draft'
+        }
+      })
       return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)
@@ -80,9 +92,14 @@ export default class PlanController {
   @Delete('/', { filters: [ ...authenticate, filter.plan.remove ]})
   @Delete('/:_id', { filters: [ ...authenticate, filter.plan.remove ] })
   async remove (ctx: Context, next: NextHandler) {
-    let { nextError, db } = ctx.service
+    let { nextError, db, PubSub } = ctx.service
     try {
       let result = await db.plan.Dao.remove(ctx.payload)
+      await PubSub.publish('draft', {
+        headers: {
+          path: 'draft'
+        }
+      })
       return ctx.api(result)
     } catch (error) {
       nextError(error, ctx, next)

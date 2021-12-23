@@ -1,12 +1,15 @@
 <template>
   <div class="bookmarks">
-    <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
+    <el-input placeholder="输入关键字进行过滤" v-model="filterText" clearable></el-input>
     <perfect-scrollbar style="height:calc(100vh - 190px)" :options="{ suppressScrollX: true }">
       <el-tree ref="theTree"
         class="filter-tree"
         :data="data"
         :props="{ key: 'key', label: 'name', children: 'children' }"
         node-key="key"
+        :draggable="editMode"
+        @node-drop="handleDrop"
+        :allow-drop="allowDrop"
         :filter-node-method="filterNode"
         @node-click="handleSelect"
         :expand-on-click-node="false"
@@ -43,11 +46,11 @@ import BaseMixin from '~/mixins/base'
 import { BookmarkDataNode } from '@/types/services/db'
 import { Tree as ElTree } from 'element-ui'
 import { TreeNode } from 'element-ui/types/tree'
-import { cloneDeep, get } from 'lodash'
+import { cloneDeep, get, nth } from 'lodash'
 import jsYaml from 'js-yaml'
 import { HttpResult } from '@/types/client'
 import { ElMessageBoxOptions, MessageBoxInputData } from 'element-ui/types/message-box'
-import { dataNodeProxy } from '@kenote/common'
+import { dataNodeProxy, initMaps, removeMaps } from '@kenote/common'
 
 @Component<Bookmark>({
   name: 'bookmark'
@@ -176,6 +179,40 @@ export default class Bookmark extends mixins(BaseMixin) {
   }
 
   /**
+   * 节点拖拽操作
+   */
+  handleDrop (draggingNode: TreeNode<string, BookmarkDataNode>, dropNode: TreeNode<string, BookmarkDataNode>, dropType: 'before' | 'after' | 'inner', evt: DragEvent) {
+    let bookmark = dataNodeProxy(initMaps(cloneDeep(this.data)))
+    let itemNode = bookmark.find({ key: draggingNode.data.key })
+    let targetNode = bookmark.find({ key: dropNode.data.key })
+    if (!itemNode || !targetNode) return
+    bookmark.remove(itemNode.key)
+    let parent = nth(targetNode?.maps, -2)
+    let items = parent ? bookmark.find({ key: parent?.key })?.children ?? [] : bookmark.data
+    let index = items.findIndex( r => r.key === targetNode?.key )
+    if (dropType === 'before') {
+      items.splice(index, 0, itemNode)
+    }
+    else if (dropType === 'after') {
+      items.splice(index + 1, 0, itemNode)
+    }
+    else if (dropType === 'inner') {
+      bookmark.add(targetNode.key, itemNode)
+    }
+    this.handleUpdateBookmark(removeMaps(bookmark.data))
+  }
+
+  /**
+   * 拖拽时判定目标节点能否被放置
+   */
+  allowDrop(draggingNode: TreeNode<string, BookmarkDataNode>, dropNode: TreeNode<string, BookmarkDataNode>, dropType: 'prev' | 'inner' | 'next') {
+    if (dropType === 'inner') {
+      return !dropNode.data.command
+    }
+    return true
+  }
+
+  /**
    * 更新书签数据
    */
   handleUpdateBookmark (data: BookmarkDataNode[]) {
@@ -239,7 +276,6 @@ export default class Bookmark extends mixins(BaseMixin) {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    // padding-right: 18px;
   }
 }
 </style>

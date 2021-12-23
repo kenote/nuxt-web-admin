@@ -1,0 +1,14 @@
+
+name: &name draft
+
+request:
+  headers:
+    path: *name
+
+response:
+  data:
+    service: db.plan.find
+    args:
+      - user: '{{auth._id}}'
+        type: draft
+    defaultValues: []
